@@ -1,0 +1,346 @@
+You should specify 'batch size' by specifying microbatch_num_per_batch and data_size_per_microbatch seperately.
+
+Parameters:
+    - Debug Mode:             True
+    - Batches:                2
+    - Microbatch Per Batch:   2
+    - Microbatch Data Size:   10
+    - Bypass First Forward:   True
+    - Bypass Last Backward:   True
+    - PP enable:              True
+    - Target PP Stage Num:    8
+    - DP enable:              True
+    - DP Grp Size:            2
+    - DP overlap:             False
+    - DP Granularity:         device
+    - PP Mode:                F_then_B
+    - PP Granularity:         device
+    - Enable PP Backpressure: True
+    - PP Grp Label:           avg_mem_grp_idx
+    - PP Bucket size:         10000000 B
+    - DP Bucket size:         -1 B
+    - Plot PP Only:           True
+    - Plot Seed:              2
+    
+cut_mode = avg_mem
+Debug Mode is ON. Forcely cut and divide the df into easy-to-analyze format.
+0 ()
+1 (conv1,)
+2 (bn1,)
+3 (relu,)
+
+Enter sim_node_gen(). pp_mode=F_then_B, bypass_first_fwd=True, bypass_last_bkwd=True
+Total passes: 4
+pass_info for seq_id 0	 0 0 BKWD True False
+pass_info for seq_id 1	 0 1 BKWD False True
+pass_info for seq_id 2	 1 0 FWD True False
+下一个 batch 的第一个 fwd: 1, 0, FWD
+[0, 0, 'relu_0_1_bkwd', 'conv1_1_0_fwd', 0, 0]
+[1, 2816, 'conv1_0_1_bkwd', 'conv1_1_0_fwd', 0, 1]
+pass_info for seq_id 3	 1 1 FWD False True
+
+Nodes with hw info of DP 0:
+    global_index  avg_mem_grp_idx  layer_index    server_id gpu_id nic_id  prev_server prev_gpu prev_nic  next_server next_gpu next_nic                  name                                            args                                                                                                 dp_args  input_#  output_#  Param_#  dp_index  pp_index  tp_index       opcode   target   layer_type       input_shape      output_shape                       param_shape kwargs  dtype_size direction     pp_grp_label  avg_mem_grp_size min_comm_grp_id min_comm_grp_sum min_comm_grp_last_weight  compute_density_ops  index_on_host  index_on_GPU input_source output_dest     read_time     exec_time    write_time
+0              0                1            3  dp0_server1   gpu2   nic2         None     None     None  dp0_server1     gpu2     nic2  dp0_maxpool_0_0_bkwd                                              ()                                                                                                      []   144000    576000        0         0         0         0  call_module  maxpool    MaxPool2d  [10, 64, 15, 15]  [10, 64, 30, 30]                                {}     {}           4      BKWD  avg_mem_grp_idx           1000003            None             None                     None              1152000              0             0         host         HBM  8.381903e-06  5.907692e-08  1.379915e-06
+1              1                1            2  dp0_server1   gpu2   nic2  dp0_server1     gpu2     nic2  dp0_server1     gpu1     nic1     dp0_relu_0_0_bkwd                         (dp0_maxpool_0_0_bkwd,)                                                                                                      []   576000    576000        0         0         0         0  call_module     relu         ReLU  [10, 64, 30, 30]  [10, 64, 30, 30]                                {}     {}           4      BKWD  avg_mem_grp_idx           1000002            None             None                     None              2304000              1             1          HBM     peerGPU  1.379915e-06  1.181538e-07  3.576279e-06
+2              2                0            1  dp0_server1   gpu1   nic1  dp0_server1     gpu2     nic2  dp0_server1     gpu1     nic1      dp0_bn1_0_0_bkwd                            (dp0_relu_0_0_bkwd,)                                                                                                      []   576000    576000      128         0         0         0  call_module      bn1  BatchNorm2d  [10, 64, 30, 30]  [10, 64, 30, 30]  {'weight': (64,), 'bias': (64,)}     {}           4      BKWD  avg_mem_grp_idx           1000001            None             None                     None             20737024              2             0      peerGPU         HBM  3.576279e-06  1.063437e-06  1.379915e-06
+3              3                0            0  dp0_server1   gpu1   nic1  dp0_server1     gpu1     nic1  dp0_server1     gpu2     nic2    dp0_conv1_0_0_bkwd                             (dp0_bn1_0_0_bkwd,)                                                                                                      []   576000      7840      576         0         0         0  call_module    conv1       Conv2d  [10, 64, 30, 30]   [10, 1, 28, 28]         {'weight': (64, 1, 3, 3)}     {}           4      BKWD  avg_mem_grp_idx           1000000            None             None                     None             10368000              3             1          HBM     peerGPU  1.379915e-06  5.316923e-07  4.867713e-08
+4              4                1            3  dp0_server1   gpu2   nic2  dp0_server1     gpu1     nic1  dp0_server1     gpu2     nic2  dp0_maxpool_0_1_bkwd                     (dp0_relu_0_0_bkwd/shadow,)                                                                                                      []   144000    576000        0         0         0         0  call_module  maxpool    MaxPool2d  [10, 64, 15, 15]  [10, 64, 30, 30]                                {}     {}           4      BKWD  avg_mem_grp_idx           1000003            None             None                     None              1152000              4             2      peerGPU         HBM  8.940697e-07  5.907692e-08  1.379915e-06
+5              5                1            2  dp0_server1   gpu2   nic2  dp0_server1     gpu2     nic2  dp0_server1     gpu1     nic1     dp0_relu_0_1_bkwd                         (dp0_maxpool_0_1_bkwd,)                                                       [[src, 0, 0, relu_0_1_bkwd, conv1_1_0_fwd, 0, 0]]   576000    576000        0         0         0         0  call_module     relu         ReLU  [10, 64, 30, 30]  [10, 64, 30, 30]                                {}     {}           4      BKWD  avg_mem_grp_idx           1000002            None             None                     None              2304000              5             3          HBM     peerGPU  1.379915e-06  1.181538e-07  3.576279e-06
+6              6                0            1  dp0_server1   gpu1   nic1  dp0_server1     gpu2     nic2  dp0_server1     gpu1     nic1      dp0_bn1_0_1_bkwd  (dp0_relu_0_1_bkwd, dp0_conv1_0_0_bkwd/shadow)                                                                                                      []   576000    576000      128         0         0         0  call_module      bn1  BatchNorm2d  [10, 64, 30, 30]  [10, 64, 30, 30]  {'weight': (64,), 'bias': (64,)}     {}           4      BKWD  avg_mem_grp_idx           1000001            None             None                     None             20737024              6             2      peerGPU         HBM  3.576279e-06  1.063437e-06  1.379915e-06
+7              7                0            0  dp0_server1   gpu1   nic1  dp0_server1     gpu1     nic1  dp0_server1     gpu1     nic1    dp0_conv1_0_1_bkwd                             (dp0_bn1_0_1_bkwd,)                                                   [[src, 1, 2816, conv1_0_1_bkwd, conv1_1_0_fwd, 0, 1]]   576000      7840      576         0         0         0  call_module    conv1       Conv2d  [10, 64, 30, 30]   [10, 1, 28, 28]         {'weight': (64, 1, 3, 3)}     {}           4      BKWD  avg_mem_grp_idx           1000000            None             None                     None             10368000              7             3          HBM         HBM  1.379915e-06  5.316923e-07  1.878217e-08
+8              8                0            0  dp0_server1   gpu1   nic1  dp0_server1     gpu1     nic1  dp0_server1     gpu1     nic1     dp0_conv1_1_0_fwd                           (dp0_conv1_0_1_bkwd,)  [[dst, 0, 0, relu_0_1_bkwd, conv1_1_0_fwd, 0, 0], [dst, 1, 2816, conv1_0_1_bkwd, conv1_1_0_fwd, 0, 1]]     7840    576000      576         0         0         0  call_module    conv1       Conv2d   [10, 1, 28, 28]  [10, 64, 30, 30]         {'weight': (64, 1, 3, 3)}     {}           4       FWD  avg_mem_grp_idx           1000000            None             None                     None              5184000              8             4          HBM         HBM  1.878217e-08  2.658462e-07  1.379915e-06
+9              9                0            1  dp0_server1   gpu1   nic1  dp0_server1     gpu1     nic1  dp0_server1     gpu2     nic2       dp0_bn1_1_0_fwd                            (dp0_conv1_1_0_fwd,)                                                                                                      []   576000    576000      128         0         0         0  call_module      bn1  BatchNorm2d  [10, 64, 30, 30]  [10, 64, 30, 30]  {'weight': (64,), 'bias': (64,)}     {}           4       FWD  avg_mem_grp_idx           1000001            None             None                     None             10368512              9             5          HBM     peerGPU  1.379915e-06  5.317186e-07  3.576279e-06
+10            10                1            2  dp0_server1   gpu2   nic2  dp0_server1     gpu1     nic1  dp0_server1     gpu2     nic2      dp0_relu_1_0_fwd                              (dp0_bn1_1_0_fwd,)                                                                                                      []   576000    576000        0         0         0         0  call_module     relu         ReLU  [10, 64, 30, 30]  [10, 64, 30, 30]                                {}     {}           4       FWD  avg_mem_grp_idx           1000002            None             None                     None              2304000             10             4      peerGPU         HBM  3.576279e-06  1.181538e-07  1.379915e-06
+11            11                1            3  dp0_server1   gpu2   nic2  dp0_server1     gpu2     nic2  dp0_server1     gpu1     nic1   dp0_maxpool_1_0_fwd                             (dp0_relu_1_0_fwd,)                                                                                                      []   576000    144000        0         0         0         0  call_module  maxpool    MaxPool2d  [10, 64, 30, 30]  [10, 64, 15, 15]                                {}     {}           4       FWD  avg_mem_grp_idx           1000003            None             None                     None               576000             11             5          HBM     peerGPU  1.379915e-06  2.953846e-08  8.940697e-07
+12            12                0            0  dp0_server1   gpu1   nic1  dp0_server1     gpu2     nic2  dp0_server1     gpu1     nic1     dp0_conv1_1_1_fwd                       (dp0_bn1_1_0_fwd/shadow,)                                                                                                      []     7840    576000      576         0         0         0  call_module    conv1       Conv2d   [10, 1, 28, 28]  [10, 64, 30, 30]         {'weight': (64, 1, 3, 3)}     {}           4       FWD  avg_mem_grp_idx           1000000            None             None                     None              5184000             12             6      peerGPU         HBM  4.867713e-08  2.658462e-07  1.379915e-06
+13            13                0            1  dp0_server1   gpu1   nic1  dp0_server1     gpu1     nic1  dp0_server1     gpu2     nic2       dp0_bn1_1_1_fwd                            (dp0_conv1_1_1_fwd,)                                                                                                      []   576000    576000      128         0         0         0  call_module      bn1  BatchNorm2d  [10, 64, 30, 30]  [10, 64, 30, 30]  {'weight': (64,), 'bias': (64,)}     {}           4       FWD  avg_mem_grp_idx           1000001            None             None                     None             10368512             13             7          HBM     peerGPU  1.379915e-06  5.317186e-07  3.576279e-06
+14            14                1            2  dp0_server1   gpu2   nic2  dp0_server1     gpu1     nic1  dp0_server1     gpu2     nic2      dp0_relu_1_1_fwd   (dp0_bn1_1_1_fwd, dp0_maxpool_1_0_fwd/shadow)                                                                                                      []   576000    576000        0         0         0         0  call_module     relu         ReLU  [10, 64, 30, 30]  [10, 64, 30, 30]                                {}     {}           4       FWD  avg_mem_grp_idx           1000002            None             None                     None              2304000             14             6      peerGPU         HBM  3.576279e-06  1.181538e-07  1.379915e-06
+15            15                1            3  dp0_server1   gpu2   nic2  dp0_server1     gpu2     nic2         None     None     None   dp0_maxpool_1_1_fwd                             (dp0_relu_1_1_fwd,)                                                                                                      []   576000    144000        0         0         0         0  call_module  maxpool    MaxPool2d  [10, 64, 30, 30]  [10, 64, 15, 15]                                {}     {}           4       FWD  avg_mem_grp_idx           1000003            None             None                     None               576000             15             7          HBM         HBM  1.379915e-06  2.953846e-08  3.449787e-07
+
+Nodes with hw info of DP 1:
+    global_index  avg_mem_grp_idx  layer_index    server_id gpu_id nic_id  prev_server prev_gpu prev_nic  next_server next_gpu next_nic                  name                                            args                                                                                                 dp_args  input_#  output_#  Param_#  dp_index  pp_index  tp_index       opcode   target   layer_type       input_shape      output_shape                       param_shape kwargs  dtype_size direction     pp_grp_label  avg_mem_grp_size min_comm_grp_id min_comm_grp_sum min_comm_grp_last_weight  compute_density_ops  index_on_host  index_on_GPU input_source output_dest     read_time     exec_time    write_time
+0              0                1            3  dp1_server1   gpu2   nic2         None     None     None  dp1_server1     gpu2     nic2  dp1_maxpool_0_0_bkwd                                              ()                                                                                                      []   144000    576000        0         0         0         0  call_module  maxpool    MaxPool2d  [10, 64, 15, 15]  [10, 64, 30, 30]                                {}     {}           4      BKWD  avg_mem_grp_idx           1000003            None             None                     None              1152000              0             0         host         HBM  8.381903e-06  5.907692e-08  1.379915e-06
+1              1                1            2  dp1_server1   gpu2   nic2  dp1_server1     gpu2     nic2  dp1_server1     gpu1     nic1     dp1_relu_0_0_bkwd                         (dp1_maxpool_0_0_bkwd,)                                                                                                      []   576000    576000        0         0         0         0  call_module     relu         ReLU  [10, 64, 30, 30]  [10, 64, 30, 30]                                {}     {}           4      BKWD  avg_mem_grp_idx           1000002            None             None                     None              2304000              1             1          HBM     peerGPU  1.379915e-06  1.181538e-07  3.576279e-06
+2              2                0            1  dp1_server1   gpu1   nic1  dp1_server1     gpu2     nic2  dp1_server1     gpu1     nic1      dp1_bn1_0_0_bkwd                            (dp1_relu_0_0_bkwd,)                                                                                                      []   576000    576000      128         0         0         0  call_module      bn1  BatchNorm2d  [10, 64, 30, 30]  [10, 64, 30, 30]  {'weight': (64,), 'bias': (64,)}     {}           4      BKWD  avg_mem_grp_idx           1000001            None             None                     None             20737024              2             0      peerGPU         HBM  3.576279e-06  1.063437e-06  1.379915e-06
+3              3                0            0  dp1_server1   gpu1   nic1  dp1_server1     gpu1     nic1  dp1_server1     gpu2     nic2    dp1_conv1_0_0_bkwd                             (dp1_bn1_0_0_bkwd,)                                                                                                      []   576000      7840      576         0         0         0  call_module    conv1       Conv2d  [10, 64, 30, 30]   [10, 1, 28, 28]         {'weight': (64, 1, 3, 3)}     {}           4      BKWD  avg_mem_grp_idx           1000000            None             None                     None             10368000              3             1          HBM     peerGPU  1.379915e-06  5.316923e-07  4.867713e-08
+4              4                1            3  dp1_server1   gpu2   nic2  dp1_server1     gpu1     nic1  dp1_server1     gpu2     nic2  dp1_maxpool_0_1_bkwd                     (dp1_relu_0_0_bkwd/shadow,)                                                                                                      []   144000    576000        0         0         0         0  call_module  maxpool    MaxPool2d  [10, 64, 15, 15]  [10, 64, 30, 30]                                {}     {}           4      BKWD  avg_mem_grp_idx           1000003            None             None                     None              1152000              4             2      peerGPU         HBM  8.940697e-07  5.907692e-08  1.379915e-06
+5              5                1            2  dp1_server1   gpu2   nic2  dp1_server1     gpu2     nic2  dp1_server1     gpu1     nic1     dp1_relu_0_1_bkwd                         (dp1_maxpool_0_1_bkwd,)                                                       [[src, 0, 0, relu_0_1_bkwd, conv1_1_0_fwd, 0, 0]]   576000    576000        0         0         0         0  call_module     relu         ReLU  [10, 64, 30, 30]  [10, 64, 30, 30]                                {}     {}           4      BKWD  avg_mem_grp_idx           1000002            None             None                     None              2304000              5             3          HBM     peerGPU  1.379915e-06  1.181538e-07  3.576279e-06
+6              6                0            1  dp1_server1   gpu1   nic1  dp1_server1     gpu2     nic2  dp1_server1     gpu1     nic1      dp1_bn1_0_1_bkwd  (dp1_relu_0_1_bkwd, dp1_conv1_0_0_bkwd/shadow)                                                                                                      []   576000    576000      128         0         0         0  call_module      bn1  BatchNorm2d  [10, 64, 30, 30]  [10, 64, 30, 30]  {'weight': (64,), 'bias': (64,)}     {}           4      BKWD  avg_mem_grp_idx           1000001            None             None                     None             20737024              6             2      peerGPU         HBM  3.576279e-06  1.063437e-06  1.379915e-06
+7              7                0            0  dp1_server1   gpu1   nic1  dp1_server1     gpu1     nic1  dp1_server1     gpu1     nic1    dp1_conv1_0_1_bkwd                             (dp1_bn1_0_1_bkwd,)                                                   [[src, 1, 2816, conv1_0_1_bkwd, conv1_1_0_fwd, 0, 1]]   576000      7840      576         0         0         0  call_module    conv1       Conv2d  [10, 64, 30, 30]   [10, 1, 28, 28]         {'weight': (64, 1, 3, 3)}     {}           4      BKWD  avg_mem_grp_idx           1000000            None             None                     None             10368000              7             3          HBM         HBM  1.379915e-06  5.316923e-07  1.878217e-08
+8              8                0            0  dp1_server1   gpu1   nic1  dp1_server1     gpu1     nic1  dp1_server1     gpu1     nic1     dp1_conv1_1_0_fwd                           (dp1_conv1_0_1_bkwd,)  [[dst, 0, 0, relu_0_1_bkwd, conv1_1_0_fwd, 0, 0], [dst, 1, 2816, conv1_0_1_bkwd, conv1_1_0_fwd, 0, 1]]     7840    576000      576         0         0         0  call_module    conv1       Conv2d   [10, 1, 28, 28]  [10, 64, 30, 30]         {'weight': (64, 1, 3, 3)}     {}           4       FWD  avg_mem_grp_idx           1000000            None             None                     None              5184000              8             4          HBM         HBM  1.878217e-08  2.658462e-07  1.379915e-06
+9              9                0            1  dp1_server1   gpu1   nic1  dp1_server1     gpu1     nic1  dp1_server1     gpu2     nic2       dp1_bn1_1_0_fwd                            (dp1_conv1_1_0_fwd,)                                                                                                      []   576000    576000      128         0         0         0  call_module      bn1  BatchNorm2d  [10, 64, 30, 30]  [10, 64, 30, 30]  {'weight': (64,), 'bias': (64,)}     {}           4       FWD  avg_mem_grp_idx           1000001            None             None                     None             10368512              9             5          HBM     peerGPU  1.379915e-06  5.317186e-07  3.576279e-06
+10            10                1            2  dp1_server1   gpu2   nic2  dp1_server1     gpu1     nic1  dp1_server1     gpu2     nic2      dp1_relu_1_0_fwd                              (dp1_bn1_1_0_fwd,)                                                                                                      []   576000    576000        0         0         0         0  call_module     relu         ReLU  [10, 64, 30, 30]  [10, 64, 30, 30]                                {}     {}           4       FWD  avg_mem_grp_idx           1000002            None             None                     None              2304000             10             4      peerGPU         HBM  3.576279e-06  1.181538e-07  1.379915e-06
+11            11                1            3  dp1_server1   gpu2   nic2  dp1_server1     gpu2     nic2  dp1_server1     gpu1     nic1   dp1_maxpool_1_0_fwd                             (dp1_relu_1_0_fwd,)                                                                                                      []   576000    144000        0         0         0         0  call_module  maxpool    MaxPool2d  [10, 64, 30, 30]  [10, 64, 15, 15]                                {}     {}           4       FWD  avg_mem_grp_idx           1000003            None             None                     None               576000             11             5          HBM     peerGPU  1.379915e-06  2.953846e-08  8.940697e-07
+12            12                0            0  dp1_server1   gpu1   nic1  dp1_server1     gpu2     nic2  dp1_server1     gpu1     nic1     dp1_conv1_1_1_fwd                       (dp1_bn1_1_0_fwd/shadow,)                                                                                                      []     7840    576000      576         0         0         0  call_module    conv1       Conv2d   [10, 1, 28, 28]  [10, 64, 30, 30]         {'weight': (64, 1, 3, 3)}     {}           4       FWD  avg_mem_grp_idx           1000000            None             None                     None              5184000             12             6      peerGPU         HBM  4.867713e-08  2.658462e-07  1.379915e-06
+13            13                0            1  dp1_server1   gpu1   nic1  dp1_server1     gpu1     nic1  dp1_server1     gpu2     nic2       dp1_bn1_1_1_fwd                            (dp1_conv1_1_1_fwd,)                                                                                                      []   576000    576000      128         0         0         0  call_module      bn1  BatchNorm2d  [10, 64, 30, 30]  [10, 64, 30, 30]  {'weight': (64,), 'bias': (64,)}     {}           4       FWD  avg_mem_grp_idx           1000001            None             None                     None             10368512             13             7          HBM     peerGPU  1.379915e-06  5.317186e-07  3.576279e-06
+14            14                1            2  dp1_server1   gpu2   nic2  dp1_server1     gpu1     nic1  dp1_server1     gpu2     nic2      dp1_relu_1_1_fwd   (dp1_bn1_1_1_fwd, dp1_maxpool_1_0_fwd/shadow)                                                                                                      []   576000    576000        0         0         0         0  call_module     relu         ReLU  [10, 64, 30, 30]  [10, 64, 30, 30]                                {}     {}           4       FWD  avg_mem_grp_idx           1000002            None             None                     None              2304000             14             6      peerGPU         HBM  3.576279e-06  1.181538e-07  1.379915e-06
+15            15                1            3  dp1_server1   gpu2   nic2  dp1_server1     gpu2     nic2         None     None     None   dp1_maxpool_1_1_fwd                             (dp1_relu_1_1_fwd,)                                                                                                      []   576000    144000        0         0         0         0  call_module  maxpool    MaxPool2d  [10, 64, 30, 30]  [10, 64, 15, 15]                                {}     {}           4       FWD  avg_mem_grp_idx           1000003            None             None                     None               576000             15             7          HBM         HBM  1.379915e-06  2.953846e-08  3.449787e-07
+generating pp flows for dp 0 (node num = 16)
+Add flow with bucket: Flow (id=0, size=2304000, flow_type=intradevice, srcEp=NodeInfo(name=dp0_maxpool_0_0_bkwd, gid=1, host=dp0_server1, gpu=gpu2, nic=nic2, read_exec_delay=9.820894700348745e-06), dstEp=NodeInfo(name=dp0_relu_0_0_bkwd, gid=1, host=dp0_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.0743471384098e-06), opcode=pp, round=-1, lat=0
+Add flow with bucket: Flow (id=1, size=2304000, flow_type=intrahost, srcEp=NodeInfo(name=dp0_relu_0_0_bkwd, gid=1, host=dp0_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.0743471384098e-06), dstEp=NodeInfo(name=dp0_bn1_0_0_bkwd, gid=0, host=dp0_server1, gpu=gpu1, nic=nic1, read_exec_delay=6.019630420461082e-06), opcode=pp, round=-1, lat=0
+Add flow with bucket: Flow (id=2, size=2304000, flow_type=intradevice, srcEp=NodeInfo(name=dp0_bn1_0_0_bkwd, gid=0, host=dp0_server1, gpu=gpu1, nic=nic1, read_exec_delay=6.019630420461082e-06), dstEp=NodeInfo(name=dp0_conv1_0_0_bkwd, gid=0, host=dp0_server1, gpu=gpu1, nic=nic1, read_exec_delay=1.960284039991393e-06), opcode=pp, round=-1, lat=0
+Add dep: Dep (id=0, srcEp=NodeInfo(name=dp0_relu_0_0_bkwd, gid=1, host=dp0_server1, gpu=gpu1, nic=nic1, read_exec_delay=5.0743471384098e-06), dstEp=NodeInfo(name=dp0_maxpool_0_1_bkwd, gid=1, host=dp0_server1, gpu=gpu2, nic=nic2, read_exec_delay=2.3330612004402983e-06)
+Add flow with bucket: Flow (id=3, size=2304000, flow_type=intradevice, srcEp=NodeInfo(name=dp0_maxpool_0_1_bkwd, gid=1, host=dp0_server1, gpu=gpu2, nic=nic2, read_exec_delay=2.3330612004402983e-06), dstEp=NodeInfo(name=dp0_relu_0_1_bkwd, gid=1, host=dp0_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.0743471384098e-06), opcode=pp, round=-1, lat=0
+Add flow with bucket: Flow (id=4, size=2304000, flow_type=intrahost, srcEp=NodeInfo(name=dp0_relu_0_1_bkwd, gid=1, host=dp0_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.0743471384098e-06), dstEp=NodeInfo(name=dp0_bn1_0_1_bkwd, gid=0, host=dp0_server1, gpu=gpu1, nic=nic1, read_exec_delay=6.019630420461082e-06), opcode=pp, round=-1, lat=0
+Add dep: Dep (id=1, srcEp=NodeInfo(name=dp0_conv1_0_0_bkwd, gid=0, host=dp0_server1, gpu=gpu2, nic=nic2, read_exec_delay=1.960284039991393e-06), dstEp=NodeInfo(name=dp0_bn1_0_1_bkwd, gid=0, host=dp0_server1, gpu=gpu1, nic=nic1, read_exec_delay=6.019630420461082e-06)
+Add flow with bucket: Flow (id=5, size=2304000, flow_type=intradevice, srcEp=NodeInfo(name=dp0_bn1_0_1_bkwd, gid=0, host=dp0_server1, gpu=gpu1, nic=nic1, read_exec_delay=6.019630420461082e-06), dstEp=NodeInfo(name=dp0_conv1_0_1_bkwd, gid=0, host=dp0_server1, gpu=gpu1, nic=nic1, read_exec_delay=1.9303890844472944e-06), opcode=pp, round=-1, lat=0
+Add flow with bucket: Flow (id=6, size=31360, flow_type=intradevice, srcEp=NodeInfo(name=dp0_conv1_0_1_bkwd, gid=0, host=dp0_server1, gpu=gpu1, nic=nic1, read_exec_delay=1.9303890844472944e-06), dstEp=NodeInfo(name=dp0_conv1_1_0_fwd, gid=0, host=dp0_server1, gpu=gpu1, nic=nic1, read_exec_delay=1.6645429306011403e-06), opcode=pp, round=-1, lat=0
+Add flow with bucket: Flow (id=7, size=2304000, flow_type=intradevice, srcEp=NodeInfo(name=dp0_conv1_1_0_fwd, gid=0, host=dp0_server1, gpu=gpu1, nic=nic1, read_exec_delay=1.6645429306011403e-06), dstEp=NodeInfo(name=dp0_bn1_1_0_fwd, gid=0, host=dp0_server1, gpu=gpu1, nic=nic1, read_exec_delay=5.487911856358518e-06), opcode=pp, round=-1, lat=0
+Add flow with bucket: Flow (id=8, size=2304000, flow_type=intrahost, srcEp=NodeInfo(name=dp0_bn1_1_0_fwd, gid=0, host=dp0_server1, gpu=gpu1, nic=nic1, read_exec_delay=5.487911856358518e-06), dstEp=NodeInfo(name=dp0_relu_1_0_fwd, gid=1, host=dp0_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.0743471384098e-06), opcode=pp, round=-1, lat=0
+Add flow with bucket: Flow (id=9, size=2304000, flow_type=intradevice, srcEp=NodeInfo(name=dp0_relu_1_0_fwd, gid=1, host=dp0_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.0743471384098e-06), dstEp=NodeInfo(name=dp0_maxpool_1_0_fwd, gid=1, host=dp0_server1, gpu=gpu2, nic=nic2, read_exec_delay=2.303522738901837e-06), opcode=pp, round=-1, lat=0
+Add dep: Dep (id=2, srcEp=NodeInfo(name=dp0_bn1_1_0_fwd, gid=0, host=dp0_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.487911856358518e-06), dstEp=NodeInfo(name=dp0_conv1_1_1_fwd, gid=0, host=dp0_server1, gpu=gpu1, nic=nic1, read_exec_delay=1.6944378861452389e-06)
+Add flow with bucket: Flow (id=10, size=2304000, flow_type=intradevice, srcEp=NodeInfo(name=dp0_conv1_1_1_fwd, gid=0, host=dp0_server1, gpu=gpu1, nic=nic1, read_exec_delay=1.6944378861452389e-06), dstEp=NodeInfo(name=dp0_bn1_1_1_fwd, gid=0, host=dp0_server1, gpu=gpu1, nic=nic1, read_exec_delay=5.487911856358518e-06), opcode=pp, round=-1, lat=0
+Add flow with bucket: Flow (id=11, size=2304000, flow_type=intrahost, srcEp=NodeInfo(name=dp0_bn1_1_1_fwd, gid=0, host=dp0_server1, gpu=gpu1, nic=nic1, read_exec_delay=5.487911856358518e-06), dstEp=NodeInfo(name=dp0_relu_1_1_fwd, gid=1, host=dp0_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.0743471384098e-06), opcode=pp, round=-1, lat=0
+Add dep: Dep (id=3, srcEp=NodeInfo(name=dp0_maxpool_1_0_fwd, gid=1, host=dp0_server1, gpu=gpu1, nic=nic1, read_exec_delay=2.303522738901837e-06), dstEp=NodeInfo(name=dp0_relu_1_1_fwd, gid=1, host=dp0_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.0743471384098e-06)
+Add flow with bucket: Flow (id=12, size=2304000, flow_type=intradevice, srcEp=NodeInfo(name=dp0_relu_1_1_fwd, gid=1, host=dp0_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.0743471384098e-06), dstEp=NodeInfo(name=dp0_maxpool_1_1_fwd, gid=1, host=dp0_server1, gpu=gpu2, nic=nic2, read_exec_delay=1.7544317187041067e-06), opcode=pp, round=-1, lat=0
+generating pp flows for dp 1 (node num = 16)
+Add flow with bucket: Flow (id=13, size=2304000, flow_type=intradevice, srcEp=NodeInfo(name=dp1_maxpool_0_0_bkwd, gid=1, host=dp1_server1, gpu=gpu2, nic=nic2, read_exec_delay=9.820894700348745e-06), dstEp=NodeInfo(name=dp1_relu_0_0_bkwd, gid=1, host=dp1_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.0743471384098e-06), opcode=pp, round=-1, lat=0
+Add flow with bucket: Flow (id=14, size=2304000, flow_type=intrahost, srcEp=NodeInfo(name=dp1_relu_0_0_bkwd, gid=1, host=dp1_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.0743471384098e-06), dstEp=NodeInfo(name=dp1_bn1_0_0_bkwd, gid=0, host=dp1_server1, gpu=gpu1, nic=nic1, read_exec_delay=6.019630420461082e-06), opcode=pp, round=-1, lat=0
+Add flow with bucket: Flow (id=15, size=2304000, flow_type=intradevice, srcEp=NodeInfo(name=dp1_bn1_0_0_bkwd, gid=0, host=dp1_server1, gpu=gpu1, nic=nic1, read_exec_delay=6.019630420461082e-06), dstEp=NodeInfo(name=dp1_conv1_0_0_bkwd, gid=0, host=dp1_server1, gpu=gpu1, nic=nic1, read_exec_delay=1.960284039991393e-06), opcode=pp, round=-1, lat=0
+Add dep: Dep (id=4, srcEp=NodeInfo(name=dp1_relu_0_0_bkwd, gid=1, host=dp1_server1, gpu=gpu1, nic=nic1, read_exec_delay=5.0743471384098e-06), dstEp=NodeInfo(name=dp1_maxpool_0_1_bkwd, gid=1, host=dp1_server1, gpu=gpu2, nic=nic2, read_exec_delay=2.3330612004402983e-06)
+Add flow with bucket: Flow (id=16, size=2304000, flow_type=intradevice, srcEp=NodeInfo(name=dp1_maxpool_0_1_bkwd, gid=1, host=dp1_server1, gpu=gpu2, nic=nic2, read_exec_delay=2.3330612004402983e-06), dstEp=NodeInfo(name=dp1_relu_0_1_bkwd, gid=1, host=dp1_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.0743471384098e-06), opcode=pp, round=-1, lat=0
+Add flow with bucket: Flow (id=17, size=2304000, flow_type=intrahost, srcEp=NodeInfo(name=dp1_relu_0_1_bkwd, gid=1, host=dp1_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.0743471384098e-06), dstEp=NodeInfo(name=dp1_bn1_0_1_bkwd, gid=0, host=dp1_server1, gpu=gpu1, nic=nic1, read_exec_delay=6.019630420461082e-06), opcode=pp, round=-1, lat=0
+Add dep: Dep (id=5, srcEp=NodeInfo(name=dp1_conv1_0_0_bkwd, gid=0, host=dp1_server1, gpu=gpu2, nic=nic2, read_exec_delay=1.960284039991393e-06), dstEp=NodeInfo(name=dp1_bn1_0_1_bkwd, gid=0, host=dp1_server1, gpu=gpu1, nic=nic1, read_exec_delay=6.019630420461082e-06)
+Add flow with bucket: Flow (id=18, size=2304000, flow_type=intradevice, srcEp=NodeInfo(name=dp1_bn1_0_1_bkwd, gid=0, host=dp1_server1, gpu=gpu1, nic=nic1, read_exec_delay=6.019630420461082e-06), dstEp=NodeInfo(name=dp1_conv1_0_1_bkwd, gid=0, host=dp1_server1, gpu=gpu1, nic=nic1, read_exec_delay=1.9303890844472944e-06), opcode=pp, round=-1, lat=0
+Add flow with bucket: Flow (id=19, size=31360, flow_type=intradevice, srcEp=NodeInfo(name=dp1_conv1_0_1_bkwd, gid=0, host=dp1_server1, gpu=gpu1, nic=nic1, read_exec_delay=1.9303890844472944e-06), dstEp=NodeInfo(name=dp1_conv1_1_0_fwd, gid=0, host=dp1_server1, gpu=gpu1, nic=nic1, read_exec_delay=1.6645429306011403e-06), opcode=pp, round=-1, lat=0
+Add flow with bucket: Flow (id=20, size=2304000, flow_type=intradevice, srcEp=NodeInfo(name=dp1_conv1_1_0_fwd, gid=0, host=dp1_server1, gpu=gpu1, nic=nic1, read_exec_delay=1.6645429306011403e-06), dstEp=NodeInfo(name=dp1_bn1_1_0_fwd, gid=0, host=dp1_server1, gpu=gpu1, nic=nic1, read_exec_delay=5.487911856358518e-06), opcode=pp, round=-1, lat=0
+Add flow with bucket: Flow (id=21, size=2304000, flow_type=intrahost, srcEp=NodeInfo(name=dp1_bn1_1_0_fwd, gid=0, host=dp1_server1, gpu=gpu1, nic=nic1, read_exec_delay=5.487911856358518e-06), dstEp=NodeInfo(name=dp1_relu_1_0_fwd, gid=1, host=dp1_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.0743471384098e-06), opcode=pp, round=-1, lat=0
+Add flow with bucket: Flow (id=22, size=2304000, flow_type=intradevice, srcEp=NodeInfo(name=dp1_relu_1_0_fwd, gid=1, host=dp1_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.0743471384098e-06), dstEp=NodeInfo(name=dp1_maxpool_1_0_fwd, gid=1, host=dp1_server1, gpu=gpu2, nic=nic2, read_exec_delay=2.303522738901837e-06), opcode=pp, round=-1, lat=0
+Add dep: Dep (id=6, srcEp=NodeInfo(name=dp1_bn1_1_0_fwd, gid=0, host=dp1_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.487911856358518e-06), dstEp=NodeInfo(name=dp1_conv1_1_1_fwd, gid=0, host=dp1_server1, gpu=gpu1, nic=nic1, read_exec_delay=1.6944378861452389e-06)
+Add flow with bucket: Flow (id=23, size=2304000, flow_type=intradevice, srcEp=NodeInfo(name=dp1_conv1_1_1_fwd, gid=0, host=dp1_server1, gpu=gpu1, nic=nic1, read_exec_delay=1.6944378861452389e-06), dstEp=NodeInfo(name=dp1_bn1_1_1_fwd, gid=0, host=dp1_server1, gpu=gpu1, nic=nic1, read_exec_delay=5.487911856358518e-06), opcode=pp, round=-1, lat=0
+Add flow with bucket: Flow (id=24, size=2304000, flow_type=intrahost, srcEp=NodeInfo(name=dp1_bn1_1_1_fwd, gid=0, host=dp1_server1, gpu=gpu1, nic=nic1, read_exec_delay=5.487911856358518e-06), dstEp=NodeInfo(name=dp1_relu_1_1_fwd, gid=1, host=dp1_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.0743471384098e-06), opcode=pp, round=-1, lat=0
+Add dep: Dep (id=7, srcEp=NodeInfo(name=dp1_maxpool_1_0_fwd, gid=1, host=dp1_server1, gpu=gpu1, nic=nic1, read_exec_delay=2.303522738901837e-06), dstEp=NodeInfo(name=dp1_relu_1_1_fwd, gid=1, host=dp1_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.0743471384098e-06)
+Add flow with bucket: Flow (id=25, size=2304000, flow_type=intradevice, srcEp=NodeInfo(name=dp1_relu_1_1_fwd, gid=1, host=dp1_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.0743471384098e-06), dstEp=NodeInfo(name=dp1_maxpool_1_1_fwd, gid=1, host=dp1_server1, gpu=gpu2, nic=nic2, read_exec_delay=1.7544317187041067e-06), opcode=pp, round=-1, lat=0
+
+node_list (32):
+{'dp0_bn1_0_0_bkwd': NodeInfo(name=dp0_bn1_0_0_bkwd, gid=0, host=dp0_server1, gpu=gpu1, nic=nic1, read_exec_delay=6.019630420461082e-06,
+            flow_depend: [[1, 0]], 
+            flow_invoke: [[2, 1.379914605732516e-06]], 
+            dep_depend: [], 
+            dep_invoke: []
+    ),
+ 'dp0_bn1_0_1_bkwd': NodeInfo(name=dp0_bn1_0_1_bkwd, gid=0, host=dp0_server1, gpu=gpu1, nic=nic1, read_exec_delay=6.019630420461082e-06,
+            flow_depend: [[4, 0]], 
+            flow_invoke: [[5, 1.379914605732516e-06]], 
+            dep_depend: [1], 
+            dep_invoke: []
+    ),
+ 'dp0_bn1_1_0_fwd': NodeInfo(name=dp0_bn1_1_0_fwd, gid=0, host=dp0_server1, gpu=gpu1, nic=nic1, read_exec_delay=5.487911856358518e-06,
+            flow_depend: [[7, 0]], 
+            flow_invoke: [[8, 3.5762786865234375e-06]], 
+            dep_depend: [], 
+            dep_invoke: [2]
+    ),
+ 'dp0_bn1_1_1_fwd': NodeInfo(name=dp0_bn1_1_1_fwd, gid=0, host=dp0_server1, gpu=gpu1, nic=nic1, read_exec_delay=5.487911856358518e-06,
+            flow_depend: [[10, 0]], 
+            flow_invoke: [[11, 3.5762786865234375e-06]], 
+            dep_depend: [], 
+            dep_invoke: []
+    ),
+ 'dp0_conv1_0_0_bkwd': NodeInfo(name=dp0_conv1_0_0_bkwd, gid=0, host=dp0_server1, gpu=gpu1, nic=nic1, read_exec_delay=1.960284039991393e-06,
+            flow_depend: [[2, 0]], 
+            flow_invoke: [], 
+            dep_depend: [], 
+            dep_invoke: [1]
+    ),
+ 'dp0_conv1_0_1_bkwd': NodeInfo(name=dp0_conv1_0_1_bkwd, gid=0, host=dp0_server1, gpu=gpu1, nic=nic1, read_exec_delay=1.9303890844472944e-06,
+            flow_depend: [[5, 0]], 
+            flow_invoke: [[6, 1.878217102247036e-08]], 
+            dep_depend: [], 
+            dep_invoke: []
+    ),
+ 'dp0_conv1_1_0_fwd': NodeInfo(name=dp0_conv1_1_0_fwd, gid=0, host=dp0_server1, gpu=gpu1, nic=nic1, read_exec_delay=1.6645429306011403e-06,
+            flow_depend: [[6, 0]], 
+            flow_invoke: [[7, 1.379914605732516e-06]], 
+            dep_depend: [], 
+            dep_invoke: []
+    ),
+ 'dp0_conv1_1_1_fwd': NodeInfo(name=dp0_conv1_1_1_fwd, gid=0, host=dp0_server1, gpu=gpu1, nic=nic1, read_exec_delay=1.6944378861452389e-06,
+            flow_depend: [], 
+            flow_invoke: [[10, 1.379914605732516e-06]], 
+            dep_depend: [2], 
+            dep_invoke: []
+    ),
+ 'dp0_maxpool_0_0_bkwd': NodeInfo(name=dp0_maxpool_0_0_bkwd, gid=1, host=dp0_server1, gpu=gpu2, nic=nic2, read_exec_delay=9.820894700348745e-06,
+            flow_depend: [], 
+            flow_invoke: [[0, 1.379914605732516e-06]], 
+            dep_depend: [], 
+            dep_invoke: []
+    ),
+ 'dp0_maxpool_0_1_bkwd': NodeInfo(name=dp0_maxpool_0_1_bkwd, gid=1, host=dp0_server1, gpu=gpu2, nic=nic2, read_exec_delay=2.3330612004402983e-06,
+            flow_depend: [], 
+            flow_invoke: [[3, 1.379914605732516e-06]], 
+            dep_depend: [0], 
+            dep_invoke: []
+    ),
+ 'dp0_maxpool_1_0_fwd': NodeInfo(name=dp0_maxpool_1_0_fwd, gid=1, host=dp0_server1, gpu=gpu2, nic=nic2, read_exec_delay=2.303522738901837e-06,
+            flow_depend: [[9, 0]], 
+            flow_invoke: [], 
+            dep_depend: [], 
+            dep_invoke: [3]
+    ),
+ 'dp0_maxpool_1_1_fwd': NodeInfo(name=dp0_maxpool_1_1_fwd, gid=1, host=dp0_server1, gpu=gpu2, nic=nic2, read_exec_delay=1.7544317187041067e-06,
+            flow_depend: [[12, 0]], 
+            flow_invoke: [], 
+            dep_depend: [], 
+            dep_invoke: []
+    ),
+ 'dp0_relu_0_0_bkwd': NodeInfo(name=dp0_relu_0_0_bkwd, gid=1, host=dp0_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.0743471384098e-06,
+            flow_depend: [[0, 0]], 
+            flow_invoke: [[1, 3.5762786865234375e-06]], 
+            dep_depend: [], 
+            dep_invoke: [0]
+    ),
+ 'dp0_relu_0_1_bkwd': NodeInfo(name=dp0_relu_0_1_bkwd, gid=1, host=dp0_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.0743471384098e-06,
+            flow_depend: [[3, 0]], 
+            flow_invoke: [[4, 3.5762786865234375e-06]], 
+            dep_depend: [], 
+            dep_invoke: []
+    ),
+ 'dp0_relu_1_0_fwd': NodeInfo(name=dp0_relu_1_0_fwd, gid=1, host=dp0_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.0743471384098e-06,
+            flow_depend: [[8, 0]], 
+            flow_invoke: [[9, 1.379914605732516e-06]], 
+            dep_depend: [], 
+            dep_invoke: []
+    ),
+ 'dp0_relu_1_1_fwd': NodeInfo(name=dp0_relu_1_1_fwd, gid=1, host=dp0_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.0743471384098e-06,
+            flow_depend: [[11, 0]], 
+            flow_invoke: [[12, 1.379914605732516e-06]], 
+            dep_depend: [3], 
+            dep_invoke: []
+    ),
+ 'dp1_bn1_0_0_bkwd': NodeInfo(name=dp1_bn1_0_0_bkwd, gid=0, host=dp1_server1, gpu=gpu1, nic=nic1, read_exec_delay=6.019630420461082e-06,
+            flow_depend: [[14, 0]], 
+            flow_invoke: [[15, 1.379914605732516e-06]], 
+            dep_depend: [], 
+            dep_invoke: []
+    ),
+ 'dp1_bn1_0_1_bkwd': NodeInfo(name=dp1_bn1_0_1_bkwd, gid=0, host=dp1_server1, gpu=gpu1, nic=nic1, read_exec_delay=6.019630420461082e-06,
+            flow_depend: [[17, 0]], 
+            flow_invoke: [[18, 1.379914605732516e-06]], 
+            dep_depend: [5], 
+            dep_invoke: []
+    ),
+ 'dp1_bn1_1_0_fwd': NodeInfo(name=dp1_bn1_1_0_fwd, gid=0, host=dp1_server1, gpu=gpu1, nic=nic1, read_exec_delay=5.487911856358518e-06,
+            flow_depend: [[20, 0]], 
+            flow_invoke: [[21, 3.5762786865234375e-06]], 
+            dep_depend: [], 
+            dep_invoke: [6]
+    ),
+ 'dp1_bn1_1_1_fwd': NodeInfo(name=dp1_bn1_1_1_fwd, gid=0, host=dp1_server1, gpu=gpu1, nic=nic1, read_exec_delay=5.487911856358518e-06,
+            flow_depend: [[23, 0]], 
+            flow_invoke: [[24, 3.5762786865234375e-06]], 
+            dep_depend: [], 
+            dep_invoke: []
+    ),
+ 'dp1_conv1_0_0_bkwd': NodeInfo(name=dp1_conv1_0_0_bkwd, gid=0, host=dp1_server1, gpu=gpu1, nic=nic1, read_exec_delay=1.960284039991393e-06,
+            flow_depend: [[15, 0]], 
+            flow_invoke: [], 
+            dep_depend: [], 
+            dep_invoke: [5]
+    ),
+ 'dp1_conv1_0_1_bkwd': NodeInfo(name=dp1_conv1_0_1_bkwd, gid=0, host=dp1_server1, gpu=gpu1, nic=nic1, read_exec_delay=1.9303890844472944e-06,
+            flow_depend: [[18, 0]], 
+            flow_invoke: [[19, 1.878217102247036e-08]], 
+            dep_depend: [], 
+            dep_invoke: []
+    ),
+ 'dp1_conv1_1_0_fwd': NodeInfo(name=dp1_conv1_1_0_fwd, gid=0, host=dp1_server1, gpu=gpu1, nic=nic1, read_exec_delay=1.6645429306011403e-06,
+            flow_depend: [[19, 0]], 
+            flow_invoke: [[20, 1.379914605732516e-06]], 
+            dep_depend: [], 
+            dep_invoke: []
+    ),
+ 'dp1_conv1_1_1_fwd': NodeInfo(name=dp1_conv1_1_1_fwd, gid=0, host=dp1_server1, gpu=gpu1, nic=nic1, read_exec_delay=1.6944378861452389e-06,
+            flow_depend: [], 
+            flow_invoke: [[23, 1.379914605732516e-06]], 
+            dep_depend: [6], 
+            dep_invoke: []
+    ),
+ 'dp1_maxpool_0_0_bkwd': NodeInfo(name=dp1_maxpool_0_0_bkwd, gid=1, host=dp1_server1, gpu=gpu2, nic=nic2, read_exec_delay=9.820894700348745e-06,
+            flow_depend: [], 
+            flow_invoke: [[13, 1.379914605732516e-06]], 
+            dep_depend: [], 
+            dep_invoke: []
+    ),
+ 'dp1_maxpool_0_1_bkwd': NodeInfo(name=dp1_maxpool_0_1_bkwd, gid=1, host=dp1_server1, gpu=gpu2, nic=nic2, read_exec_delay=2.3330612004402983e-06,
+            flow_depend: [], 
+            flow_invoke: [[16, 1.379914605732516e-06]], 
+            dep_depend: [4], 
+            dep_invoke: []
+    ),
+ 'dp1_maxpool_1_0_fwd': NodeInfo(name=dp1_maxpool_1_0_fwd, gid=1, host=dp1_server1, gpu=gpu2, nic=nic2, read_exec_delay=2.303522738901837e-06,
+            flow_depend: [[22, 0]], 
+            flow_invoke: [], 
+            dep_depend: [], 
+            dep_invoke: [7]
+    ),
+ 'dp1_maxpool_1_1_fwd': NodeInfo(name=dp1_maxpool_1_1_fwd, gid=1, host=dp1_server1, gpu=gpu2, nic=nic2, read_exec_delay=1.7544317187041067e-06,
+            flow_depend: [[25, 0]], 
+            flow_invoke: [], 
+            dep_depend: [], 
+            dep_invoke: []
+    ),
+ 'dp1_relu_0_0_bkwd': NodeInfo(name=dp1_relu_0_0_bkwd, gid=1, host=dp1_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.0743471384098e-06,
+            flow_depend: [[13, 0]], 
+            flow_invoke: [[14, 3.5762786865234375e-06]], 
+            dep_depend: [], 
+            dep_invoke: [4]
+    ),
+ 'dp1_relu_0_1_bkwd': NodeInfo(name=dp1_relu_0_1_bkwd, gid=1, host=dp1_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.0743471384098e-06,
+            flow_depend: [[16, 0]], 
+            flow_invoke: [[17, 3.5762786865234375e-06]], 
+            dep_depend: [], 
+            dep_invoke: []
+    ),
+ 'dp1_relu_1_0_fwd': NodeInfo(name=dp1_relu_1_0_fwd, gid=1, host=dp1_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.0743471384098e-06,
+            flow_depend: [[21, 0]], 
+            flow_invoke: [[22, 1.379914605732516e-06]], 
+            dep_depend: [], 
+            dep_invoke: []
+    ),
+ 'dp1_relu_1_1_fwd': NodeInfo(name=dp1_relu_1_1_fwd, gid=1, host=dp1_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.0743471384098e-06,
+            flow_depend: [[24, 0]], 
+            flow_invoke: [[25, 1.379914605732516e-06]], 
+            dep_depend: [7], 
+            dep_invoke: []
+    )}
+
+flow_list (26):
+{0: Flow (id=0, size=2304000, flow_type=intradevice, srcEp=NodeInfo(name=dp0_maxpool_0_0_bkwd, gid=1, host=dp0_server1, gpu=gpu2, nic=nic2, read_exec_delay=9.820894700348745e-06), dstEp=NodeInfo(name=dp0_relu_0_0_bkwd, gid=1, host=dp0_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.0743471384098e-06), opcode=pp, round=-1, lat=0,
+ 1: Flow (id=1, size=2304000, flow_type=intrahost, srcEp=NodeInfo(name=dp0_relu_0_0_bkwd, gid=1, host=dp0_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.0743471384098e-06), dstEp=NodeInfo(name=dp0_bn1_0_0_bkwd, gid=0, host=dp0_server1, gpu=gpu1, nic=nic1, read_exec_delay=6.019630420461082e-06), opcode=pp, round=-1, lat=0,
+ 2: Flow (id=2, size=2304000, flow_type=intradevice, srcEp=NodeInfo(name=dp0_bn1_0_0_bkwd, gid=0, host=dp0_server1, gpu=gpu1, nic=nic1, read_exec_delay=6.019630420461082e-06), dstEp=NodeInfo(name=dp0_conv1_0_0_bkwd, gid=0, host=dp0_server1, gpu=gpu1, nic=nic1, read_exec_delay=1.960284039991393e-06), opcode=pp, round=-1, lat=0,
+ 3: Flow (id=3, size=2304000, flow_type=intradevice, srcEp=NodeInfo(name=dp0_maxpool_0_1_bkwd, gid=1, host=dp0_server1, gpu=gpu2, nic=nic2, read_exec_delay=2.3330612004402983e-06), dstEp=NodeInfo(name=dp0_relu_0_1_bkwd, gid=1, host=dp0_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.0743471384098e-06), opcode=pp, round=-1, lat=0,
+ 4: Flow (id=4, size=2304000, flow_type=intrahost, srcEp=NodeInfo(name=dp0_relu_0_1_bkwd, gid=1, host=dp0_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.0743471384098e-06), dstEp=NodeInfo(name=dp0_bn1_0_1_bkwd, gid=0, host=dp0_server1, gpu=gpu1, nic=nic1, read_exec_delay=6.019630420461082e-06), opcode=pp, round=-1, lat=0,
+ 5: Flow (id=5, size=2304000, flow_type=intradevice, srcEp=NodeInfo(name=dp0_bn1_0_1_bkwd, gid=0, host=dp0_server1, gpu=gpu1, nic=nic1, read_exec_delay=6.019630420461082e-06), dstEp=NodeInfo(name=dp0_conv1_0_1_bkwd, gid=0, host=dp0_server1, gpu=gpu1, nic=nic1, read_exec_delay=1.9303890844472944e-06), opcode=pp, round=-1, lat=0,
+ 6: Flow (id=6, size=31360, flow_type=intradevice, srcEp=NodeInfo(name=dp0_conv1_0_1_bkwd, gid=0, host=dp0_server1, gpu=gpu1, nic=nic1, read_exec_delay=1.9303890844472944e-06), dstEp=NodeInfo(name=dp0_conv1_1_0_fwd, gid=0, host=dp0_server1, gpu=gpu1, nic=nic1, read_exec_delay=1.6645429306011403e-06), opcode=pp, round=-1, lat=0,
+ 7: Flow (id=7, size=2304000, flow_type=intradevice, srcEp=NodeInfo(name=dp0_conv1_1_0_fwd, gid=0, host=dp0_server1, gpu=gpu1, nic=nic1, read_exec_delay=1.6645429306011403e-06), dstEp=NodeInfo(name=dp0_bn1_1_0_fwd, gid=0, host=dp0_server1, gpu=gpu1, nic=nic1, read_exec_delay=5.487911856358518e-06), opcode=pp, round=-1, lat=0,
+ 8: Flow (id=8, size=2304000, flow_type=intrahost, srcEp=NodeInfo(name=dp0_bn1_1_0_fwd, gid=0, host=dp0_server1, gpu=gpu1, nic=nic1, read_exec_delay=5.487911856358518e-06), dstEp=NodeInfo(name=dp0_relu_1_0_fwd, gid=1, host=dp0_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.0743471384098e-06), opcode=pp, round=-1, lat=0,
+ 9: Flow (id=9, size=2304000, flow_type=intradevice, srcEp=NodeInfo(name=dp0_relu_1_0_fwd, gid=1, host=dp0_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.0743471384098e-06), dstEp=NodeInfo(name=dp0_maxpool_1_0_fwd, gid=1, host=dp0_server1, gpu=gpu2, nic=nic2, read_exec_delay=2.303522738901837e-06), opcode=pp, round=-1, lat=0,
+ 10: Flow (id=10, size=2304000, flow_type=intradevice, srcEp=NodeInfo(name=dp0_conv1_1_1_fwd, gid=0, host=dp0_server1, gpu=gpu1, nic=nic1, read_exec_delay=1.6944378861452389e-06), dstEp=NodeInfo(name=dp0_bn1_1_1_fwd, gid=0, host=dp0_server1, gpu=gpu1, nic=nic1, read_exec_delay=5.487911856358518e-06), opcode=pp, round=-1, lat=0,
+ 11: Flow (id=11, size=2304000, flow_type=intrahost, srcEp=NodeInfo(name=dp0_bn1_1_1_fwd, gid=0, host=dp0_server1, gpu=gpu1, nic=nic1, read_exec_delay=5.487911856358518e-06), dstEp=NodeInfo(name=dp0_relu_1_1_fwd, gid=1, host=dp0_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.0743471384098e-06), opcode=pp, round=-1, lat=0,
+ 12: Flow (id=12, size=2304000, flow_type=intradevice, srcEp=NodeInfo(name=dp0_relu_1_1_fwd, gid=1, host=dp0_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.0743471384098e-06), dstEp=NodeInfo(name=dp0_maxpool_1_1_fwd, gid=1, host=dp0_server1, gpu=gpu2, nic=nic2, read_exec_delay=1.7544317187041067e-06), opcode=pp, round=-1, lat=0,
+ 13: Flow (id=13, size=2304000, flow_type=intradevice, srcEp=NodeInfo(name=dp1_maxpool_0_0_bkwd, gid=1, host=dp1_server1, gpu=gpu2, nic=nic2, read_exec_delay=9.820894700348745e-06), dstEp=NodeInfo(name=dp1_relu_0_0_bkwd, gid=1, host=dp1_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.0743471384098e-06), opcode=pp, round=-1, lat=0,
+ 14: Flow (id=14, size=2304000, flow_type=intrahost, srcEp=NodeInfo(name=dp1_relu_0_0_bkwd, gid=1, host=dp1_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.0743471384098e-06), dstEp=NodeInfo(name=dp1_bn1_0_0_bkwd, gid=0, host=dp1_server1, gpu=gpu1, nic=nic1, read_exec_delay=6.019630420461082e-06), opcode=pp, round=-1, lat=0,
+ 15: Flow (id=15, size=2304000, flow_type=intradevice, srcEp=NodeInfo(name=dp1_bn1_0_0_bkwd, gid=0, host=dp1_server1, gpu=gpu1, nic=nic1, read_exec_delay=6.019630420461082e-06), dstEp=NodeInfo(name=dp1_conv1_0_0_bkwd, gid=0, host=dp1_server1, gpu=gpu1, nic=nic1, read_exec_delay=1.960284039991393e-06), opcode=pp, round=-1, lat=0,
+ 16: Flow (id=16, size=2304000, flow_type=intradevice, srcEp=NodeInfo(name=dp1_maxpool_0_1_bkwd, gid=1, host=dp1_server1, gpu=gpu2, nic=nic2, read_exec_delay=2.3330612004402983e-06), dstEp=NodeInfo(name=dp1_relu_0_1_bkwd, gid=1, host=dp1_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.0743471384098e-06), opcode=pp, round=-1, lat=0,
+ 17: Flow (id=17, size=2304000, flow_type=intrahost, srcEp=NodeInfo(name=dp1_relu_0_1_bkwd, gid=1, host=dp1_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.0743471384098e-06), dstEp=NodeInfo(name=dp1_bn1_0_1_bkwd, gid=0, host=dp1_server1, gpu=gpu1, nic=nic1, read_exec_delay=6.019630420461082e-06), opcode=pp, round=-1, lat=0,
+ 18: Flow (id=18, size=2304000, flow_type=intradevice, srcEp=NodeInfo(name=dp1_bn1_0_1_bkwd, gid=0, host=dp1_server1, gpu=gpu1, nic=nic1, read_exec_delay=6.019630420461082e-06), dstEp=NodeInfo(name=dp1_conv1_0_1_bkwd, gid=0, host=dp1_server1, gpu=gpu1, nic=nic1, read_exec_delay=1.9303890844472944e-06), opcode=pp, round=-1, lat=0,
+ 19: Flow (id=19, size=31360, flow_type=intradevice, srcEp=NodeInfo(name=dp1_conv1_0_1_bkwd, gid=0, host=dp1_server1, gpu=gpu1, nic=nic1, read_exec_delay=1.9303890844472944e-06), dstEp=NodeInfo(name=dp1_conv1_1_0_fwd, gid=0, host=dp1_server1, gpu=gpu1, nic=nic1, read_exec_delay=1.6645429306011403e-06), opcode=pp, round=-1, lat=0,
+ 20: Flow (id=20, size=2304000, flow_type=intradevice, srcEp=NodeInfo(name=dp1_conv1_1_0_fwd, gid=0, host=dp1_server1, gpu=gpu1, nic=nic1, read_exec_delay=1.6645429306011403e-06), dstEp=NodeInfo(name=dp1_bn1_1_0_fwd, gid=0, host=dp1_server1, gpu=gpu1, nic=nic1, read_exec_delay=5.487911856358518e-06), opcode=pp, round=-1, lat=0,
+ 21: Flow (id=21, size=2304000, flow_type=intrahost, srcEp=NodeInfo(name=dp1_bn1_1_0_fwd, gid=0, host=dp1_server1, gpu=gpu1, nic=nic1, read_exec_delay=5.487911856358518e-06), dstEp=NodeInfo(name=dp1_relu_1_0_fwd, gid=1, host=dp1_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.0743471384098e-06), opcode=pp, round=-1, lat=0,
+ 22: Flow (id=22, size=2304000, flow_type=intradevice, srcEp=NodeInfo(name=dp1_relu_1_0_fwd, gid=1, host=dp1_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.0743471384098e-06), dstEp=NodeInfo(name=dp1_maxpool_1_0_fwd, gid=1, host=dp1_server1, gpu=gpu2, nic=nic2, read_exec_delay=2.303522738901837e-06), opcode=pp, round=-1, lat=0,
+ 23: Flow (id=23, size=2304000, flow_type=intradevice, srcEp=NodeInfo(name=dp1_conv1_1_1_fwd, gid=0, host=dp1_server1, gpu=gpu1, nic=nic1, read_exec_delay=1.6944378861452389e-06), dstEp=NodeInfo(name=dp1_bn1_1_1_fwd, gid=0, host=dp1_server1, gpu=gpu1, nic=nic1, read_exec_delay=5.487911856358518e-06), opcode=pp, round=-1, lat=0,
+ 24: Flow (id=24, size=2304000, flow_type=intrahost, srcEp=NodeInfo(name=dp1_bn1_1_1_fwd, gid=0, host=dp1_server1, gpu=gpu1, nic=nic1, read_exec_delay=5.487911856358518e-06), dstEp=NodeInfo(name=dp1_relu_1_1_fwd, gid=1, host=dp1_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.0743471384098e-06), opcode=pp, round=-1, lat=0,
+ 25: Flow (id=25, size=2304000, flow_type=intradevice, srcEp=NodeInfo(name=dp1_relu_1_1_fwd, gid=1, host=dp1_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.0743471384098e-06), dstEp=NodeInfo(name=dp1_maxpool_1_1_fwd, gid=1, host=dp1_server1, gpu=gpu2, nic=nic2, read_exec_delay=1.7544317187041067e-06), opcode=pp, round=-1, lat=0}
+
+dep_list (8):
+{0: Dep (id=0, srcEp=NodeInfo(name=dp0_relu_0_0_bkwd, gid=1, host=dp0_server1, gpu=gpu1, nic=nic1, read_exec_delay=5.0743471384098e-06), dstEp=NodeInfo(name=dp0_maxpool_0_1_bkwd, gid=1, host=dp0_server1, gpu=gpu2, nic=nic2, read_exec_delay=2.3330612004402983e-06),
+ 1: Dep (id=1, srcEp=NodeInfo(name=dp0_conv1_0_0_bkwd, gid=0, host=dp0_server1, gpu=gpu2, nic=nic2, read_exec_delay=1.960284039991393e-06), dstEp=NodeInfo(name=dp0_bn1_0_1_bkwd, gid=0, host=dp0_server1, gpu=gpu1, nic=nic1, read_exec_delay=6.019630420461082e-06),
+ 2: Dep (id=2, srcEp=NodeInfo(name=dp0_bn1_1_0_fwd, gid=0, host=dp0_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.487911856358518e-06), dstEp=NodeInfo(name=dp0_conv1_1_1_fwd, gid=0, host=dp0_server1, gpu=gpu1, nic=nic1, read_exec_delay=1.6944378861452389e-06),
+ 3: Dep (id=3, srcEp=NodeInfo(name=dp0_maxpool_1_0_fwd, gid=1, host=dp0_server1, gpu=gpu1, nic=nic1, read_exec_delay=2.303522738901837e-06), dstEp=NodeInfo(name=dp0_relu_1_1_fwd, gid=1, host=dp0_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.0743471384098e-06),
+ 4: Dep (id=4, srcEp=NodeInfo(name=dp1_relu_0_0_bkwd, gid=1, host=dp1_server1, gpu=gpu1, nic=nic1, read_exec_delay=5.0743471384098e-06), dstEp=NodeInfo(name=dp1_maxpool_0_1_bkwd, gid=1, host=dp1_server1, gpu=gpu2, nic=nic2, read_exec_delay=2.3330612004402983e-06),
+ 5: Dep (id=5, srcEp=NodeInfo(name=dp1_conv1_0_0_bkwd, gid=0, host=dp1_server1, gpu=gpu2, nic=nic2, read_exec_delay=1.960284039991393e-06), dstEp=NodeInfo(name=dp1_bn1_0_1_bkwd, gid=0, host=dp1_server1, gpu=gpu1, nic=nic1, read_exec_delay=6.019630420461082e-06),
+ 6: Dep (id=6, srcEp=NodeInfo(name=dp1_bn1_1_0_fwd, gid=0, host=dp1_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.487911856358518e-06), dstEp=NodeInfo(name=dp1_conv1_1_1_fwd, gid=0, host=dp1_server1, gpu=gpu1, nic=nic1, read_exec_delay=1.6944378861452389e-06),
+ 7: Dep (id=7, srcEp=NodeInfo(name=dp1_maxpool_1_0_fwd, gid=1, host=dp1_server1, gpu=gpu1, nic=nic1, read_exec_delay=2.303522738901837e-06), dstEp=NodeInfo(name=dp1_relu_1_1_fwd, gid=1, host=dp1_server1, gpu=gpu2, nic=nic2, read_exec_delay=5.0743471384098e-06)}
