@@ -10,9 +10,9 @@
 
 ## 运行
 
-`
+```
 python3 get_fx_graph.py --pp_mode F_then_B --pp_granularity device --dp_granularity device --pp_flow_bucket_size 10000000 -d --plot_seed 11 > graph.txt
-`
+```
 
 # Reference
 Resnet的代码来自这里：
