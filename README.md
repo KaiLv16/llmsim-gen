@@ -1,38 +1,19 @@
-# ResNet50：残差网络在Pytorch中的实现
+# llmsim
 
-# 性能情况
-| 训练数据集 | 权值文件名称 | 测试数据集 | 精度 |
-| :---: | :---: | :---: | :---: |
-| MNIST-train | resnet50_mnist.pth | MNIST-test | 99.64% |
+## 基本情况
 
-# 所需环境
-torch==1.7.1
-# 文件下载
-## a.模型文件下载
-训练所需的resnet50_mnist.pth可以在百度云或google drive下载。
-**百度云链接：**
-链接：https://pan.baidu.com/s/1apl5kspxGvjg4y6hLjSktQ?pwd=4mlv 
-提取码：4mlv
+这个repo的代码实现了给定一个模型，生成NS3仿真用的依赖文件 （节点和边），需要搭配 llmsim-sim 一起使用
 
-**google drive 链接：**
-[https://drive.google.com/file/d/1rFNsKgbUWKfp533Znsu0Jwz3XhQSxksM/view?usp=sharing](https://drive.google.com/file/d/1rFNsKgbUWKfp533Znsu0Jwz3XhQSxksM/view?usp=sharing)
-## b.MNIST数据集下载
-**百度云链接：**
-链接: [https://pan.baidu.com/s/1MYMs_axknMm2g5Ou-cWmgQ](https://pan.baidu.com/s/1MYMs_axknMm2g5Ou-cWmgQ)
-提取码: 8ce2 
-# 预测步骤
+当前调试OK的神经网络是resnet。你可以需要根据自己的网路添加一些内容，如：
+- 不同的算子的计算复杂度
+- 不同的host/GPU/NIC的capability
 
-1. 下载好预训练的模型或按照训练步骤训练好模型；
-1. 在prediction.py文件里面，在如下部分修改PAHT使其对应训练好的模型路径；
-```python
-PATH = './logs/resnet50-mnist.pth'
-```
+## 运行
 
-3. 运行prediction.py，输入每次预测的图片个数。
-# 训练步骤
+`
+python3 get_fx_graph.py --pp_mode F_then_B --pp_granularity device --dp_granularity device --pp_flow_bucket_size 10000000 -d --plot_seed 11 > graph.txt
+`
 
-1. 本文使用MNIST数据集进行训练，调用pytorch接口可以直接进行下载（代码已写好）；
-1. 如果使用pytorch接口下载速度慢，可使用百度云进行下载。将下载后的文件放入data文件夹中即可；
-1. 运行train.py即可开始训练。
 # Reference
-[https://github.com/bubbliiiing/faster-rcnn-pytorch.git](https://github.com/bubbliiiing/faster-rcnn-pytorch.git)
+Resnet的代码来自这里：
+[https://github.com/wangyunjeff/ResNet50-MNIST-pytorch](https://github.com/wangyunjeff/ResNet50-MNIST-pytorch)
