@@ -5,7 +5,7 @@ current_time=$(date +"%Y/%m/%d %H:%M")
 
 # 如果没有提供 commit message 参数，则使用默认的 "fix bugs" 加上当前时间
 if [ -z "$1" ]; then
-  commit_message="fix bugs $current_time"
+  commit_message="trivial modify at $current_time"
 else
   commit_message="$1"
 fi
