@@ -1,0 +1,17 @@
+global_index,avg_mem_grp_idx,layer_index,name,args,dp_args,input_#,output_#,Param_#,dp_index,pp_index,tp_index,opcode,target,layer_type,input_shape,output_shape,param_shape,kwargs,dtype_size,direction,avg_mem_grp_size,compute_density_ops
+0,1,3,maxpool_0_0_bkwd,(),[],144000,576000,0,0,0,0,call_module,maxpool,MaxPool2d,"[10, 64, 15, 15]","[10, 64, 30, 30]",{},{},[4],BKWD,1000003,1152000
+1,1,2,relu_0_0_bkwd,"('maxpool_0_0_bkwd',)",[],576000,576000,0,0,0,0,call_module,relu,ReLU,"[10, 64, 30, 30]","[10, 64, 30, 30]",{},{},[4],BKWD,1000002,2304000
+2,0,1,bn1_0_0_bkwd,"('relu_0_0_bkwd',)",[],576000,576000,128,0,0,0,call_module,bn1,BatchNorm2d,"[10, 64, 30, 30]","[10, 64, 30, 30]","{'weight': torch.Size([64]), 'bias': torch.Size([64])}",{},[4],BKWD,1000001,20737024
+3,0,0,conv1_0_0_bkwd,"('bn1_0_0_bkwd',)",[],576000,7840,576,0,0,0,call_module,conv1,Conv2d,"[10, 64, 30, 30]","[10, 1, 28, 28]","{'weight': torch.Size([64, 1, 3, 3])}",{},[4],BKWD,1000000,10368000
+4,1,3,maxpool_0_1_bkwd,"('relu_0_0_bkwd/shadow',)",[],144000,576000,0,0,0,0,call_module,maxpool,MaxPool2d,"[10, 64, 15, 15]","[10, 64, 30, 30]",{},{},[4],BKWD,1000003,1152000
+5,1,2,relu_0_1_bkwd,"('maxpool_0_1_bkwd',)","[['src', 0, 0, 'relu_0_1_bkwd', 'conv1_1_0_fwd', 0, 0]]",576000,576000,0,0,0,0,call_module,relu,ReLU,"[10, 64, 30, 30]","[10, 64, 30, 30]",{},{},[4],BKWD,1000002,2304000
+6,0,1,bn1_0_1_bkwd,"('relu_0_1_bkwd', 'conv1_0_0_bkwd/shadow')",[],576000,576000,128,0,0,0,call_module,bn1,BatchNorm2d,"[10, 64, 30, 30]","[10, 64, 30, 30]","{'weight': torch.Size([64]), 'bias': torch.Size([64])}",{},[4],BKWD,1000001,20737024
+7,0,0,conv1_0_1_bkwd,"('bn1_0_1_bkwd',)","[['src', 1, 2816, 'conv1_0_1_bkwd', 'conv1_1_0_fwd', 0, 1]]",576000,7840,576,0,0,0,call_module,conv1,Conv2d,"[10, 64, 30, 30]","[10, 1, 28, 28]","{'weight': torch.Size([64, 1, 3, 3])}",{},[4],BKWD,1000000,10368000
+8,0,0,conv1_1_0_fwd,"('conv1_0_1_bkwd',)","[['dst', 0, 0, 'relu_0_1_bkwd', 'conv1_1_0_fwd', 0, 0], ['dst', 1, 2816, 'conv1_0_1_bkwd', 'conv1_1_0_fwd', 0, 1]]",7840,576000,576,0,0,0,call_module,conv1,Conv2d,"[10, 1, 28, 28]","[10, 64, 30, 30]","{'weight': torch.Size([64, 1, 3, 3])}",{},[4],FWD,1000000,5184000
+9,0,1,bn1_1_0_fwd,"('conv1_1_0_fwd',)",[],576000,576000,128,0,0,0,call_module,bn1,BatchNorm2d,"[10, 64, 30, 30]","[10, 64, 30, 30]","{'weight': torch.Size([64]), 'bias': torch.Size([64])}",{},[4],FWD,1000001,10368512
+10,1,2,relu_1_0_fwd,"('bn1_1_0_fwd',)",[],576000,576000,0,0,0,0,call_module,relu,ReLU,"[10, 64, 30, 30]","[10, 64, 30, 30]",{},{},[4],FWD,1000002,2304000
+11,1,3,maxpool_1_0_fwd,"('relu_1_0_fwd',)",[],576000,144000,0,0,0,0,call_module,maxpool,MaxPool2d,"[10, 64, 30, 30]","[10, 64, 15, 15]",{},{},[4],FWD,1000003,576000
+12,0,0,conv1_1_1_fwd,"('bn1_1_0_fwd/shadow',)",[],7840,576000,576,0,0,0,call_module,conv1,Conv2d,"[10, 1, 28, 28]","[10, 64, 30, 30]","{'weight': torch.Size([64, 1, 3, 3])}",{},[4],FWD,1000000,5184000
+13,0,1,bn1_1_1_fwd,"('conv1_1_1_fwd',)",[],576000,576000,128,0,0,0,call_module,bn1,BatchNorm2d,"[10, 64, 30, 30]","[10, 64, 30, 30]","{'weight': torch.Size([64]), 'bias': torch.Size([64])}",{},[4],FWD,1000001,10368512
+14,1,2,relu_1_1_fwd,"('bn1_1_1_fwd', 'maxpool_1_0_fwd/shadow')",[],576000,576000,0,0,0,0,call_module,relu,ReLU,"[10, 64, 30, 30]","[10, 64, 30, 30]",{},{},[4],FWD,1000002,2304000
+15,1,3,maxpool_1_1_fwd,"('relu_1_1_fwd',)",[],576000,144000,0,0,0,0,call_module,maxpool,MaxPool2d,"[10, 64, 30, 30]","[10, 64, 15, 15]",{},{},[4],FWD,1000003,576000
