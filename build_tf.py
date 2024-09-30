@@ -7,8 +7,9 @@ def assign_layer_id():
 
 
 class Layer:
-    def __init__(self, layer_id, input_size, output_size, calc_time, param_size, former_layer_id=None, next_layer_id=None):
+    def __init__(self, layer_id, inherent_id, input_size, output_size, calc_time, param_size, former_layer_id=None, next_layer_id=None):
         self.layer_id = layer_id
+        self.inherent_id = inherent_id
         self.input_size = input_size
         self.output_size = output_size
         self.calc_time = calc_time
@@ -37,8 +38,8 @@ class Layer:
 
 # 包括两个线性层： N -> 4N  &&  4N -> N, N为隐藏层大小。参数量 = (N * 4 * N + 4 * N) + (4 * N * N + N)
 class MLP(Layer):
-    def __init__(self, layer_id, input_size, output_size, calc_time, param_size, former_layer_id=None, next_layer_id=None):
-        super().__init__(layer_id, input_size, output_size, calc_time, param_size, former_layer_id, next_layer_id)
+    def __init__(self, layer_id, inherent_id, input_size, output_size, calc_time, param_size, former_layer_id=None, next_layer_id=None):
+        super().__init__(layer_id, inherent_id, input_size, output_size, calc_time, param_size, former_layer_id, next_layer_id)
         self.layer_type = "MLP"
 
     def __repr__(self):
@@ -48,8 +49,8 @@ class MLP(Layer):
 
 
 class Attention(Layer):
-    def __init__(self, layer_id, input_size, output_size, calc_time, param_size, former_layer_id=None, next_layer_id=None):
-        super().__init__(layer_id, input_size, output_size, calc_time, param_size, former_layer_id, next_layer_id)
+    def __init__(self, layer_id, inherent_id, input_size, output_size, calc_time, param_size, former_layer_id=None, next_layer_id=None):
+        super().__init__(layer_id, inherent_id, input_size, output_size, calc_time, param_size, former_layer_id, next_layer_id)
         self.layer_type = "Attention"
 
     def __repr__(self):
