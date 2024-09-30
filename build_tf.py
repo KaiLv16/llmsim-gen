@@ -68,8 +68,8 @@ class Layer:
 
     def set_tp_grp(self, tp_grp, tp_fwd_type=None, tp_bkwd_type=None):
         self.tp_grp = tp_grp
-        self.tp_type = tp_fwd_type if tp_fwd_type else None
-        self.tp_type = tp_bkwd_type if tp_bkwd_type else None
+        self.tp_fwd_type = tp_fwd_type if tp_fwd_type else None
+        self.tp_bkwd_type = tp_bkwd_type if tp_bkwd_type else None
 
     def set_dp_grp(self, dp_grp, dp_type):
         self.dp_grp = dp_grp
@@ -79,7 +79,7 @@ class Layer:
         return (f"Layer {self.layer_id}: Input_Size = {self.input_size}, Output_Size = {self.output_size}, "
                 f"Calc_Time = {self.calc_time}s, Param_Size = {self.param_size}, "
                 f"Former_Layer = {self.former_layer_id}, Next_Layer = {self.next_layer_id}, "
-                f"TP_Group = {self.tp_grp}, TP_Type = {self.tp_fwd_type}, TP_Type = {self.tp_bkwd_type}, DP_Group = {self.dp_grp}, DP_Type = {self.dp_type}")
+                f"TP_Group = {self.tp_grp}, TP_fwd_Type = {self.tp_fwd_type}, TP_bkwd_Type = {self.tp_bkwd_type}, DP_Group = {self.dp_grp}, DP_Type = {self.dp_type}")
 
 
 # 包括QKV层 和输出层：4 * N^2
@@ -89,7 +89,7 @@ class Attention(Layer):
         self.layer_type = "Attention"
 
     def __repr__(self):
-        repo_str = self.layer_type + '\n'
+        repo_str = self.layer_type + ' '
         repo_str += super().__repr__()
         return repo_str
 
@@ -101,7 +101,7 @@ class MLP(Layer):
         self.layer_type = "MLP"
 
     def __repr__(self):
-        repo_str = self.layer_type + '\n'
+        repo_str = self.layer_type + ' '
         repo_str += super().__repr__()
         return repo_str
 
@@ -120,7 +120,13 @@ class TransformerLayer:
         self.mlp_layer = MLP(layer_id=layer_id_mlp, inherent_id=inherent_id, input_size=output_input_size, output_size=input_size, 
                              calc_time=mlp_calc_time, param_size=mlp_param_size, 
                              former_layer_id=layer_id_attn, next_layer_id=next_layer_id)
-        
+    
+    def get_grp_id(self, Num_of_layers, TP):
+        did_lid_part = self.inherent_id // TP
+        tid = self.inherent_id % TP
+        did = did_lid_part // Num_of_layers
+        lid = did_lid_part % Num_of_layers
+        return did, lid, tid
 
     def set_tp_groups(self, tp_grp_mlp, tp_grp_attn, tp_fwd_type=None, tp_bkwd_type=None):
         self.attention_layer.set_tp_grp(tp_grp_attn, tp_fwd_type, tp_bkwd_type)
@@ -132,7 +138,9 @@ class TransformerLayer:
         self.attention_layer.set_dp_grp(dp_grp, dp_type)
 
     def __repr__(self):
-        return f"Transformer Layer {self.inherent_id}:\n{self.attention_layer}\n{self.mlp_layer}"
+        Num_of_layers = 3  # 设置适当的层数
+        TP = 4             # 设置适当的TP值
+        return f"Transformer Layer {self.inherent_id} ({self.get_grp_id(Num_of_layers, TP)}):\n{self.attention_layer}\n{self.mlp_layer}"
 
 if __name__ == '__main__':
     # 读取 CSV 文件到 DataFrame
@@ -143,7 +151,7 @@ if __name__ == '__main__':
     Num_of_layers = 3
     global_batch = 8192
     micro_batch = 1
-    seq_length = 4096 
+    seq_length = 4096
 
     mb_input_size = Seq_len * micro_batch * Hidden_size
     assert FFN_hidden_size == Hidden_size * 4
@@ -151,8 +159,9 @@ if __name__ == '__main__':
     Head_size = Hidden_size / Attention_heads
     attn_param_size_tp = (3 * (Hidden_size * Head_size * Attention_heads) + Hidden_size * Hidden_size) / TP   #  = 4 * Hidden_size^2 / TP
 
-    tf_layers = [[[] for _ in range(TP)] for _ in range(DP)]
+    tf_layers = [[[] for _ in range(Num_of_layers)] for _ in range(DP)]
     for did in range(DP):
+        dp_grp = []
         for lid in range(Num_of_layers):
             tp_grp_attn = []
             tp_grp_mlp = []
@@ -170,12 +179,11 @@ if __name__ == '__main__':
                                 mlp_calc_time=0.005, attn_calc_time=0.010, 
                                 mlp_param_size=mlp_param_size_tp, attn_param_size=attn_param_size_tp)
                                 )
-                last_layer = lid2
-                # 设置tp_grp (if exist)
-                tf_layers[did][lid][-1].set_tp_groups(tp_grp_attn=tp_grp_attn, tp_grp_mlp=tp_grp_mlp, tp_fwd_type='ALLREDUCE', tp_bkwd_type='ALLREDUCE')
+            for tid in range(TP):
+                # 设置tp_grp 和 dp_grp (if exist)
+                tf_layers[did][lid][tid].set_tp_groups(tp_grp_attn=tp_grp_attn, tp_grp_mlp=tp_grp_mlp, tp_fwd_type='ALLREDUCE', tp_bkwd_type='ALLREDUCE')
 
-                # 设置dp_grp (if exist)
-                tf_layers[did][lid][-1].set_dp_groups(dp_grp=[3], dp_type='ALLREDUCE')
+                tf_layers[did][lid][tid].set_dp_groups(dp_grp=[3], dp_type='ALLREDUCE')
 
-            # 打印Transformer层信息
-            print(tf_layers[-1])
+                # 打印Transformer层信息
+                print(f"\n{tf_layers[did][lid][tid]}")
