@@ -46,6 +46,7 @@ class MLP(Layer):
         repo_str += super().__repr__()
         return repo_str
 
+
 class Attention(Layer):
     def __init__(self, layer_id, input_size, output_size, calc_time, param_size, former_layer_id=None, next_layer_id=None):
         super().__init__(layer_id, input_size, output_size, calc_time, param_size, former_layer_id, next_layer_id)
