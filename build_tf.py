@@ -58,14 +58,18 @@ class Attention(Layer):
         repo_str += super().__repr__()
         return repo_str
 
+
 class TransformerLayer:
-    def __init__(self, layer_id1, layer_id2, input_size, output_size, mlp_calc_time, attn_calc_time, mlp_param_size, attn_param_size, former_layer_id=None, next_layer_id=None):
+    '''
+    inherent_id: 用于确定这一层的物理位置
+    '''
+    def __init__(self, inherent_id, layer_id1, layer_id2, input_size, output_size, mlp_calc_time, attn_calc_time, mlp_param_size, attn_param_size, former_layer_id=None, next_layer_id=None):
         output_input_size = mlp_param_size / input_size
-        self.attention_layer = Attention(layer_id=layer_id1, input_size=input_size, output_size=output_input_size, 
+        self.attention_layer = Attention(layer_id=layer_id1, inherent_id=inherent_id, input_size=input_size, output_size=output_input_size, 
                                          calc_time=attn_calc_time, param_size=attn_param_size, 
                                          former_layer_id=former_layer_id, next_layer_id=layer_id2)
         
-        self.mlp_layer = MLP(layer_id=layer_id2, input_size=output_input_size, output_size=input_size, 
+        self.mlp_layer = MLP(layer_id=layer_id2, inherent_id=inherent_id, input_size=output_input_size, output_size=input_size, 
                              calc_time=mlp_calc_time, param_size=mlp_param_size, 
                              former_layer_id=layer_id1, next_layer_id=next_layer_id)
         
