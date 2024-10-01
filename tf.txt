@@ -1,0 +1,112 @@
+Name: GPT_7B
+Parameter_size: 7B
+Hidden_size: 4096
+Num_of_layers: 32
+Attention_heads: 32
+Sequence_length: 2048
+FFN_hidden_size: 16384
+World_size: 8
+TP: 2
+PP: 2
+DP: 2
+
+Transformer Layer 0 ((0, 0, 0, 0)):
+Attention Layer 0: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = None, Next_Layer = 1, TP_Group = [0, 2], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+MLP Layer 1: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 0, Next_Layer = 4, TP_Group = [1, 3], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+
+Transformer Layer 2 ((0, 0, 1, 0)):
+Attention Layer 4: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 1, Next_Layer = 5, TP_Group = [4, 6], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+MLP Layer 5: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 4, Next_Layer = 8, TP_Group = [5, 7], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+
+Transformer Layer 4 ((0, 0, 2, 0)):
+Attention Layer 8: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 5, Next_Layer = 9, TP_Group = [8, 10], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+MLP Layer 9: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 8, Next_Layer = None, TP_Group = [9, 11], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+
+Transformer Layer 1 ((0, 0, 0, 1)):
+Attention Layer 2: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = None, Next_Layer = 3, TP_Group = [0, 2], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+MLP Layer 3: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 2, Next_Layer = 6, TP_Group = [1, 3], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+
+Transformer Layer 3 ((0, 0, 1, 1)):
+Attention Layer 6: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 3, Next_Layer = 7, TP_Group = [4, 6], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+MLP Layer 7: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 6, Next_Layer = 10, TP_Group = [5, 7], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+
+Transformer Layer 5 ((0, 0, 2, 1)):
+Attention Layer 10: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 7, Next_Layer = 11, TP_Group = [8, 10], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+MLP Layer 11: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 10, Next_Layer = None, TP_Group = [9, 11], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+
+Transformer Layer 6 ((0, 1, 0, 0)):
+Attention Layer 12: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = None, Next_Layer = 13, TP_Group = [12, 14], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+MLP Layer 13: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 12, Next_Layer = 16, TP_Group = [13, 15], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+
+Transformer Layer 8 ((0, 1, 1, 0)):
+Attention Layer 16: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 13, Next_Layer = 17, TP_Group = [16, 18], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+MLP Layer 17: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 16, Next_Layer = 20, TP_Group = [17, 19], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+
+Transformer Layer 10 ((0, 1, 2, 0)):
+Attention Layer 20: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 17, Next_Layer = 21, TP_Group = [20, 22], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+MLP Layer 21: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 20, Next_Layer = None, TP_Group = [21, 23], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+
+Transformer Layer 7 ((0, 1, 0, 1)):
+Attention Layer 14: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = None, Next_Layer = 15, TP_Group = [12, 14], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+MLP Layer 15: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 14, Next_Layer = 18, TP_Group = [13, 15], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+
+Transformer Layer 9 ((0, 1, 1, 1)):
+Attention Layer 18: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 15, Next_Layer = 19, TP_Group = [16, 18], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+MLP Layer 19: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 18, Next_Layer = 22, TP_Group = [17, 19], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+
+Transformer Layer 11 ((0, 1, 2, 1)):
+Attention Layer 22: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 19, Next_Layer = 23, TP_Group = [20, 22], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+MLP Layer 23: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 22, Next_Layer = None, TP_Group = [21, 23], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+
+Transformer Layer 12 ((1, 0, 0, 0)):
+Attention Layer 24: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = None, Next_Layer = 25, TP_Group = [24, 26], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+MLP Layer 25: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 24, Next_Layer = 28, TP_Group = [25, 27], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+
+Transformer Layer 14 ((1, 0, 1, 0)):
+Attention Layer 28: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 25, Next_Layer = 29, TP_Group = [28, 30], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+MLP Layer 29: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 28, Next_Layer = 32, TP_Group = [29, 31], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+
+Transformer Layer 16 ((1, 0, 2, 0)):
+Attention Layer 32: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 29, Next_Layer = 33, TP_Group = [32, 34], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+MLP Layer 33: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 32, Next_Layer = None, TP_Group = [33, 35], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+
+Transformer Layer 13 ((1, 0, 0, 1)):
+Attention Layer 26: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = None, Next_Layer = 27, TP_Group = [24, 26], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+MLP Layer 27: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 26, Next_Layer = 30, TP_Group = [25, 27], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+
+Transformer Layer 15 ((1, 0, 1, 1)):
+Attention Layer 30: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 27, Next_Layer = 31, TP_Group = [28, 30], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+MLP Layer 31: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 30, Next_Layer = 34, TP_Group = [29, 31], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+
+Transformer Layer 17 ((1, 0, 2, 1)):
+Attention Layer 34: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 31, Next_Layer = 35, TP_Group = [32, 34], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+MLP Layer 35: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 34, Next_Layer = None, TP_Group = [33, 35], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+
+Transformer Layer 18 ((1, 1, 0, 0)):
+Attention Layer 36: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = None, Next_Layer = 37, TP_Group = [36, 38], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+MLP Layer 37: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 36, Next_Layer = 40, TP_Group = [37, 39], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+
+Transformer Layer 20 ((1, 1, 1, 0)):
+Attention Layer 40: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 37, Next_Layer = 41, TP_Group = [40, 42], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+MLP Layer 41: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 40, Next_Layer = 44, TP_Group = [41, 43], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+
+Transformer Layer 22 ((1, 1, 2, 0)):
+Attention Layer 44: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 41, Next_Layer = 45, TP_Group = [44, 46], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+MLP Layer 45: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 44, Next_Layer = None, TP_Group = [45, 47], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+
+Transformer Layer 19 ((1, 1, 0, 1)):
+Attention Layer 38: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = None, Next_Layer = 39, TP_Group = [36, 38], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+MLP Layer 39: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 38, Next_Layer = 42, TP_Group = [37, 39], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+
+Transformer Layer 21 ((1, 1, 1, 1)):
+Attention Layer 42: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 39, Next_Layer = 43, TP_Group = [40, 42], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+MLP Layer 43: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 42, Next_Layer = 46, TP_Group = [41, 43], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+
+Transformer Layer 23 ((1, 1, 2, 1)):
+Attention Layer 46: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 43, Next_Layer = 47, TP_Group = [44, 46], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+MLP Layer 47: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 46, Next_Layer = None, TP_Group = [45, 47], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None
+
+new_DP: 2
+new_mbs: 2
+new_Num_of_layers: 3
+new_TP: 2
