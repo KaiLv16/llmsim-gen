@@ -1,6 +1,17 @@
 # -*- coding: utf-8 -*-
 
 import pandas as pd
+import argparse
+
+def parse_arguments():
+    parser = argparse.ArgumentParser(description="Transformers Layer Configuration")
+    parser.add_argument('--num_of_layers', type=int, default=3, help='Number of layers in the transformer model (default: 3)')
+    parser.add_argument('--global_batch', type=int, default=8192, help='Global batch size (default: 8192)')
+    parser.add_argument('--micro_batch', type=int, default=1, help='Micro batch size (default: 1)')
+    parser.add_argument('--seq_length', type=int, default=4096, help='Sequence length (default: 4096)')
+    parser.add_argument('--pp_cut', type=int, default=-1, help='Degree of compression, usually 0 (minimal) or -1 (no compression) (default: -1)')
+    return parser.parse_args()
+
 
 # 全局 flow ID 分发器
 global_lid_register = -1
@@ -57,6 +68,7 @@ class Layer:
         self.input_size = input_size
         self.output_size = output_size
         self.calc_time = calc_time
+        self.bkwd_calc_time = 2 * calc_time
         self.param_size = param_size
         self.former_layer_id = former_layer_id
         self.next_layer_id = next_layer_id
@@ -143,16 +155,30 @@ class TransformerLayer:
         return f"Transformer Layer {self.inherent_id} ({self.get_grp_id(Num_of_layers, TP)}):\n{self.attention_layer}\n{self.mlp_layer}"
 
 if __name__ == '__main__':
+    args = parse_arguments()
     # 读取 CSV 文件到 DataFrame
     workload_df = pd.read_csv('workload.csv', sep='\t')
     Parameter_size, Hidden_size, Num_of_layers, Attention_heads, Seq_len, FFN_hidden_size, World_size, TP, PP, DP \
         = get_parameters_by_name(workload_df, 'GPT_7B')
 
-    Num_of_layers = 3
-    global_batch = 8192
-    micro_batch = 1
-    seq_length = 4096
+    # Num_of_layers = 3
+    # global_batch = 8192
+    # micro_batch = 1
+    # seq_length = 4096
+    # pp_cut = -1    # 压缩的程度。一般来讲应该是 0(最小压缩) 或者 -1 （不压缩）
 
+    # 部分参数更新, for ease of simulation
+    Num_of_layers = args.num_of_layers
+    global_batch = args.global_batch
+    micro_batch = args.micro_batch
+    seq_length = args.seq_length
+    pp_cut = args.pp_cut    # 压缩的程度。一般来讲应该是 0(最小压缩) 或者 -1 （不压缩）
+
+    mbs = global_batch // micro_batch
+    
+    if pp_cut >= 0:
+        mbs = min(global_batch // micro_batch, PP + pp_cut)
+    
     mb_input_size = Seq_len * micro_batch * Hidden_size
     assert FFN_hidden_size == Hidden_size * 4
     mlp_param_size_tp = (Hidden_size * FFN_hidden_size + FFN_hidden_size + FFN_hidden_size * Hidden_size + Hidden_size) / TP
@@ -162,6 +188,7 @@ if __name__ == '__main__':
     tf_layers = [[[] for _ in range(Num_of_layers)] for _ in range(DP)]
     for did in range(DP):
         dp_grp = []
+        # 为每一层构建多个TP组
         for lid in range(Num_of_layers):
             tp_grp_attn = []
             tp_grp_mlp = []
@@ -179,11 +206,35 @@ if __name__ == '__main__':
                                 mlp_calc_time=0.005, attn_calc_time=0.010, 
                                 mlp_param_size=mlp_param_size_tp, attn_param_size=attn_param_size_tp)
                                 )
+            # 设置TP组
             for tid in range(TP):
-                # 设置tp_grp 和 dp_grp (if exist)
                 tf_layers[did][lid][tid].set_tp_groups(tp_grp_attn=tp_grp_attn, tp_grp_mlp=tp_grp_mlp, tp_fwd_type='ALLREDUCE', tp_bkwd_type='ALLREDUCE')
 
-                tf_layers[did][lid][tid].set_dp_groups(dp_grp=[3], dp_type='ALLREDUCE')
+        
+        # 连接多层Transformer网络
+        for tid in range(TP):
+            for lid in range(1, Num_of_layers):
+                tf_layers[did][lid][tid].attention_layer.former_layer_id = tf_layers[did][lid - 1][tid].mlp_layer.layer_id
+                tf_layers[did][lid - 1][tid].mlp_layer.next_layer_id = tf_layers[did][lid][tid].attention_layer.layer_id
 
-                # 打印Transformer层信息
+            for lid in range(Num_of_layers):
                 print(f"\n{tf_layers[did][lid][tid]}")
+
+        # below is TODO
+        # 处理流水线并行的逻辑
+        for tid in range(TP-1, -1, -1):
+            for lid in range(Num_of_layers-1, -1, -1):
+                # 流水线中每一层的数据传输
+                if lid < Num_of_layers - 1:
+                    # 当前层的输出连接到下一层的输入
+                    tf_layers[did][lid][tid].attention_layer.next_layer_id = tf_layers[did][lid + 1][tid].attention_layer.layer_id
+                    tf_layers[did][lid + 1][tid].mlp_layer.former_layer_id = tf_layers[did][lid][tid].mlp_layer.layer_id
+
+        # 数据并行
+        for lid in range(Num_of_layers):
+            dp_grp.append(tf_layers[did][lid][0].inherent_id)
+        for tid in range(TP):
+            for lid in range(Num_of_layers):
+                tf_layers[did][lid][tid].set_dp_groups(dp_grp, dp_type='SHARD')
+
+
