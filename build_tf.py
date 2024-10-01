@@ -122,9 +122,12 @@ class TransformerLayer:
     '''
     inherent_id: 用于确定这一层的物理位置
     '''
-    def __init__(self, inherent_id, layer_id_attn, layer_id_mlp, input_size, output_size, mlp_calc_time, attn_calc_time, mlp_param_size, attn_param_size, former_layer_id=None, next_layer_id=None):
+    def __init__(self, inherent_id, layer_id_attn, layer_id_mlp, input_size, output_size, mlp_calc_time, attn_calc_time, mlp_param_size, attn_param_size, former_layer_id=None, next_layer_id=None, mbs=0, Num_of_layers=1, TP=1):
         output_input_size = input_size
         self.inherent_id = inherent_id
+        self.mbs = mbs
+        self.Num_of_layers = Num_of_layers  # 设置适当的层数
+        self.TP = TP             # 设置适当的TP值
         self.attention_layer = Attention(layer_id=layer_id_attn, inherent_id=inherent_id, input_size=input_size, output_size=output_input_size, 
                                          calc_time=attn_calc_time, param_size=attn_param_size, 
                                          former_layer_id=former_layer_id, next_layer_id=layer_id_mlp)
@@ -133,12 +136,19 @@ class TransformerLayer:
                              calc_time=mlp_calc_time, param_size=mlp_param_size, 
                              former_layer_id=layer_id_attn, next_layer_id=next_layer_id)
     
-    def get_grp_id(self, Num_of_layers, TP):
-        did_lid_part = self.inherent_id // TP
-        tid = self.inherent_id % TP
-        did = did_lid_part // Num_of_layers
-        lid = did_lid_part % Num_of_layers
-        return did, lid, tid
+    def extract_ids(self):
+        # 计算 did
+        did = self.inherent_id // (self.mbs * self.Num_of_layers * self.TP)
+        # 计算 mbid
+        remaining_after_did = self.inherent_id % (self.mbs * self.Num_of_layers * self.TP)
+        mbid = remaining_after_did // (self.Num_of_layers * self.TP)
+        # 计算 lid
+        remaining_after_mbid = remaining_after_did % (self.Num_of_layers * self.TP)
+        lid = remaining_after_mbid // self.TP
+        # 计算 tid
+        tid = remaining_after_mbid % self.TP
+        return did, mbid, lid, tid
+
 
     def set_tp_groups(self, tp_grp_mlp, tp_grp_attn, tp_fwd_type=None, tp_bkwd_type=None):
         self.attention_layer.set_tp_grp(tp_grp_attn, tp_fwd_type, tp_bkwd_type)
@@ -150,9 +160,7 @@ class TransformerLayer:
         self.attention_layer.set_dp_grp(dp_grp, dp_type)
 
     def __repr__(self):
-        Num_of_layers = 3  # 设置适当的层数
-        TP = 4             # 设置适当的TP值
-        return f"Transformer Layer {self.inherent_id} ({self.get_grp_id(Num_of_layers, TP)}):\n{self.attention_layer}\n{self.mlp_layer}"
+        return f"Transformer Layer {self.inherent_id} ({self.extract_ids()}):\n{self.attention_layer}\n{self.mlp_layer}"
 
 if __name__ == '__main__':
     args = parse_arguments()
@@ -178,63 +186,70 @@ if __name__ == '__main__':
     
     if pp_cut >= 0:
         mbs = min(global_batch // micro_batch, PP + pp_cut)
-    
+
     mb_input_size = Seq_len * micro_batch * Hidden_size
     assert FFN_hidden_size == Hidden_size * 4
     mlp_param_size_tp = (Hidden_size * FFN_hidden_size + FFN_hidden_size + FFN_hidden_size * Hidden_size + Hidden_size) / TP
     Head_size = Hidden_size / Attention_heads
     attn_param_size_tp = (3 * (Hidden_size * Head_size * Attention_heads) + Hidden_size * Hidden_size) / TP   #  = 4 * Hidden_size^2 / TP
 
-    tf_layers = [[[] for _ in range(Num_of_layers)] for _ in range(DP)]
+    tf_layers = [[[[] for _ in range(Num_of_layers)] for _ in range(mbs)] for _ in range(DP)]
     for did in range(DP):
-        dp_grp = []
-        # 为每一层构建多个TP组
-        for lid in range(Num_of_layers):
-            tp_grp_attn = []
-            tp_grp_mlp = []
-            last_layer = -1
-            next_layer = -1
-            for tid in range(TP):
-                inherent_id = did * (Num_of_layers * TP) + lid * TP + tid
-                lid1 = get_id()
-                lid2 = get_id()
-                tp_grp_attn.append(lid1)
-                tp_grp_mlp.append(lid2)
-                tf_layers[did][lid].append(TransformerLayer(inherent_id=inherent_id, 
-                                layer_id_attn=lid1, layer_id_mlp=lid2, 
-                                input_size=mb_input_size, output_size=mb_input_size, 
-                                mlp_calc_time=0.005, attn_calc_time=0.010, 
-                                mlp_param_size=mlp_param_size_tp, attn_param_size=attn_param_size_tp)
-                                )
-            # 设置TP组
-            for tid in range(TP):
-                tf_layers[did][lid][tid].set_tp_groups(tp_grp_attn=tp_grp_attn, tp_grp_mlp=tp_grp_mlp, tp_fwd_type='ALLREDUCE', tp_bkwd_type='ALLREDUCE')
-
-        
-        # 连接多层Transformer网络
-        for tid in range(TP):
-            for lid in range(1, Num_of_layers):
-                tf_layers[did][lid][tid].attention_layer.former_layer_id = tf_layers[did][lid - 1][tid].mlp_layer.layer_id
-                tf_layers[did][lid - 1][tid].mlp_layer.next_layer_id = tf_layers[did][lid][tid].attention_layer.layer_id
-
+        dp_grp = [[] for _ in range(Num_of_layers)]  # 对每一个Transformer layer，都维护一个DP组
+        for mbid in range(mbs):
+            # 为每一层构建多个 TP 组
             for lid in range(Num_of_layers):
-                print(f"\n{tf_layers[did][lid][tid]}")
+                tp_grp_attn = []
+                tp_grp_mlp = []
+                last_layer = -1
+                next_layer = -1
+                # 构建并设置 TP 组
+                for tid in range(TP):
+                    inherent_id = did * (mbs * Num_of_layers * TP) + mbid * (Num_of_layers * TP) + lid * TP + tid
+                    lid1 = get_id()
+                    lid2 = get_id()
+                    tp_grp_attn.append(lid1)
+                    tp_grp_mlp.append(lid2)
+                    tf_layers[did][mbid][lid].append(
+                        TransformerLayer(inherent_id=inherent_id, 
+                                    layer_id_attn=lid1, layer_id_mlp=lid2, 
+                                    input_size=mb_input_size, output_size=mb_input_size, 
+                                    mlp_calc_time=0.005, attn_calc_time=0.010, 
+                                    mlp_param_size=mlp_param_size_tp, attn_param_size=attn_param_size_tp,
+                                    mbs=mbs, Num_of_layers=Num_of_layers, TP=TP)
+                        )
+                for tid in range(TP):
+                    tf_layers[did][mbid][lid][tid].set_tp_groups(tp_grp_attn=tp_grp_attn, tp_grp_mlp=tp_grp_mlp, tp_fwd_type='ALLREDUCE', tp_bkwd_type='ALLREDUCE')
 
-        # below is TODO
-        # 处理流水线并行的逻辑
-        for tid in range(TP-1, -1, -1):
-            for lid in range(Num_of_layers-1, -1, -1):
-                # 流水线中每一层的数据传输
-                if lid < Num_of_layers - 1:
-                    # 当前层的输出连接到下一层的输入
-                    tf_layers[did][lid][tid].attention_layer.next_layer_id = tf_layers[did][lid + 1][tid].attention_layer.layer_id
-                    tf_layers[did][lid + 1][tid].mlp_layer.former_layer_id = tf_layers[did][lid][tid].mlp_layer.layer_id
+            
+            # 连接多层Transformer网络
+            for tid in range(TP):
+                for lid in range(1, Num_of_layers):
+                    tf_layers[did][mbid][lid][tid].attention_layer.former_layer_id = tf_layers[did][mbid][lid - 1][tid].mlp_layer.layer_id
+                    tf_layers[did][mbid][lid - 1][tid].mlp_layer.next_layer_id = tf_layers[did][mbid][lid][tid].attention_layer.layer_id
 
-        # 数据并行
-        for lid in range(Num_of_layers):
-            dp_grp.append(tf_layers[did][lid][0].inherent_id)
-        for tid in range(TP):
-            for lid in range(Num_of_layers):
-                tf_layers[did][lid][tid].set_dp_groups(dp_grp, dp_type='SHARD')
+                for lid in range(Num_of_layers):
+                    print(f"\n{tf_layers[did][mbid][lid][tid]}")
+
+        # # below is TODO
+        # # 处理流水线并行的逻辑
+        # for tid in range(TP-1, -1, -1):
+        #     for lid in range(Num_of_layers-1, -1, -1):
+        #         # 流水线中每一层的数据传输
+        #         if lid < Num_of_layers - 1:
+        #             # 当前层的输出连接到下一层的输入
+        #             tf_layers[did][mbid][lid][tid].attention_layer.next_layer_id = tf_layers[did][mbid][lid + 1][tid].attention_layer.layer_id
+        #             tf_layers[did][mbid][lid + 1][tid].mlp_layer.former_layer_id = tf_layers[did][mbid][lid][tid].mlp_layer.layer_id
+
+        # # 数据并行
+        # for lid in range(Num_of_layers):
+        #     dp_grp.append(tf_layers[did][mbid][lid][0].inherent_id)
+        # for tid in range(TP):
+        #     for lid in range(Num_of_layers):
+        #         tf_layers[did][mbid][lid][tid].set_dp_groups(dp_grp, dp_type='SHARD')
 
 
+    print(f'\nnew_DP: {DP}')
+    print(f'new_mbs: {mbs}')
+    print(f'new_Num_of_layers: {Num_of_layers}')
+    print(f'new_TP: {TP}')
