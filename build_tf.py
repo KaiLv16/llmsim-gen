@@ -72,11 +72,16 @@ class Layer:
         self.param_size = param_size
         self.former_layer_id = former_layer_id
         self.next_layer_id = next_layer_id
+
         self.tp_grp = []
         self.tp_fwd_type = None
         self.tp_bkwd_type = None
+
         self.dp_grp = []
         self.dp_type = None
+
+        self.pp_dep = []
+        self.pp_invoke = []
 
     def set_tp_grp(self, tp_grp, tp_fwd_type=None, tp_bkwd_type=None):
         self.tp_grp = tp_grp
@@ -91,14 +96,15 @@ class Layer:
         return (f"Layer {self.layer_id}: Input_Size = {self.input_size}, Output_Size = {self.output_size}, "
                 f"Calc_Time = {self.calc_time}s, Param_Size = {self.param_size}, "
                 f"Former_Layer = {self.former_layer_id}, Next_Layer = {self.next_layer_id}, "
-                f"TP_Group = {self.tp_grp}, TP_fwd_Type = {self.tp_fwd_type}, TP_bkwd_Type = {self.tp_bkwd_type}, DP_Group = {self.dp_grp}, DP_Type = {self.dp_type}")
+                f"TP_Group = {self.tp_grp}, TP_fwd_Type = {self.tp_fwd_type}, TP_bkwd_Type = {self.tp_bkwd_type}, DP_Group = {self.dp_grp}, DP_Type = {self.dp_type}, "
+                f"pp_dep={self.pp_dep}, pp_invoke={self.pp_invoke}")
 
 
 # 包括QKV层 和输出层：4 * N^2
 class Attention(Layer):
     def __init__(self, tf_object, layer_id, inherent_id, input_size, output_size, calc_time, param_size, former_layer_id=None, next_layer_id=None):
         super().__init__(layer_id, inherent_id, input_size, output_size, calc_time, param_size, former_layer_id, next_layer_id)
-        self.layer_type = "Attention"
+        self.layer_type = "Attn"
         self.tf_layer = tf_object
 
     def __repr__(self):
@@ -124,22 +130,37 @@ class TransformerLayer:
     '''
     inherent_id: 用于确定这一层的物理位置
     '''
-    def __init__(self, inherent_id, step, pass_type, layer_id_attn, layer_id_mlp, input_size, output_size, mlp_calc_time, attn_calc_time, mlp_param_size, attn_param_size, former_layer_id=None, next_layer_id=None, mbs=0, Num_of_layers=1, TP=1):
+    def __init__(self, inherent_id, step, pass_type, layer_id_attn, layer_id_mlp, input_size, output_size, mlp_calc_time, attn_calc_time, mlp_param_size, attn_param_size, former_layer_id=None, next_layer_id=None, did=0, mbs=0, Num_of_layers=1, TP=1):
         output_input_size = input_size
         self.inherent_id = inherent_id
         self.step = step
         self.pass_type = pass_type
+        self.did = did
         self.mbs = mbs
         self.Num_of_layers = Num_of_layers  # 设置适当的层数
         self.TP = TP             # 设置适当的TP值
-        self.attention_layer = Attention(self, layer_id=layer_id_attn, inherent_id=inherent_id, input_size=input_size, output_size=output_input_size, 
+        self.physical_layer_id = self.extract_ids()[4]
+        self.physical_tp_id = self.extract_ids()[5]
+        
+        
+        if self.pass_type == 'FWD':
+            self.attention_layer = Attention(self, layer_id=layer_id_attn, inherent_id=inherent_id, input_size=input_size, output_size=output_input_size, 
                                          calc_time=attn_calc_time, param_size=attn_param_size, 
                                          former_layer_id=former_layer_id, next_layer_id=layer_id_mlp)
         
-        self.mlp_layer = MLP(self, layer_id=layer_id_mlp, inherent_id=inherent_id, input_size=output_input_size, output_size=input_size, 
+            self.mlp_layer = MLP(self, layer_id=layer_id_mlp, inherent_id=inherent_id, input_size=output_input_size, output_size=input_size, 
                              calc_time=mlp_calc_time, param_size=mlp_param_size, 
                              former_layer_id=layer_id_attn, next_layer_id=next_layer_id)
-    
+        else:
+            self.mlp_layer = MLP(self, layer_id=layer_id_mlp, inherent_id=inherent_id, input_size=output_input_size, output_size=input_size, 
+                             calc_time=mlp_calc_time, param_size=mlp_param_size, 
+                             former_layer_id=former_layer_id, next_layer_id=layer_id_attn)
+            
+            self.attention_layer = Attention(self, layer_id=layer_id_attn, inherent_id=inherent_id, input_size=input_size, output_size=output_input_size, 
+                                         calc_time=attn_calc_time, param_size=attn_param_size, 
+                                         former_layer_id=layer_id_mlp, next_layer_id=next_layer_id)
+        
+           
     def extract_ids(self):
         # 计算 did
         did = self.inherent_id // (self.mbs * self.Num_of_layers * self.TP)
@@ -151,7 +172,7 @@ class TransformerLayer:
         lid = remaining_after_mbid // self.TP
         # 计算 tid
         tid = remaining_after_mbid % self.TP
-        return did, mbid, lid, tid
+        return self.step, self.pass_type, did, mbid, lid, tid
 
 
     def set_tp_groups(self, tp_grp_mlp, tp_grp_attn, tp_fwd_type=None, tp_bkwd_type=None):
@@ -164,7 +185,9 @@ class TransformerLayer:
         self.attention_layer.set_dp_grp(dp_grp, dp_type)
 
     def __repr__(self):
-        return f"Transformer Layer {self.inherent_id} ({self.extract_ids()}):\n{self.attention_layer}\n{self.mlp_layer}"
+        result = self.extract_ids()
+        # return f"Transformer Layer {self.inherent_id} (step={result[0]} pass_type={result[1]} did={result[2]} mbid={result[3]} lid={result[4]} tid={result[5]}):\n{self.attention_layer}\n{self.mlp_layer}"
+        return f"Transformer Layer {self.inherent_id} (step, type, did, mbid, lid, tid = {result}):\n{self.attention_layer}\n{self.mlp_layer}"
 
 if __name__ == '__main__':
     args = parse_arguments()
@@ -199,65 +222,137 @@ if __name__ == '__main__':
     Head_size = Hidden_size / Attention_heads
     attn_param_size_tp = (3 * (Hidden_size * Head_size * Attention_heads) + Hidden_size * Hidden_size) / TP   #  = 4 * Hidden_size^2 / TP
 
-    tf_layers = [[[[] for _ in range(Num_of_layers)] for _ in range(mbs)] for _ in range(DP)]
-
     passes = 2
     bypass_first_fwd = True
-    bypass_last_bkwd = True
+    bypass_last_bkwd = False
 
     steps = passes * 2
     first_step = 1 if bypass_first_fwd else 0
     last_step = 1 if bypass_last_bkwd else 0
+    tf_layers = [[[[[] for _ in range(Num_of_layers)] for _ in range(mbs)] for _ in range(DP)] for _ in range(steps)]
+    total_layer_cnt = 0
+
     for step in range(first_step, steps - last_step):
-        pass_type = 'FWD' if step//2 == 0 else 'BKWD'
-        for did in range(DP):
-            dp_grp = [[] for _ in range(Num_of_layers)]  # 对最后一个 mbid 的每一个 Transformer layer，都维护一个 DP 组
-            for mbid in range(mbs):
-                # 为每一层构建多个 TP 组
-                for lid in range(Num_of_layers):
-                    # 构建并设置 TP 组
-                    tp_grp_attn = []
-                    tp_grp_mlp = []
-                    last_layer = -1
-                    next_layer = -1
-                    for tid in range(TP):
-                        inherent_id = did * (mbs * Num_of_layers * TP) + mbid * (Num_of_layers * TP) + lid * TP + tid
-                        lid1 = get_id()
-                        lid2 = get_id()
-                        tp_grp_attn.append(lid1)
-                        tp_grp_mlp.append(lid2)
-                        tf_layers[did][mbid][lid].append(
-                            TransformerLayer(inherent_id=inherent_id, step=step, pass_type=pass_type,
-                                        layer_id_attn=lid1, layer_id_mlp=lid2, 
-                                        input_size=mb_input_size, output_size=mb_input_size, 
-                                        mlp_calc_time=0.005, attn_calc_time=0.010, 
-                                        mlp_param_size=mlp_param_size_tp, attn_param_size=attn_param_size_tp,
-                                        mbs=mbs, Num_of_layers=Num_of_layers, TP=TP)
-                            )
-                    for tid in range(TP):
-                        tf_layers[did][mbid][lid][tid].set_tp_groups(tp_grp_attn=tp_grp_attn, tp_grp_mlp=tp_grp_mlp, tp_fwd_type='ALLREDUCE', tp_bkwd_type='ALLREDUCE')
-
-                
-                # 连接多层Transformer网络
-                for tid in range(TP):
-                    for lid in range(1, Num_of_layers):
-                        tf_layers[did][mbid][lid][tid].attention_layer.former_layer_id = tf_layers[did][mbid][lid - 1][tid].mlp_layer.layer_id
-                        tf_layers[did][mbid][lid - 1][tid].mlp_layer.next_layer_id = tf_layers[did][mbid][lid][tid].attention_layer.layer_id
-
+        pass_type = 'FWD' if step%2 == 0 else 'BKWD'
+        if pass_type == 'FWD':
+            for did in range(DP):
+                dp_grp = [[] for _ in range(Num_of_layers)]  # 对最后一个 mbid 的每一个 Transformer layer，都维护一个 DP 组
+                for mbid in range(mbs):
+                    # 为每一层构建多个 TP 组
                     for lid in range(Num_of_layers):
-                        print(f"\n{tf_layers[did][mbid][lid][tid]}")
-                
-                if pass_type == 'BKWD' and mbid == mbs - 1:
-                    # 为最后一个 mbid 添加 DP
-                    pass
+                        # 构建并设置 TP 组
+                        tp_grp_attn = []
+                        tp_grp_mlp = []
+                        last_layer = -1
+                        next_layer = -1
+                        for tid in range(TP):
+                            inherent_id = did * (mbs * Num_of_layers * TP) + mbid * (Num_of_layers * TP) + lid * TP + tid
+                            lid1 = get_id()
+                            lid2 = get_id()
+                            tp_grp_attn.append(lid1)
+                            tp_grp_mlp.append(lid2)
+                            tf_layers[step][did][mbid][lid].append(
+                                TransformerLayer(inherent_id=inherent_id, step=step, pass_type=pass_type,
+                                            layer_id_attn=lid1, layer_id_mlp=lid2, 
+                                            input_size=mb_input_size, output_size=mb_input_size, 
+                                            mlp_calc_time=0.005, attn_calc_time=0.010, 
+                                            mlp_param_size=mlp_param_size_tp, attn_param_size=attn_param_size_tp,
+                                            did=did, mbs=mbs, Num_of_layers=Num_of_layers, TP=TP)
+                                )
+                            total_layer_cnt += 1
+                        for tid in range(TP):
+                            tf_layers[step][did][mbid][lid][tid].set_tp_groups(tp_grp_attn=tp_grp_attn, tp_grp_mlp=tp_grp_mlp, tp_fwd_type='ALLREDUCE', tp_bkwd_type='ALLREDUCE')
 
-                if pass_type == 'FWD' and mbid == 0:
-                    # 为第一个 mbid 添加 DP
-                    pass
+                    
+                    # 连接多层Transformer网络
+                    for tid in range(TP):
+                        for lid in range(1, Num_of_layers):
+                            tf_layers[step][did][mbid][lid][tid].attention_layer.former_layer_id = tf_layers[step][did][mbid][lid - 1][tid].mlp_layer.layer_id
+                            tf_layers[step][did][mbid][lid - 1][tid].mlp_layer.next_layer_id = tf_layers[step][did][mbid][lid][tid].attention_layer.layer_id
+                    
+                # 添加 PP 依赖
+                for mbid in range(1, mbs):     # 每个mb
+                    for lid in range(Num_of_layers):  # 每层
+                        for tid in range(TP):       # 每个 TP 组
+                            for tgrp in range(TP):
+                                tf_layers[step][did][mbid-1][lid][tid].mlp_layer.pp_invoke.append(tf_layers[step][did][mbid][lid][tgrp].attention_layer.layer_id)
+                                tf_layers[step][did][mbid][lid][tid].attention_layer.pp_dep.append(tf_layers[step][did][mbid-1][lid][tgrp].mlp_layer.layer_id)
+                            
+                    
+
+                    if pass_type == 'BKWD' and mbid == mbs - 1:
+                        # 为最后一个 mbid 添加 DP
+                        pass
+
+                    if pass_type == 'FWD' and mbid == 0:
+                        # 为第一个 mbid 添加 DP
+                        pass
+
+        else:       # BKWD
+            for did in range(DP):
+                dp_grp = [[] for _ in range(Num_of_layers)]  # 对最后一个 mbid 的每一个 Transformer layer，都维护一个 DP 组
+                for mbid in range(mbs):
+                    # 为每一层构建多个 TP 组
+                    for lid in range(Num_of_layers):
+                        # 构建并设置 TP 组
+                        tp_grp_attn = []
+                        tp_grp_mlp = []
+                        last_layer = -1
+                        next_layer = -1
+                        for tid in range(TP):
+                            inherent_id = did * (mbs * Num_of_layers * TP) + mbid * (Num_of_layers * TP) + lid * TP + tid
+                            lid1 = get_id()
+                            lid2 = get_id()
+                            tp_grp_attn.append(lid1)
+                            tp_grp_mlp.append(lid2)
+                            tf_layers[step][did][mbid][lid].append(
+                                TransformerLayer(inherent_id=inherent_id, step=step, pass_type=pass_type,
+                                            layer_id_attn=lid1, layer_id_mlp=lid2, 
+                                            input_size=mb_input_size, output_size=mb_input_size, 
+                                            mlp_calc_time=0.005, attn_calc_time=0.010, 
+                                            mlp_param_size=mlp_param_size_tp, attn_param_size=attn_param_size_tp,
+                                            did=did, mbs=mbs, Num_of_layers=Num_of_layers, TP=TP)
+                                )
+                            total_layer_cnt += 1
+                        for tid in range(TP):
+                            tf_layers[step][did][mbid][lid][tid].set_tp_groups(tp_grp_attn=tp_grp_attn, tp_grp_mlp=tp_grp_mlp, tp_fwd_type='ALLREDUCE', tp_bkwd_type='ALLREDUCE')
+
+                    # 连接多层Transformer网络 (反向传播)
+                    for tid in range(TP):
+                        for lid in range(1, Num_of_layers):
+                            tf_layers[step][did][mbid][lid][tid].mlp_layer.former_layer_id = tf_layers[step][did][mbid][lid - 1][tid].attention_layer.layer_id
+                            tf_layers[step][did][mbid][lid - 1][tid].attention_layer.next_layer_id = tf_layers[step][did][mbid][lid][tid].mlp_layer.layer_id
+                    
+                    # 连接前向和反向传播的代码。这里使用PP进行连接。
+                    if mbid == 0:
+                        if step - 1 >= first_step:
+                            for tid in range(TP):
+                                for tgrp in range(TP):
+                                    tf_layers[step][did][mbid][0][tid].mlp_layer.pp_dep.append(tf_layers[step - 1][did][mbs - 1][Num_of_layers - 1][tgrp].mlp_layer.layer_id)
+                                    tf_layers[step - 1][did][mbs - 1][Num_of_layers - 1][tid].mlp_layer.pp_invoke.append(tf_layers[step][did][mbid][0][tgrp].mlp_layer.layer_id)
 
 
 
-    print(f'\nnew_DP: {DP}')
+                # 添加 PP 依赖
+                for mbid in range(1, mbs):     # 每个mb
+                    for lid in range(Num_of_layers):  # 每层
+                        for tid in range(TP):       # 每个 TP 组
+                            for tgrp in range(TP):
+                                tf_layers[step][did][mbid-1][lid][tid].mlp_layer.pp_invoke.append(tf_layers[step][did][mbid][lid][tgrp].attention_layer.layer_id)
+                                tf_layers[step][did][mbid][lid][tid].attention_layer.pp_dep.append(tf_layers[step][did][mbid-1][lid][tgrp].mlp_layer.layer_id)
+                            
+
+
+    for step in range(first_step, steps - last_step):
+        for dp in range(len(tf_layers[step])):
+            for mb in range(len(tf_layers[step][dp])):
+                for layer in range(len(tf_layers[step][dp][mb])):
+                    for tid in range(len(tf_layers[step][dp][mb][layer])):
+                        print(f"\n{tf_layers[step][dp][mb][layer][tid]}")
+
+    print(f'\npasses: {list(range(first_step, steps - last_step))}')                
+    print(f'new_DP: {DP}')
     print(f'new_mbs: {mbs}')
     print(f'new_Num_of_layers: {Num_of_layers}')
     print(f'new_TP: {TP}')
+    print(f'total_layers: {total_layer_cnt}')
