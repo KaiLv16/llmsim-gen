@@ -187,7 +187,11 @@ class TransformerLayer:
     def __repr__(self):
         result = self.extract_ids()
         # return f"Transformer Layer {self.inherent_id} (step={result[0]} pass_type={result[1]} did={result[2]} mbid={result[3]} lid={result[4]} tid={result[5]}):\n{self.attention_layer}\n{self.mlp_layer}"
-        return f"Transformer Layer {self.inherent_id} (step, type, did, mbid, lid, tid = {result}):\n{self.attention_layer}\n{self.mlp_layer}"
+        
+        if self.pass_type == 'FWD':
+            return f"FWD Transformer Layer {self.inherent_id} (step, type, did, mbid, lid, tid = {result}):\n{self.attention_layer}\n{self.mlp_layer}"
+        else:
+            return f"BKWD Transformer Layer {self.inherent_id} (step, type, did, mbid, lid, tid = {result}):\n{self.mlp_layer}\n{self.attention_layer}"
 
 if __name__ == '__main__':
     args = parse_arguments()
@@ -279,7 +283,7 @@ if __name__ == '__main__':
                                 tf_layers[step][did][mbid][lid][tid].attention_layer.pp_dep.append(tf_layers[step][did][mbid-1][lid][tgrp].mlp_layer.layer_id)
                             
                     
-
+                    # TODO： 添加 DP
                     if pass_type == 'BKWD' and mbid == mbs - 1:
                         # 为最后一个 mbid 添加 DP
                         pass
@@ -338,8 +342,8 @@ if __name__ == '__main__':
                     for lid in range(Num_of_layers):  # 每层
                         for tid in range(TP):       # 每个 TP 组
                             for tgrp in range(TP):
-                                tf_layers[step][did][mbid-1][lid][tid].mlp_layer.pp_invoke.append(tf_layers[step][did][mbid][lid][tgrp].attention_layer.layer_id)
-                                tf_layers[step][did][mbid][lid][tid].attention_layer.pp_dep.append(tf_layers[step][did][mbid-1][lid][tgrp].mlp_layer.layer_id)
+                                tf_layers[step][did][mbid-1][lid][tid].attention_layer.pp_invoke.append(tf_layers[step][did][mbid][lid][tgrp].mlp_layer.layer_id)
+                                tf_layers[step][did][mbid][lid][tid].mlp_layer.pp_dep.append(tf_layers[step][did][mbid-1][lid][tgrp].attention_layer.layer_id)
                             
 
 
