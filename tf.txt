@@ -11,100 +11,100 @@ PP: 2
 DP: 2
 
 BKWD Transformer Layer 0 (step, type, did, mbid, lid, tid = (1, 'BKWD', 0, 0, 0, 0)):
-MLP Layer 1: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = None, Next_Layer = 0, TP_Group = [1, 3], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
-Attn Layer 0: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 1, Next_Layer = 5, TP_Group = [0, 2], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[13, 15]
+MLP Layer 0: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = None, Next_Layer = 1, TP_Group = [0, 2], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+Attn Layer 1: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 0, Next_Layer = 4, TP_Group = [1, 3], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[12, 14]
 
 BKWD Transformer Layer 1 (step, type, did, mbid, lid, tid = (1, 'BKWD', 0, 0, 0, 1)):
-MLP Layer 3: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = None, Next_Layer = 2, TP_Group = [1, 3], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
-Attn Layer 2: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 3, Next_Layer = 7, TP_Group = [0, 2], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[13, 15]
+MLP Layer 2: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = None, Next_Layer = 3, TP_Group = [0, 2], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+Attn Layer 3: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 2, Next_Layer = 6, TP_Group = [1, 3], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[12, 14]
 
 BKWD Transformer Layer 2 (step, type, did, mbid, lid, tid = (1, 'BKWD', 0, 0, 1, 0)):
-MLP Layer 5: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 0, Next_Layer = 4, TP_Group = [5, 7], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
-Attn Layer 4: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 5, Next_Layer = 9, TP_Group = [4, 6], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[17, 19]
+MLP Layer 4: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 1, Next_Layer = 5, TP_Group = [4, 6], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+Attn Layer 5: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 4, Next_Layer = 8, TP_Group = [5, 7], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[16, 18]
 
 BKWD Transformer Layer 3 (step, type, did, mbid, lid, tid = (1, 'BKWD', 0, 0, 1, 1)):
-MLP Layer 7: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 2, Next_Layer = 6, TP_Group = [5, 7], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
-Attn Layer 6: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 7, Next_Layer = 11, TP_Group = [4, 6], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[17, 19]
+MLP Layer 6: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 3, Next_Layer = 7, TP_Group = [4, 6], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+Attn Layer 7: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 6, Next_Layer = 10, TP_Group = [5, 7], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[16, 18]
 
 BKWD Transformer Layer 4 (step, type, did, mbid, lid, tid = (1, 'BKWD', 0, 0, 2, 0)):
-MLP Layer 9: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 4, Next_Layer = 8, TP_Group = [9, 11], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
-Attn Layer 8: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 9, Next_Layer = None, TP_Group = [8, 10], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[21, 23]
+MLP Layer 8: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 5, Next_Layer = 9, TP_Group = [8, 10], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+Attn Layer 9: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 8, Next_Layer = None, TP_Group = [9, 11], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[20, 22]
 
 BKWD Transformer Layer 5 (step, type, did, mbid, lid, tid = (1, 'BKWD', 0, 0, 2, 1)):
-MLP Layer 11: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 6, Next_Layer = 10, TP_Group = [9, 11], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
-Attn Layer 10: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 11, Next_Layer = None, TP_Group = [8, 10], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[21, 23]
+MLP Layer 10: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 7, Next_Layer = 11, TP_Group = [8, 10], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+Attn Layer 11: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 10, Next_Layer = None, TP_Group = [9, 11], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[20, 22]
 
 BKWD Transformer Layer 6 (step, type, did, mbid, lid, tid = (1, 'BKWD', 0, 1, 0, 0)):
-MLP Layer 13: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = None, Next_Layer = 12, TP_Group = [13, 15], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[0, 2], pp_invoke=[]
-Attn Layer 12: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 13, Next_Layer = 17, TP_Group = [12, 14], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+MLP Layer 12: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = None, Next_Layer = 13, TP_Group = [12, 14], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[1, 3], pp_invoke=[]
+Attn Layer 13: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 12, Next_Layer = 16, TP_Group = [13, 15], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
 
 BKWD Transformer Layer 7 (step, type, did, mbid, lid, tid = (1, 'BKWD', 0, 1, 0, 1)):
-MLP Layer 15: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = None, Next_Layer = 14, TP_Group = [13, 15], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[0, 2], pp_invoke=[]
-Attn Layer 14: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 15, Next_Layer = 19, TP_Group = [12, 14], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+MLP Layer 14: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = None, Next_Layer = 15, TP_Group = [12, 14], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[1, 3], pp_invoke=[]
+Attn Layer 15: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 14, Next_Layer = 18, TP_Group = [13, 15], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
 
 BKWD Transformer Layer 8 (step, type, did, mbid, lid, tid = (1, 'BKWD', 0, 1, 1, 0)):
-MLP Layer 17: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 12, Next_Layer = 16, TP_Group = [17, 19], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[4, 6], pp_invoke=[]
-Attn Layer 16: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 17, Next_Layer = 21, TP_Group = [16, 18], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+MLP Layer 16: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 13, Next_Layer = 17, TP_Group = [16, 18], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[5, 7], pp_invoke=[]
+Attn Layer 17: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 16, Next_Layer = 20, TP_Group = [17, 19], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
 
 BKWD Transformer Layer 9 (step, type, did, mbid, lid, tid = (1, 'BKWD', 0, 1, 1, 1)):
-MLP Layer 19: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 14, Next_Layer = 18, TP_Group = [17, 19], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[4, 6], pp_invoke=[]
-Attn Layer 18: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 19, Next_Layer = 23, TP_Group = [16, 18], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+MLP Layer 18: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 15, Next_Layer = 19, TP_Group = [16, 18], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[5, 7], pp_invoke=[]
+Attn Layer 19: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 18, Next_Layer = 22, TP_Group = [17, 19], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
 
 BKWD Transformer Layer 10 (step, type, did, mbid, lid, tid = (1, 'BKWD', 0, 1, 2, 0)):
-MLP Layer 21: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 16, Next_Layer = 20, TP_Group = [21, 23], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[8, 10], pp_invoke=[]
-Attn Layer 20: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 21, Next_Layer = None, TP_Group = [20, 22], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+MLP Layer 20: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 17, Next_Layer = 21, TP_Group = [20, 22], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[9, 11], pp_invoke=[]
+Attn Layer 21: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 20, Next_Layer = None, TP_Group = [21, 23], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
 
 BKWD Transformer Layer 11 (step, type, did, mbid, lid, tid = (1, 'BKWD', 0, 1, 2, 1)):
-MLP Layer 23: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 18, Next_Layer = 22, TP_Group = [21, 23], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[8, 10], pp_invoke=[]
-Attn Layer 22: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 23, Next_Layer = None, TP_Group = [20, 22], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+MLP Layer 22: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 19, Next_Layer = 23, TP_Group = [20, 22], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[9, 11], pp_invoke=[]
+Attn Layer 23: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 22, Next_Layer = None, TP_Group = [21, 23], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
 
 BKWD Transformer Layer 12 (step, type, did, mbid, lid, tid = (1, 'BKWD', 1, 0, 0, 0)):
-MLP Layer 25: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = None, Next_Layer = 24, TP_Group = [25, 27], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
-Attn Layer 24: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 25, Next_Layer = 29, TP_Group = [24, 26], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[37, 39]
+MLP Layer 24: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = None, Next_Layer = 25, TP_Group = [24, 26], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+Attn Layer 25: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 24, Next_Layer = 28, TP_Group = [25, 27], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[36, 38]
 
 BKWD Transformer Layer 13 (step, type, did, mbid, lid, tid = (1, 'BKWD', 1, 0, 0, 1)):
-MLP Layer 27: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = None, Next_Layer = 26, TP_Group = [25, 27], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
-Attn Layer 26: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 27, Next_Layer = 31, TP_Group = [24, 26], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[37, 39]
+MLP Layer 26: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = None, Next_Layer = 27, TP_Group = [24, 26], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+Attn Layer 27: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 26, Next_Layer = 30, TP_Group = [25, 27], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[36, 38]
 
 BKWD Transformer Layer 14 (step, type, did, mbid, lid, tid = (1, 'BKWD', 1, 0, 1, 0)):
-MLP Layer 29: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 24, Next_Layer = 28, TP_Group = [29, 31], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
-Attn Layer 28: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 29, Next_Layer = 33, TP_Group = [28, 30], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[41, 43]
+MLP Layer 28: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 25, Next_Layer = 29, TP_Group = [28, 30], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+Attn Layer 29: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 28, Next_Layer = 32, TP_Group = [29, 31], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[40, 42]
 
 BKWD Transformer Layer 15 (step, type, did, mbid, lid, tid = (1, 'BKWD', 1, 0, 1, 1)):
-MLP Layer 31: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 26, Next_Layer = 30, TP_Group = [29, 31], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
-Attn Layer 30: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 31, Next_Layer = 35, TP_Group = [28, 30], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[41, 43]
+MLP Layer 30: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 27, Next_Layer = 31, TP_Group = [28, 30], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+Attn Layer 31: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 30, Next_Layer = 34, TP_Group = [29, 31], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[40, 42]
 
 BKWD Transformer Layer 16 (step, type, did, mbid, lid, tid = (1, 'BKWD', 1, 0, 2, 0)):
-MLP Layer 33: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 28, Next_Layer = 32, TP_Group = [33, 35], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
-Attn Layer 32: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 33, Next_Layer = None, TP_Group = [32, 34], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[45, 47]
+MLP Layer 32: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 29, Next_Layer = 33, TP_Group = [32, 34], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+Attn Layer 33: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 32, Next_Layer = None, TP_Group = [33, 35], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[44, 46]
 
 BKWD Transformer Layer 17 (step, type, did, mbid, lid, tid = (1, 'BKWD', 1, 0, 2, 1)):
-MLP Layer 35: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 30, Next_Layer = 34, TP_Group = [33, 35], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
-Attn Layer 34: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 35, Next_Layer = None, TP_Group = [32, 34], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[45, 47]
+MLP Layer 34: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 31, Next_Layer = 35, TP_Group = [32, 34], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+Attn Layer 35: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 34, Next_Layer = None, TP_Group = [33, 35], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[44, 46]
 
 BKWD Transformer Layer 18 (step, type, did, mbid, lid, tid = (1, 'BKWD', 1, 1, 0, 0)):
-MLP Layer 37: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = None, Next_Layer = 36, TP_Group = [37, 39], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[24, 26], pp_invoke=[]
-Attn Layer 36: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 37, Next_Layer = 41, TP_Group = [36, 38], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+MLP Layer 36: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = None, Next_Layer = 37, TP_Group = [36, 38], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[25, 27], pp_invoke=[]
+Attn Layer 37: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 36, Next_Layer = 40, TP_Group = [37, 39], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
 
 BKWD Transformer Layer 19 (step, type, did, mbid, lid, tid = (1, 'BKWD', 1, 1, 0, 1)):
-MLP Layer 39: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = None, Next_Layer = 38, TP_Group = [37, 39], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[24, 26], pp_invoke=[]
-Attn Layer 38: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 39, Next_Layer = 43, TP_Group = [36, 38], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+MLP Layer 38: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = None, Next_Layer = 39, TP_Group = [36, 38], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[25, 27], pp_invoke=[]
+Attn Layer 39: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 38, Next_Layer = 42, TP_Group = [37, 39], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
 
 BKWD Transformer Layer 20 (step, type, did, mbid, lid, tid = (1, 'BKWD', 1, 1, 1, 0)):
-MLP Layer 41: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 36, Next_Layer = 40, TP_Group = [41, 43], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[28, 30], pp_invoke=[]
-Attn Layer 40: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 41, Next_Layer = 45, TP_Group = [40, 42], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+MLP Layer 40: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 37, Next_Layer = 41, TP_Group = [40, 42], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[29, 31], pp_invoke=[]
+Attn Layer 41: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 40, Next_Layer = 44, TP_Group = [41, 43], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
 
 BKWD Transformer Layer 21 (step, type, did, mbid, lid, tid = (1, 'BKWD', 1, 1, 1, 1)):
-MLP Layer 43: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 38, Next_Layer = 42, TP_Group = [41, 43], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[28, 30], pp_invoke=[]
-Attn Layer 42: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 43, Next_Layer = 47, TP_Group = [40, 42], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+MLP Layer 42: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 39, Next_Layer = 43, TP_Group = [40, 42], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[29, 31], pp_invoke=[]
+Attn Layer 43: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 42, Next_Layer = 46, TP_Group = [41, 43], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
 
 BKWD Transformer Layer 22 (step, type, did, mbid, lid, tid = (1, 'BKWD', 1, 1, 2, 0)):
-MLP Layer 45: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 40, Next_Layer = 44, TP_Group = [45, 47], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[32, 34], pp_invoke=[]
-Attn Layer 44: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 45, Next_Layer = None, TP_Group = [44, 46], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+MLP Layer 44: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 41, Next_Layer = 45, TP_Group = [44, 46], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[33, 35], pp_invoke=[]
+Attn Layer 45: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 44, Next_Layer = None, TP_Group = [45, 47], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
 
 BKWD Transformer Layer 23 (step, type, did, mbid, lid, tid = (1, 'BKWD', 1, 1, 2, 1)):
-MLP Layer 47: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 42, Next_Layer = 46, TP_Group = [45, 47], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[32, 34], pp_invoke=[]
-Attn Layer 46: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 47, Next_Layer = None, TP_Group = [44, 46], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+MLP Layer 46: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 43, Next_Layer = 47, TP_Group = [44, 46], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[33, 35], pp_invoke=[]
+Attn Layer 47: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 46, Next_Layer = None, TP_Group = [45, 47], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
 
 FWD Transformer Layer 0 (step, type, did, mbid, lid, tid = (2, 'FWD', 0, 0, 0, 0)):
 Attn Layer 48: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = None, Next_Layer = 49, TP_Group = [48, 50], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
@@ -148,11 +148,11 @@ MLP Layer 67: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, P
 
 FWD Transformer Layer 10 (step, type, did, mbid, lid, tid = (2, 'FWD', 0, 1, 2, 0)):
 Attn Layer 68: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 65, Next_Layer = 69, TP_Group = [68, 70], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[57, 59], pp_invoke=[]
-MLP Layer 69: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 68, Next_Layer = None, TP_Group = [69, 71], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[97, 99]
+MLP Layer 69: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 68, Next_Layer = None, TP_Group = [69, 71], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[96, 98, 108, 110]
 
 FWD Transformer Layer 11 (step, type, did, mbid, lid, tid = (2, 'FWD', 0, 1, 2, 1)):
 Attn Layer 70: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 67, Next_Layer = 71, TP_Group = [68, 70], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[57, 59], pp_invoke=[]
-MLP Layer 71: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 70, Next_Layer = None, TP_Group = [69, 71], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[97, 99]
+MLP Layer 71: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 70, Next_Layer = None, TP_Group = [69, 71], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[96, 98, 108, 110]
 
 FWD Transformer Layer 12 (step, type, did, mbid, lid, tid = (2, 'FWD', 1, 0, 0, 0)):
 Attn Layer 72: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = None, Next_Layer = 73, TP_Group = [72, 74], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
@@ -196,107 +196,107 @@ MLP Layer 91: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, P
 
 FWD Transformer Layer 22 (step, type, did, mbid, lid, tid = (2, 'FWD', 1, 1, 2, 0)):
 Attn Layer 92: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 89, Next_Layer = 93, TP_Group = [92, 94], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[81, 83], pp_invoke=[]
-MLP Layer 93: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 92, Next_Layer = None, TP_Group = [93, 95], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[121, 123]
+MLP Layer 93: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 92, Next_Layer = None, TP_Group = [93, 95], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[120, 122, 132, 134]
 
 FWD Transformer Layer 23 (step, type, did, mbid, lid, tid = (2, 'FWD', 1, 1, 2, 1)):
 Attn Layer 94: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 91, Next_Layer = 95, TP_Group = [92, 94], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[81, 83], pp_invoke=[]
-MLP Layer 95: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 94, Next_Layer = None, TP_Group = [93, 95], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[121, 123]
+MLP Layer 95: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 94, Next_Layer = None, TP_Group = [93, 95], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[120, 122, 132, 134]
 
 BKWD Transformer Layer 0 (step, type, did, mbid, lid, tid = (3, 'BKWD', 0, 0, 0, 0)):
-MLP Layer 97: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = None, Next_Layer = 96, TP_Group = [97, 99], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[69, 71], pp_invoke=[]
-Attn Layer 96: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 97, Next_Layer = 101, TP_Group = [96, 98], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[109, 111]
+MLP Layer 96: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = None, Next_Layer = 97, TP_Group = [96, 98], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[69, 71], pp_invoke=[]
+Attn Layer 97: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 96, Next_Layer = 100, TP_Group = [97, 99], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[108, 110]
 
 BKWD Transformer Layer 1 (step, type, did, mbid, lid, tid = (3, 'BKWD', 0, 0, 0, 1)):
-MLP Layer 99: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = None, Next_Layer = 98, TP_Group = [97, 99], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[69, 71], pp_invoke=[]
-Attn Layer 98: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 99, Next_Layer = 103, TP_Group = [96, 98], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[109, 111]
+MLP Layer 98: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = None, Next_Layer = 99, TP_Group = [96, 98], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[69, 71], pp_invoke=[]
+Attn Layer 99: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 98, Next_Layer = 102, TP_Group = [97, 99], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[108, 110]
 
 BKWD Transformer Layer 2 (step, type, did, mbid, lid, tid = (3, 'BKWD', 0, 0, 1, 0)):
-MLP Layer 101: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 96, Next_Layer = 100, TP_Group = [101, 103], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
-Attn Layer 100: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 101, Next_Layer = 105, TP_Group = [100, 102], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[113, 115]
+MLP Layer 100: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 97, Next_Layer = 101, TP_Group = [100, 102], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+Attn Layer 101: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 100, Next_Layer = 104, TP_Group = [101, 103], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[112, 114]
 
 BKWD Transformer Layer 3 (step, type, did, mbid, lid, tid = (3, 'BKWD', 0, 0, 1, 1)):
-MLP Layer 103: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 98, Next_Layer = 102, TP_Group = [101, 103], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
-Attn Layer 102: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 103, Next_Layer = 107, TP_Group = [100, 102], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[113, 115]
+MLP Layer 102: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 99, Next_Layer = 103, TP_Group = [100, 102], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+Attn Layer 103: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 102, Next_Layer = 106, TP_Group = [101, 103], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[112, 114]
 
 BKWD Transformer Layer 4 (step, type, did, mbid, lid, tid = (3, 'BKWD', 0, 0, 2, 0)):
-MLP Layer 105: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 100, Next_Layer = 104, TP_Group = [105, 107], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
-Attn Layer 104: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 105, Next_Layer = None, TP_Group = [104, 106], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[117, 119]
+MLP Layer 104: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 101, Next_Layer = 105, TP_Group = [104, 106], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+Attn Layer 105: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 104, Next_Layer = None, TP_Group = [105, 107], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[116, 118]
 
 BKWD Transformer Layer 5 (step, type, did, mbid, lid, tid = (3, 'BKWD', 0, 0, 2, 1)):
-MLP Layer 107: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 102, Next_Layer = 106, TP_Group = [105, 107], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
-Attn Layer 106: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 107, Next_Layer = None, TP_Group = [104, 106], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[117, 119]
+MLP Layer 106: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 103, Next_Layer = 107, TP_Group = [104, 106], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+Attn Layer 107: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 106, Next_Layer = None, TP_Group = [105, 107], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[116, 118]
 
 BKWD Transformer Layer 6 (step, type, did, mbid, lid, tid = (3, 'BKWD', 0, 1, 0, 0)):
-MLP Layer 109: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = None, Next_Layer = 108, TP_Group = [109, 111], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[96, 98], pp_invoke=[]
-Attn Layer 108: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 109, Next_Layer = 113, TP_Group = [108, 110], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+MLP Layer 108: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = None, Next_Layer = 109, TP_Group = [108, 110], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[69, 71, 97, 99], pp_invoke=[]
+Attn Layer 109: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 108, Next_Layer = 112, TP_Group = [109, 111], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
 
 BKWD Transformer Layer 7 (step, type, did, mbid, lid, tid = (3, 'BKWD', 0, 1, 0, 1)):
-MLP Layer 111: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = None, Next_Layer = 110, TP_Group = [109, 111], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[96, 98], pp_invoke=[]
-Attn Layer 110: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 111, Next_Layer = 115, TP_Group = [108, 110], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+MLP Layer 110: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = None, Next_Layer = 111, TP_Group = [108, 110], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[69, 71, 97, 99], pp_invoke=[]
+Attn Layer 111: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 110, Next_Layer = 114, TP_Group = [109, 111], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
 
 BKWD Transformer Layer 8 (step, type, did, mbid, lid, tid = (3, 'BKWD', 0, 1, 1, 0)):
-MLP Layer 113: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 108, Next_Layer = 112, TP_Group = [113, 115], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[100, 102], pp_invoke=[]
-Attn Layer 112: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 113, Next_Layer = 117, TP_Group = [112, 114], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+MLP Layer 112: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 109, Next_Layer = 113, TP_Group = [112, 114], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[101, 103], pp_invoke=[]
+Attn Layer 113: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 112, Next_Layer = 116, TP_Group = [113, 115], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
 
 BKWD Transformer Layer 9 (step, type, did, mbid, lid, tid = (3, 'BKWD', 0, 1, 1, 1)):
-MLP Layer 115: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 110, Next_Layer = 114, TP_Group = [113, 115], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[100, 102], pp_invoke=[]
-Attn Layer 114: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 115, Next_Layer = 119, TP_Group = [112, 114], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+MLP Layer 114: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 111, Next_Layer = 115, TP_Group = [112, 114], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[101, 103], pp_invoke=[]
+Attn Layer 115: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 114, Next_Layer = 118, TP_Group = [113, 115], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
 
 BKWD Transformer Layer 10 (step, type, did, mbid, lid, tid = (3, 'BKWD', 0, 1, 2, 0)):
-MLP Layer 117: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 112, Next_Layer = 116, TP_Group = [117, 119], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[104, 106], pp_invoke=[]
-Attn Layer 116: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 117, Next_Layer = None, TP_Group = [116, 118], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+MLP Layer 116: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 113, Next_Layer = 117, TP_Group = [116, 118], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[105, 107], pp_invoke=[]
+Attn Layer 117: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 116, Next_Layer = None, TP_Group = [117, 119], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
 
 BKWD Transformer Layer 11 (step, type, did, mbid, lid, tid = (3, 'BKWD', 0, 1, 2, 1)):
-MLP Layer 119: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 114, Next_Layer = 118, TP_Group = [117, 119], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[104, 106], pp_invoke=[]
-Attn Layer 118: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 119, Next_Layer = None, TP_Group = [116, 118], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+MLP Layer 118: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 115, Next_Layer = 119, TP_Group = [116, 118], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[105, 107], pp_invoke=[]
+Attn Layer 119: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 118, Next_Layer = None, TP_Group = [117, 119], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
 
 BKWD Transformer Layer 12 (step, type, did, mbid, lid, tid = (3, 'BKWD', 1, 0, 0, 0)):
-MLP Layer 121: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = None, Next_Layer = 120, TP_Group = [121, 123], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[93, 95], pp_invoke=[]
-Attn Layer 120: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 121, Next_Layer = 125, TP_Group = [120, 122], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[133, 135]
+MLP Layer 120: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = None, Next_Layer = 121, TP_Group = [120, 122], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[93, 95], pp_invoke=[]
+Attn Layer 121: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 120, Next_Layer = 124, TP_Group = [121, 123], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[132, 134]
 
 BKWD Transformer Layer 13 (step, type, did, mbid, lid, tid = (3, 'BKWD', 1, 0, 0, 1)):
-MLP Layer 123: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = None, Next_Layer = 122, TP_Group = [121, 123], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[93, 95], pp_invoke=[]
-Attn Layer 122: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 123, Next_Layer = 127, TP_Group = [120, 122], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[133, 135]
+MLP Layer 122: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = None, Next_Layer = 123, TP_Group = [120, 122], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[93, 95], pp_invoke=[]
+Attn Layer 123: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 122, Next_Layer = 126, TP_Group = [121, 123], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[132, 134]
 
 BKWD Transformer Layer 14 (step, type, did, mbid, lid, tid = (3, 'BKWD', 1, 0, 1, 0)):
-MLP Layer 125: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 120, Next_Layer = 124, TP_Group = [125, 127], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
-Attn Layer 124: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 125, Next_Layer = 129, TP_Group = [124, 126], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[137, 139]
+MLP Layer 124: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 121, Next_Layer = 125, TP_Group = [124, 126], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+Attn Layer 125: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 124, Next_Layer = 128, TP_Group = [125, 127], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[136, 138]
 
 BKWD Transformer Layer 15 (step, type, did, mbid, lid, tid = (3, 'BKWD', 1, 0, 1, 1)):
-MLP Layer 127: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 122, Next_Layer = 126, TP_Group = [125, 127], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
-Attn Layer 126: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 127, Next_Layer = 131, TP_Group = [124, 126], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[137, 139]
+MLP Layer 126: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 123, Next_Layer = 127, TP_Group = [124, 126], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+Attn Layer 127: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 126, Next_Layer = 130, TP_Group = [125, 127], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[136, 138]
 
 BKWD Transformer Layer 16 (step, type, did, mbid, lid, tid = (3, 'BKWD', 1, 0, 2, 0)):
-MLP Layer 129: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 124, Next_Layer = 128, TP_Group = [129, 131], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
-Attn Layer 128: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 129, Next_Layer = None, TP_Group = [128, 130], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[141, 143]
+MLP Layer 128: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 125, Next_Layer = 129, TP_Group = [128, 130], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+Attn Layer 129: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 128, Next_Layer = None, TP_Group = [129, 131], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[140, 142]
 
 BKWD Transformer Layer 17 (step, type, did, mbid, lid, tid = (3, 'BKWD', 1, 0, 2, 1)):
-MLP Layer 131: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 126, Next_Layer = 130, TP_Group = [129, 131], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
-Attn Layer 130: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 131, Next_Layer = None, TP_Group = [128, 130], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[141, 143]
+MLP Layer 130: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 127, Next_Layer = 131, TP_Group = [128, 130], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+Attn Layer 131: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 130, Next_Layer = None, TP_Group = [129, 131], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[140, 142]
 
 BKWD Transformer Layer 18 (step, type, did, mbid, lid, tid = (3, 'BKWD', 1, 1, 0, 0)):
-MLP Layer 133: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = None, Next_Layer = 132, TP_Group = [133, 135], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[120, 122], pp_invoke=[]
-Attn Layer 132: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 133, Next_Layer = 137, TP_Group = [132, 134], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+MLP Layer 132: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = None, Next_Layer = 133, TP_Group = [132, 134], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[93, 95, 121, 123], pp_invoke=[]
+Attn Layer 133: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 132, Next_Layer = 136, TP_Group = [133, 135], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
 
 BKWD Transformer Layer 19 (step, type, did, mbid, lid, tid = (3, 'BKWD', 1, 1, 0, 1)):
-MLP Layer 135: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = None, Next_Layer = 134, TP_Group = [133, 135], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[120, 122], pp_invoke=[]
-Attn Layer 134: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 135, Next_Layer = 139, TP_Group = [132, 134], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+MLP Layer 134: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = None, Next_Layer = 135, TP_Group = [132, 134], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[93, 95, 121, 123], pp_invoke=[]
+Attn Layer 135: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 134, Next_Layer = 138, TP_Group = [133, 135], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
 
 BKWD Transformer Layer 20 (step, type, did, mbid, lid, tid = (3, 'BKWD', 1, 1, 1, 0)):
-MLP Layer 137: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 132, Next_Layer = 136, TP_Group = [137, 139], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[124, 126], pp_invoke=[]
-Attn Layer 136: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 137, Next_Layer = 141, TP_Group = [136, 138], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+MLP Layer 136: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 133, Next_Layer = 137, TP_Group = [136, 138], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[125, 127], pp_invoke=[]
+Attn Layer 137: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 136, Next_Layer = 140, TP_Group = [137, 139], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
 
 BKWD Transformer Layer 21 (step, type, did, mbid, lid, tid = (3, 'BKWD', 1, 1, 1, 1)):
-MLP Layer 139: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 134, Next_Layer = 138, TP_Group = [137, 139], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[124, 126], pp_invoke=[]
-Attn Layer 138: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 139, Next_Layer = 143, TP_Group = [136, 138], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+MLP Layer 138: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 135, Next_Layer = 139, TP_Group = [136, 138], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[125, 127], pp_invoke=[]
+Attn Layer 139: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 138, Next_Layer = 142, TP_Group = [137, 139], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
 
 BKWD Transformer Layer 22 (step, type, did, mbid, lid, tid = (3, 'BKWD', 1, 1, 2, 0)):
-MLP Layer 141: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 136, Next_Layer = 140, TP_Group = [141, 143], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[128, 130], pp_invoke=[]
-Attn Layer 140: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 141, Next_Layer = None, TP_Group = [140, 142], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+MLP Layer 140: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 137, Next_Layer = 141, TP_Group = [140, 142], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[129, 131], pp_invoke=[]
+Attn Layer 141: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 140, Next_Layer = None, TP_Group = [141, 143], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
 
 BKWD Transformer Layer 23 (step, type, did, mbid, lid, tid = (3, 'BKWD', 1, 1, 2, 1)):
-MLP Layer 143: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 138, Next_Layer = 142, TP_Group = [141, 143], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[128, 130], pp_invoke=[]
-Attn Layer 142: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 143, Next_Layer = None, TP_Group = [140, 142], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+MLP Layer 142: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.005s, Param_Size = 67119104.0, Former_Layer = 139, Next_Layer = 143, TP_Group = [140, 142], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[129, 131], pp_invoke=[]
+Attn Layer 143: Input_Size = 8388608, Output_Size = 8388608, Calc_Time = 0.01s, Param_Size = 33554432.0, Former_Layer = 142, Next_Layer = None, TP_Group = [141, 143], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_Group = [], DP_Type = None, pp_dep=[], pp_invoke=[]
 
 passes: [1, 2, 3]
 new_DP: 2

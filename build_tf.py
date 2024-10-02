@@ -139,6 +139,7 @@ class TransformerLayer:
         self.mbs = mbs
         self.Num_of_layers = Num_of_layers  # 设置适当的层数
         self.TP = TP             # 设置适当的TP值
+
         self.physical_layer_id = self.extract_ids()[4]
         self.physical_tp_id = self.extract_ids()[5]
         
@@ -236,11 +237,14 @@ if __name__ == '__main__':
     tf_layers = [[[[[] for _ in range(Num_of_layers)] for _ in range(mbs)] for _ in range(DP)] for _ in range(steps)]
     total_layer_cnt = 0
 
+    dp_grp_fwd = [[[[] for _ in ['attn', 'mlp']] for _ in range(TP)] for _ in range(Num_of_layers)]  # 对最后一个 mbid 的每一个 Transformer layer，都维护一个 DP 组
+    dp_grp_bkwd = [[[[] for _ in ['attn', 'mlp']] for _ in range(TP)] for _ in range(Num_of_layers)]  # 对最后一个 mbid 的每一个 Transformer layer，都维护一个 DP 组
+
     for step in range(first_step, steps - last_step):
         pass_type = 'FWD' if step%2 == 0 else 'BKWD'
         if pass_type == 'FWD':
+            dp_grp_fwd = [[[[] for _ in ['attn', 'mlp']] for _ in range(TP)] for _ in range(Num_of_layers)]
             for did in range(DP):
-                dp_grp = [[] for _ in range(Num_of_layers)]  # 对最后一个 mbid 的每一个 Transformer layer，都维护一个 DP 组
                 for mbid in range(mbs):
                     # 为每一层构建多个 TP 组
                     for lid in range(Num_of_layers):
@@ -251,13 +255,19 @@ if __name__ == '__main__':
                         next_layer = -1
                         for tid in range(TP):
                             inherent_id = did * (mbs * Num_of_layers * TP) + mbid * (Num_of_layers * TP) + lid * TP + tid
-                            lid1 = get_id()
-                            lid2 = get_id()
-                            tp_grp_attn.append(lid1)
-                            tp_grp_mlp.append(lid2)
+                            lid_attn = get_id()
+                            lid_mlp = get_id()
+                            tp_grp_attn.append(lid_attn)
+                            tp_grp_mlp.append(lid_mlp)
+
+                            # 添加DP依赖
+                            if mbid == mbs - 1:
+                                dp_grp_fwd[lid][tid][0].append(lid_attn)
+                                dp_grp_fwd[lid][tid][1].append(lid_mlp)
+
                             tf_layers[step][did][mbid][lid].append(
                                 TransformerLayer(inherent_id=inherent_id, step=step, pass_type=pass_type,
-                                            layer_id_attn=lid1, layer_id_mlp=lid2, 
+                                            layer_id_attn=lid_attn, layer_id_mlp=lid_mlp, 
                                             input_size=mb_input_size, output_size=mb_input_size, 
                                             mlp_calc_time=0.005, attn_calc_time=0.010, 
                                             mlp_param_size=mlp_param_size_tp, attn_param_size=attn_param_size_tp,
@@ -274,6 +284,7 @@ if __name__ == '__main__':
                             tf_layers[step][did][mbid][lid][tid].attention_layer.former_layer_id = tf_layers[step][did][mbid][lid - 1][tid].mlp_layer.layer_id
                             tf_layers[step][did][mbid][lid - 1][tid].mlp_layer.next_layer_id = tf_layers[step][did][mbid][lid][tid].attention_layer.layer_id
                     
+
                 # 添加 PP 依赖
                 for mbid in range(1, mbs):     # 每个mb
                     for lid in range(Num_of_layers):  # 每层
@@ -282,7 +293,7 @@ if __name__ == '__main__':
                                 tf_layers[step][did][mbid-1][lid][tid].mlp_layer.pp_invoke.append(tf_layers[step][did][mbid][lid][tgrp].attention_layer.layer_id)
                                 tf_layers[step][did][mbid][lid][tid].attention_layer.pp_dep.append(tf_layers[step][did][mbid-1][lid][tgrp].mlp_layer.layer_id)
                             
-                    
+                for dgrp in range(DP):
                     # TODO： 添加 DP
                     if pass_type == 'BKWD' and mbid == mbs - 1:
                         # 为最后一个 mbid 添加 DP
@@ -293,8 +304,8 @@ if __name__ == '__main__':
                         pass
 
         else:       # BKWD
+            dp_grp_bkwd = [[[[] for _ in ['attn', 'mlp']] for _ in range(TP)] for _ in range(Num_of_layers)]
             for did in range(DP):
-                dp_grp = [[] for _ in range(Num_of_layers)]  # 对最后一个 mbid 的每一个 Transformer layer，都维护一个 DP 组
                 for mbid in range(mbs):
                     # 为每一层构建多个 TP 组
                     for lid in range(Num_of_layers):
@@ -305,13 +316,19 @@ if __name__ == '__main__':
                         next_layer = -1
                         for tid in range(TP):
                             inherent_id = did * (mbs * Num_of_layers * TP) + mbid * (Num_of_layers * TP) + lid * TP + tid
-                            lid1 = get_id()
-                            lid2 = get_id()
-                            tp_grp_attn.append(lid1)
-                            tp_grp_mlp.append(lid2)
+                            lid_mlp = get_id()
+                            lid_attn = get_id()
+                            tp_grp_attn.append(lid_attn)
+                            tp_grp_mlp.append(lid_mlp)
+
+                            # 添加DP依赖
+                            if mbid == 0:
+                                dp_grp_bkwd[lid][tid][0].append(lid_attn)
+                                dp_grp_bkwd[lid][tid][1].append(lid_mlp)
+
                             tf_layers[step][did][mbid][lid].append(
                                 TransformerLayer(inherent_id=inherent_id, step=step, pass_type=pass_type,
-                                            layer_id_attn=lid1, layer_id_mlp=lid2, 
+                                            layer_id_attn=lid_attn, layer_id_mlp=lid_mlp, 
                                             input_size=mb_input_size, output_size=mb_input_size, 
                                             mlp_calc_time=0.005, attn_calc_time=0.010, 
                                             mlp_param_size=mlp_param_size_tp, attn_param_size=attn_param_size_tp,
@@ -334,6 +351,24 @@ if __name__ == '__main__':
                                 for tgrp in range(TP):
                                     tf_layers[step][did][mbid][0][tid].mlp_layer.pp_dep.append(tf_layers[step - 1][did][mbs - 1][Num_of_layers - 1][tgrp].mlp_layer.layer_id)
                                     tf_layers[step - 1][did][mbs - 1][Num_of_layers - 1][tid].mlp_layer.pp_invoke.append(tf_layers[step][did][mbid][0][tgrp].mlp_layer.layer_id)
+                    
+                    # 对 FWD，累积DP资源
+                    if mbid == mbs - 1:
+                        if step - 1 >= first_step:
+                            for tid in range(TP):
+                                for tgrp in range(TP):
+                                    tf_layers[step][did][mbid][0][tid].mlp_layer.pp_dep.append(tf_layers[step - 1][did][mbs - 1][Num_of_layers - 1][tgrp].mlp_layer.layer_id)
+                                    tf_layers[step - 1][did][mbs - 1][Num_of_layers - 1][tid].mlp_layer.pp_invoke.append(tf_layers[step][did][mbid][0][tgrp].mlp_layer.layer_id)
+
+            # TP并行下，每个 TP 部分分别做 DP 的 all-reduce
+            # for did in range(DP):
+            #     for lid in range(Num_of_layers):            
+            #         if len(dp_grp_bkwd[0]) != 0 and len(dp_grp_fwd[0]) != 0:
+            #             for dgrp in range(DP):
+            #                 tf_layers[step - 1][did][mbs - 1][lid][tid].mlp_layer.dp_grp.append()
+            #                 tf_layers[step][did][0][lid][tid]
+            #         else:
+            #             assert False
 
 
 
