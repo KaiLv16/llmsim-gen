@@ -81,7 +81,8 @@ class Layer:
         self.tp_fwd_type = None
         self.tp_bkwd_type = None
 
-        self.dp_grp = []
+        self.dp_src_grp = []
+        self.dp_dst_grp = []
         self.dp_type = None
 
         self.pp_dep = []
@@ -101,7 +102,7 @@ class Layer:
                 # f"Input_Size = {self.input_size}, Output_Size = {self.output_size}, "
                 # f"Calc_Time = {self.calc_time}s, Param_Size = {self.param_size}, "
                 f"Former_Layer = {self.former_layer_id}, Next_Layer = {self.next_layer_id}, "
-                f"TP_Group = {self.tp_grp}, TP_fwd_Type = {self.tp_fwd_type}, TP_bkwd_Type = {self.tp_bkwd_type}, DP_Group = {self.dp_grp}, DP_Type = {self.dp_type}, "
+                f"TP_Group = {self.tp_grp}, TP_fwd_Type = {self.tp_fwd_type}, TP_bkwd_Type = {self.tp_bkwd_type}, DP_src = {self.dp_src_grp}, DP_dst = {self.dp_dst_grp}, DP_Type = {self.dp_type}, "
                 f"pp_dep={self.pp_dep}, pp_invoke={self.pp_invoke}")
 
 
@@ -204,7 +205,7 @@ if __name__ == '__main__':
     # 读取 CSV 文件到 DataFrame
     workload_df = pd.read_csv('workload.csv', sep='\t')
     Parameter_size, Hidden_size, Num_of_layers, Attention_heads, Seq_len, FFN_hidden_size, World_size, TP, PP, DP \
-        = get_parameters_by_name(workload_df, 'GPT_7B_2')
+        = get_parameters_by_name(workload_df, 'GPT_7B')
 
     # Num_of_layers = 3
     # global_batch = 8192
@@ -288,7 +289,6 @@ if __name__ == '__main__':
                             tf_layers[step][did][mbid][lid][tid].attention_layer.former_layer_id = tf_layers[step][did][mbid][lid - 1][tid].mlp_layer.layer_id
                             tf_layers[step][did][mbid][lid - 1][tid].mlp_layer.next_layer_id = tf_layers[step][did][mbid][lid][tid].attention_layer.layer_id
                     
-
                 # 添加 PP 依赖
                 for mbid in range(1, mbs):     # 每个mb
                     for lid in range(Num_of_layers):  # 每层
@@ -304,11 +304,16 @@ if __name__ == '__main__':
                     if step > first_step:
                         for tid in range(TP):       # 每个 TP 部分分别做 DP 的 all-reduce
                             for dgrp in range(DP):
-                                tf_layers[step - 1][did][mbs - 1][Num_of_layers - 1 - lid][tid].attention_layer.dp_grp.append(tf_layers[step][dgrp][0][lid][tid].attention_layer.layer_id)
-                                tf_layers[step][did][0][lid][tid].attention_layer.dp_grp.append(tf_layers[step - 1][dgrp][mbs - 1][Num_of_layers - 1 - lid][tid].attention_layer.layer_id)
+                                tf_layers[step - 1][did][mbs - 1][Num_of_layers - 1 - lid][tid].attention_layer.dp_dst_grp.append(tf_layers[step][dgrp][0][lid][tid].attention_layer.layer_id)
+                                tf_layers[step][did][0][lid][tid].attention_layer.dp_src_grp.append(tf_layers[step - 1][dgrp][mbs - 1][Num_of_layers - 1 - lid][tid].attention_layer.layer_id)
 
-                                tf_layers[step - 1][did][mbs - 1][Num_of_layers - 1 - lid][tid].mlp_layer.dp_grp.append(tf_layers[step][dgrp][0][lid][tid].mlp_layer.layer_id)
-                                tf_layers[step][did][0][lid][tid].mlp_layer.dp_grp.append(tf_layers[step - 1][dgrp][mbs - 1][Num_of_layers - 1 - lid][tid].mlp_layer.layer_id)
+                                tf_layers[step - 1][did][mbs - 1][Num_of_layers - 1 - lid][tid].mlp_layer.dp_dst_grp.append(tf_layers[step][dgrp][0][lid][tid].mlp_layer.layer_id)
+                                tf_layers[step][did][0][lid][tid].mlp_layer.dp_src_grp.append(tf_layers[step - 1][dgrp][mbs - 1][Num_of_layers - 1 - lid][tid].mlp_layer.layer_id)
+
+                            tf_layers[step - 1][did][mbs - 1][Num_of_layers - 1 - lid][tid].attention_layer.dp_src_grp = tf_layers[step][did][0][lid][tid].attention_layer.dp_src_grp
+                            tf_layers[step][did][0][lid][tid].attention_layer.dp_dst_grp = tf_layers[step - 1][did][mbs - 1][Num_of_layers - 1 - lid][tid].attention_layer.dp_dst_grp
+                            tf_layers[step - 1][did][mbs - 1][Num_of_layers - 1 - lid][tid].mlp_layer.dp_src_grp = tf_layers[step][did][0][lid][tid].mlp_layer.dp_src_grp
+                            tf_layers[step][did][0][lid][tid].mlp_layer.dp_dst_grp = tf_layers[step - 1][did][mbs - 1][Num_of_layers - 1 - lid][tid].mlp_layer.dp_dst_grp
 
                             tf_layers[step - 1][did][mbs - 1][Num_of_layers - 1 - lid][tid].attention_layer.dp_type = 'ALLREDUCE'
                             tf_layers[step][did][0][lid][tid].attention_layer.dp_type = 'ALLREDUCE'
