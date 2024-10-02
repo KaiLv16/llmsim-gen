@@ -2,6 +2,7 @@
 
 import pandas as pd
 import argparse
+from build_llm_exec_graph import *
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Transformers Layer Configuration")
@@ -10,6 +11,9 @@ def parse_arguments():
     parser.add_argument('--micro_batch', type=int, default=1, help='Micro batch size (default: 1)')
     parser.add_argument('--seq_length', type=int, default=4096, help='Sequence length (default: 4096)')
     parser.add_argument('--pp_cut', type=int, default=-1, help='Degree of compression, usually 0 (minimal) or -1 (no compression) (default: -1)')
+    parser.add_argument('--passes', type=int, default=2, help='Number of passes')
+    parser.add_argument('--bypass_first_fwd', type=bool, default=True, help='Bypass first forward pass')
+    parser.add_argument('--bypass_last_bkwd', type=bool, default=True, help='Bypass last backward pass')
     return parser.parse_args()
 
 
@@ -93,8 +97,9 @@ class Layer:
         self.dp_type = dp_type if dp_grp else None
 
     def __repr__(self):
-        return (f"Layer {self.layer_id}: Input_Size = {self.input_size}, Output_Size = {self.output_size}, "
-                f"Calc_Time = {self.calc_time}s, Param_Size = {self.param_size}, "
+        return (f"Layer {self.layer_id}: "
+                # f"Input_Size = {self.input_size}, Output_Size = {self.output_size}, "
+                # f"Calc_Time = {self.calc_time}s, Param_Size = {self.param_size}, "
                 f"Former_Layer = {self.former_layer_id}, Next_Layer = {self.next_layer_id}, "
                 f"TP_Group = {self.tp_grp}, TP_fwd_Type = {self.tp_fwd_type}, TP_bkwd_Type = {self.tp_bkwd_type}, DP_Group = {self.dp_grp}, DP_Type = {self.dp_type}, "
                 f"pp_dep={self.pp_dep}, pp_invoke={self.pp_invoke}")
@@ -199,13 +204,16 @@ if __name__ == '__main__':
     # 读取 CSV 文件到 DataFrame
     workload_df = pd.read_csv('workload.csv', sep='\t')
     Parameter_size, Hidden_size, Num_of_layers, Attention_heads, Seq_len, FFN_hidden_size, World_size, TP, PP, DP \
-        = get_parameters_by_name(workload_df, 'GPT_7B')
+        = get_parameters_by_name(workload_df, 'GPT_7B_2')
 
     # Num_of_layers = 3
     # global_batch = 8192
     # micro_batch = 1
     # seq_length = 4096
     # pp_cut = -1    # 压缩的程度。一般来讲应该是 0(最小压缩) 或者 -1 （不压缩）
+    passes = args.passes
+    bypass_first_fwd = args.bypass_first_fwd
+    bypass_last_bkwd = args.bypass_last_bkwd
 
     # 部分参数更新, for ease of simulation
     Num_of_layers = args.num_of_layers
@@ -213,7 +221,7 @@ if __name__ == '__main__':
     micro_batch = args.micro_batch
     seq_length = args.seq_length
     pp_cut = args.pp_cut    # 压缩的程度。一般来讲应该是 0(最小压缩) 或者 -1 （不压缩）
-
+    
     mbs = global_batch // micro_batch
     assert global_batch == mbs * micro_batch
     
@@ -226,10 +234,6 @@ if __name__ == '__main__':
     mlp_param_size_tp = (Hidden_size * FFN_hidden_size + FFN_hidden_size + FFN_hidden_size * Hidden_size + Hidden_size) / TP
     Head_size = Hidden_size / Attention_heads
     attn_param_size_tp = (3 * (Hidden_size * Head_size * Attention_heads) + Hidden_size * Hidden_size) / TP   #  = 4 * Hidden_size^2 / TP
-
-    passes = 2
-    bypass_first_fwd = True
-    bypass_last_bkwd = False
 
     steps = passes * 2
     first_step = 1 if bypass_first_fwd else 0
@@ -381,8 +385,6 @@ if __name__ == '__main__':
                                 tf_layers[step][did][mbid][lid][tid].mlp_layer.pp_dep.append(tf_layers[step][did][mbid-1][lid][tgrp].attention_layer.layer_id)
 
 
-
-
     for step in range(first_step, steps - last_step):
         for dp in range(len(tf_layers[step])):
             for mb in range(len(tf_layers[step][dp])):
@@ -396,3 +398,4 @@ if __name__ == '__main__':
     print(f'new_Num_of_layers: {Num_of_layers}')
     print(f'new_TP: {TP}')
     print(f'total_layers: {total_layer_cnt}')
+
