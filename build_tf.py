@@ -293,15 +293,27 @@ if __name__ == '__main__':
                                 tf_layers[step][did][mbid-1][lid][tid].mlp_layer.pp_invoke.append(tf_layers[step][did][mbid][lid][tgrp].attention_layer.layer_id)
                                 tf_layers[step][did][mbid][lid][tid].attention_layer.pp_dep.append(tf_layers[step][did][mbid-1][lid][tgrp].mlp_layer.layer_id)
                             
-                for dgrp in range(DP):
-                    # TODO： 添加 DP
-                    if pass_type == 'BKWD' and mbid == mbs - 1:
-                        # 为最后一个 mbid 添加 DP
+            # 最后：TP并行下，每个 TP 部分分别做 DP 的 all-reduce
+            for did in range(DP):
+                for lid in range(Num_of_layers):            
+                    # if len(dp_grp_bkwd[0]) != 0 and len(dp_grp_fwd[0]) != 0:
+                    if step > first_step:
+                        for tid in range(TP):       # 每个 TP 部分分别做 DP 的 all-reduce
+                            for dgrp in range(DP):
+                                tf_layers[step - 1][did][mbs - 1][Num_of_layers - 1 - lid][tid].attention_layer.dp_grp.append(tf_layers[step][dgrp][0][lid][tid].attention_layer.layer_id)
+                                tf_layers[step][did][0][lid][tid].attention_layer.dp_grp.append(tf_layers[step - 1][dgrp][mbs - 1][Num_of_layers - 1 - lid][tid].attention_layer.layer_id)
+
+                                tf_layers[step - 1][did][mbs - 1][Num_of_layers - 1 - lid][tid].mlp_layer.dp_grp.append(tf_layers[step][dgrp][0][lid][tid].mlp_layer.layer_id)
+                                tf_layers[step][did][0][lid][tid].mlp_layer.dp_grp.append(tf_layers[step - 1][dgrp][mbs - 1][Num_of_layers - 1 - lid][tid].mlp_layer.layer_id)
+
+                            tf_layers[step - 1][did][mbs - 1][Num_of_layers - 1 - lid][tid].attention_layer.dp_type = 'ALLREDUCE'
+                            tf_layers[step][did][0][lid][tid].attention_layer.dp_type = 'ALLREDUCE'
+                            tf_layers[step - 1][did][mbs - 1][Num_of_layers - 1 - lid][tid].mlp_layer.dp_type = 'ALLREDUCE'
+                            tf_layers[step][did][0][lid][tid].mlp_layer.dp_type = 'ALLREDUCE'
+                    else:
                         pass
 
-                    if pass_type == 'FWD' and mbid == 0:
-                        # 为第一个 mbid 添加 DP
-                        pass
+
 
         else:       # BKWD
             dp_grp_bkwd = [[[[] for _ in ['attn', 'mlp']] for _ in range(TP)] for _ in range(Num_of_layers)]
@@ -360,18 +372,6 @@ if __name__ == '__main__':
                                     tf_layers[step][did][mbid][0][tid].mlp_layer.pp_dep.append(tf_layers[step - 1][did][mbs - 1][Num_of_layers - 1][tgrp].mlp_layer.layer_id)
                                     tf_layers[step - 1][did][mbs - 1][Num_of_layers - 1][tid].mlp_layer.pp_invoke.append(tf_layers[step][did][mbid][0][tgrp].mlp_layer.layer_id)
 
-            # TP并行下，每个 TP 部分分别做 DP 的 all-reduce
-            # for did in range(DP):
-            #     for lid in range(Num_of_layers):            
-            #         if len(dp_grp_bkwd[0]) != 0 and len(dp_grp_fwd[0]) != 0:
-            #             for dgrp in range(DP):
-            #                 tf_layers[step - 1][did][mbs - 1][lid][tid].mlp_layer.dp_grp.append()
-            #                 tf_layers[step][did][0][lid][tid]
-            #         else:
-            #             assert False
-
-
-
                 # 添加 PP 依赖
                 for mbid in range(1, mbs):     # 每个mb
                     for lid in range(Num_of_layers):  # 每层
@@ -379,7 +379,8 @@ if __name__ == '__main__':
                             for tgrp in range(TP):
                                 tf_layers[step][did][mbid-1][lid][tid].attention_layer.pp_invoke.append(tf_layers[step][did][mbid][lid][tgrp].mlp_layer.layer_id)
                                 tf_layers[step][did][mbid][lid][tid].mlp_layer.pp_dep.append(tf_layers[step][did][mbid-1][lid][tgrp].attention_layer.layer_id)
-                            
+
+
 
 
     for step in range(first_step, steps - last_step):
