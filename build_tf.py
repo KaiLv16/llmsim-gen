@@ -3,6 +3,8 @@
 import pandas as pd
 import argparse
 from build_llm_exec_graph import *
+from collections import defaultdict
+
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Transformers Layer Configuration")
@@ -65,6 +67,43 @@ def get_parameters_by_name(df, name):
         return None, None, None, None, None, None, None, None, None, None   # 如果没有找到，返回 None
     
 
+# Usage: 
+# flow = Flow(src=, dst=, size=, lat=, depend_flow=[], invoke_flow=[])
+# print(flow)
+class Flow:
+    def __init__(self, prio=3, src=-1, dst=-1, size=10000, lat=0, depend_node=[], invoke_node=[], depend_flow=[], invoke_flow=[]):
+        self.prio = prio
+        self.src = src
+        self.dst = dst
+        self.size = size
+        self.lat = lat
+        self.depend_node = depend_node
+        self.invoke_node = invoke_node
+        self.depend_flow = depend_flow
+        self.invoke_flow = invoke_flow
+
+    def __repr__(self) -> str:
+        repr_str = f"""{self.prio}, src={self.src}, dst={self.dst}, size={self.size}, lat={self.lat}, depend_node={self.depend_node}, invoke_node={self.invoke_node}, depend_flow={self.depend_flow}, invoke_flow={self.invoke_flow}"""
+        return repr_str
+
+
+# Usage: 
+# dep = Dep(src=, dst=, depend_flow=[], invoke_flow=[])
+# print(dep)
+class Dep:
+    def __init__(self, src=-1, dst=-1, depend_node=[], invoke_node=[], depend_flow=[], invoke_flow=[]):
+        self.src = src
+        self.dst = dst
+        self.depend_node = depend_node
+        self.invoke_node = invoke_node
+        self.depend_flow = depend_flow
+        self.invoke_flow = invoke_flow
+
+    def __repr__(self) -> str:
+        repr_str = f"""src={self.src}, dst={self.dst}, depend_node={self.depend_node}, invoke_node={self.invoke_node}, depend_flow={self.depend_flow}, invoke_flow={self.invoke_flow}"""
+        return repr_str
+
+
 class Layer:
     def __init__(self, layer_id, inherent_id, input_size, output_size, calc_time, param_size, former_layer_id=None, next_layer_id=None):
         self.layer_id = layer_id
@@ -88,6 +127,17 @@ class Layer:
         self.pp_dep = []
         self.pp_invoke = []
 
+        self.flow_dep_id = []
+        self.flow_invoke_id = []
+
+    def __repr__(self):
+        return (f"Layer {self.layer_id}: "
+                # f"Input_Size = {self.input_size}, Output_Size = {self.output_size}, "
+                # f"Calc_Time = {self.calc_time}s, Param_Size = {self.param_size}, "
+                f"Former_Layer = {self.former_layer_id}, Next_Layer = {self.next_layer_id}, "
+                f"TP_Group = {self.tp_grp}, TP_fwd_Type = {self.tp_fwd_type}, TP_bkwd_Type = {self.tp_bkwd_type}, DP_src = {self.dp_src_grp}, DP_dst = {self.dp_dst_grp}, DP_Type = {self.dp_type}, "
+                f"pp_dep={self.pp_dep}, pp_invoke={self.pp_invoke}")
+    
     def set_tp_grp(self, tp_grp, tp_fwd_type=None, tp_bkwd_type=None):
         self.tp_grp = tp_grp
         self.tp_fwd_type = tp_fwd_type if tp_fwd_type else None
@@ -97,13 +147,19 @@ class Layer:
         self.dp_grp = dp_grp
         self.dp_type = dp_type if dp_grp else None
 
-    def __repr__(self):
-        return (f"Layer {self.layer_id}: "
-                # f"Input_Size = {self.input_size}, Output_Size = {self.output_size}, "
-                # f"Calc_Time = {self.calc_time}s, Param_Size = {self.param_size}, "
-                f"Former_Layer = {self.former_layer_id}, Next_Layer = {self.next_layer_id}, "
-                f"TP_Group = {self.tp_grp}, TP_fwd_Type = {self.tp_fwd_type}, TP_bkwd_Type = {self.tp_bkwd_type}, DP_src = {self.dp_src_grp}, DP_dst = {self.dp_dst_grp}, DP_Type = {self.dp_type}, "
-                f"pp_dep={self.pp_dep}, pp_invoke={self.pp_invoke}")
+    def print_dep_flow(self, file_name=None, end='\n'):
+        if file_name is None:
+            print(self.flow_dep_id)
+        else:
+            with open(file_name, 'w') as f:
+                f.write(f"dep={self.flow_dep_id} {end}")
+
+    def print_invoke_flow(self, file_name=None, end='\n'):
+        if file_name is None:
+            print(self.flow_invoke_id)
+        else:
+            with open(file_name, 'w') as f:
+                f.write(f"invoke={self.flow_invoke_id} {end}")
 
 
 # 包括QKV层 和输出层：4 * N^2
@@ -166,8 +222,16 @@ class TransformerLayer:
             self.attention_layer = Attention(self, layer_id=layer_id_attn, inherent_id=inherent_id, input_size=input_size, output_size=output_input_size, 
                                          calc_time=attn_calc_time, param_size=attn_param_size, 
                                          former_layer_id=layer_id_mlp, next_layer_id=next_layer_id)
+    
+    def __repr__(self):
+        result = self.extract_ids()
+        # return f"Transformer Layer {self.inherent_id} (step={result[0]} pass_type={result[1]} did={result[2]} mbid={result[3]} lid={result[4]} tid={result[5]}):\n{self.attention_layer}\n{self.mlp_layer}"
         
-           
+        if self.pass_type == 'FWD':
+            return f"FWD Transformer Layer {self.inherent_id} (step, type, did, mbid, lid, tid = {result}):\n{self.attention_layer}\n{self.mlp_layer}"
+        else:
+            return f"BKWD Transformer Layer {self.inherent_id} (step, type, did, mbid, lid, tid = {result}):\n{self.mlp_layer}\n{self.attention_layer}"
+       
     def extract_ids(self):
         # 计算 did
         did = self.inherent_id // (self.mbs * self.Num_of_layers * self.TP)
@@ -181,24 +245,86 @@ class TransformerLayer:
         tid = remaining_after_mbid % self.TP
         return self.step, self.pass_type, did, mbid, lid, tid
 
-
     def set_tp_groups(self, tp_grp_mlp, tp_grp_attn, tp_fwd_type=None, tp_bkwd_type=None):
         self.attention_layer.set_tp_grp(tp_grp_attn, tp_fwd_type, tp_bkwd_type)
         self.mlp_layer.set_tp_grp(tp_grp_mlp, tp_fwd_type, tp_bkwd_type)
         
-
     def set_dp_groups(self, dp_grp, dp_type):
         self.mlp_layer.set_dp_grp(dp_grp, dp_type)
         self.attention_layer.set_dp_grp(dp_grp, dp_type)
 
-    def __repr__(self):
-        result = self.extract_ids()
-        # return f"Transformer Layer {self.inherent_id} (step={result[0]} pass_type={result[1]} did={result[2]} mbid={result[3]} lid={result[4]} tid={result[5]}):\n{self.attention_layer}\n{self.mlp_layer}"
+    
+
+def ring_all_reduce(N, total_data_size):
+    assert N > 1, f"Exception when generating AllReduce flows: DP grp must bigger than 1!"
+    flows = defaultdict(list)               # key: data chunk   value:  cc_flow
+
+    v_node = defaultdict(list)       # key: dp_id        value: cc_vnode 
+    v_nodename_start = []       # key: dp_id        value: cc_vnode 
+    v_nodename_end = []       # key: dp_id        value: cc_vnode 
+    
+    flow_data_size = total_data_size / N
+
+    data_chunk_start_idx = [i for i in range(N)]
+    data_chunk_idx = [i for i in range(N)]
+    
+    for chunk in range(N):
+        chunk_flow_id = 0
         
-        if self.pass_type == 'FWD':
-            return f"FWD Transformer Layer {self.inherent_id} (step, type, did, mbid, lid, tid = {result}):\n{self.attention_layer}\n{self.mlp_layer}"
+        for round in range(2 * N - 2):
+            src = data_chunk_idx[chunk]             # 对应 源dp_id
+            dst = (data_chunk_idx[chunk] + 1) % N   # 对应 目的dp_id
+            data_chunk_idx[chunk] = dst             # 更新该chunk的指向的dp_id的指针，供下一次for循环使用
+            if round < N - 1 - 1:
+                src_op = '_rs'      # reduce-scatter
+                dst_op = '_rs'      # all gather
+            elif round == N - 1 - 1:
+                src_op = '_rs'
+                dst_op = '_ag'
+            else:
+                src_op = '_ag' 
+                dst_op = '_ag'
+
+            src_node_name = f"virt_dp{src}_chunk{chunk}" + src_op
+            if src_node_name not in v_node:
+                v_node[src_node_name] = cc_vnode(src_node_name, src)
+                if round == 0:
+                    v_nodename_start.append(src_node_name)
+
+            dst_node_name = f"virt_dp{dst}_chunk{chunk}" + dst_op
+            if dst_node_name not in v_node:
+                v_node[dst_node_name] = cc_vnode(dst_node_name, dst)
+                if round >= N - 1 - 1:
+                    v_nodename_end.append(dst_node_name)
+
+            flow = cc_Flow(f"chunk{chunk}_flow{chunk_flow_id}", src, dst, flow_data_size, 'reduce-scatter', round, v_node[src_node_name], v_node[dst_node_name])
+            
+            v_node[src_node_name].flow_invoke.append(flow)
+            v_node[dst_node_name].flow_depend.append(flow)
+            flows[chunk].append(flow)
+
+            chunk_flow_id += 1
+
+    # 提取 nodename 中的dp组信息
+    def extract_dp_number(s):
+        match = re.search(r'dp(\d+)', s)
+        if match:
+            return int(match.group(1))
         else:
-            return f"BKWD Transformer Layer {self.inherent_id} (step, type, did, mbid, lid, tid = {result}):\n{self.mlp_layer}\n{self.attention_layer}"
+            return None
+        
+    # 把vnode转换成按照dp分组的形式
+    vnode_grp_by_dpid = defaultdict(list)
+    for nodename, node in v_node.items():
+        dp_id = extract_dp_number(nodename)
+        vnode_grp_by_dpid[(dp_id, nodename)] = node
+    
+    assert len(v_nodename_start) == N       # 每个DP只主动触发自己的1/N的数据的发送，剩下的数据需要等待其他DP发过来
+    assert len(vnode_grp_by_dpid) == len(v_node)      # N组
+    assert len(v_nodename_end) == N * N     # 每个node上面的数据分为N份，N个node
+
+    return flows, vnode_grp_by_dpid, v_nodename_start, v_nodename_end
+
 
 if __name__ == '__main__':
     args = parse_arguments()
@@ -206,6 +332,8 @@ if __name__ == '__main__':
     workload_df = pd.read_csv('workload.csv', sep='\t')
     Parameter_size, Hidden_size, Num_of_layers, Attention_heads, Seq_len, FFN_hidden_size, World_size, TP, PP, DP \
         = get_parameters_by_name(workload_df, 'GPT_7B')
+    # 开始构造流
+    flow_list = []
 
     # Num_of_layers = 3
     # global_batch = 8192
@@ -246,7 +374,8 @@ if __name__ == '__main__':
     dp_grp_bkwd = [[[[] for _ in ['attn', 'mlp']] for _ in range(TP)] for _ in range(Num_of_layers)]  # 对最后一个 mbid 的每一个 Transformer layer，都维护一个 DP 组
 
     for step in range(first_step, steps - last_step):
-        pass_type = 'FWD' if step%2 == 0 else 'BKWD'
+        pass_type = 'FWD' if step % 2 == 0 else 'BKWD'
+
         if pass_type == 'FWD':
             dp_grp_fwd = [[[[] for _ in ['attn', 'mlp']] for _ in range(TP)] for _ in range(Num_of_layers)]
             for did in range(DP):
@@ -288,6 +417,11 @@ if __name__ == '__main__':
                         for lid in range(1, Num_of_layers):
                             tf_layers[step][did][mbid][lid][tid].attention_layer.former_layer_id = tf_layers[step][did][mbid][lid - 1][tid].mlp_layer.layer_id
                             tf_layers[step][did][mbid][lid - 1][tid].mlp_layer.next_layer_id = tf_layers[step][did][mbid][lid][tid].attention_layer.layer_id
+                            src_id = tf_layers[step][did][mbid][lid - 1][tid].mlp_layer.layer_id
+                            dst_id = tf_layers[step][did][mbid][lid][tid].attention_layer.layer_id
+                            size = tf_layers[step][did][mbid][lid - 1][tid].mlp_layer.output_size
+                            lat = tf_layers[step][did][mbid][lid - 1][tid].mlp_layer.calc_time
+                            flow_list.append(Flow(src=src_id, dst=dst_id, size=size, lat=lat, depend_flow=[], invoke_flow=[]))
                     
                 # 添加 PP 依赖
                 for mbid in range(1, mbs):     # 每个mb
@@ -364,7 +498,13 @@ if __name__ == '__main__':
                         for lid in range(1, Num_of_layers):
                             tf_layers[step][did][mbid][lid][tid].mlp_layer.former_layer_id = tf_layers[step][did][mbid][lid - 1][tid].attention_layer.layer_id
                             tf_layers[step][did][mbid][lid - 1][tid].attention_layer.next_layer_id = tf_layers[step][did][mbid][lid][tid].mlp_layer.layer_id
-                    
+                            src_id = tf_layers[step][did][mbid][lid - 1][tid].attention_layer.layer_id
+                            dst_id = tf_layers[step][did][mbid][lid][tid].mlp_layer.layer_id
+                            size = tf_layers[step][did][mbid][lid - 1][tid].attention_layer.output_size
+                            lat = tf_layers[step][did][mbid][lid - 1][tid].attention_layer.calc_time
+                            flow_list.append(Flow(src=src_id, dst=dst_id, size=size, lat=lat, depend_flow=[], invoke_flow=[]))
+
+                            
                     # 连接前向和反向传播的代码。这里使用PP进行连接。
                     if mbid == 0:
                         if step - 1 >= first_step:
@@ -397,10 +537,21 @@ if __name__ == '__main__':
                     for tid in range(len(tf_layers[step][dp][mb][layer])):
                         print(f"\n{tf_layers[step][dp][mb][layer][tid]}")
 
+
+
+def all_reduce_wrapper(src_list, dst_list=None, total_data_size=0):
+    if dst_list is None:
+        dst_list  = src_list
+    assert len(src_list) == len(dst_list)
+    flows, vnode_grp_by_dpid, v_nodename_start, v_nodename_end = ring_all_reduce(len(src_list), )
+
+
+    return 
+
+
     print(f'\npasses: {list(range(first_step, steps - last_step))}')                
     print(f'new_DP: {DP}')
     print(f'new_mbs: {mbs}')
     print(f'new_Num_of_layers: {Num_of_layers}')
     print(f'new_TP: {TP}')
     print(f'total_layers: {total_layer_cnt}')
-
