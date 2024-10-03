@@ -201,10 +201,3 @@ MLP Layer 93: Former_Layer = 92, Next_Layer = None, TP_Group = [93, 95], TP_fwd_
 FWD Transformer Layer 23 (step, type, did, mbid, lid, tid = (2, 'FWD', 1, 1, 2, 1)):
 Attn Layer 94: Former_Layer = 91, Next_Layer = 95, TP_Group = [92, 94], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[81, 83], pp_invoke=[]
 MLP Layer 95: Former_Layer = 94, Next_Layer = None, TP_Group = [93, 95], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
-
-passes: [1, 2]
-new_DP: 2
-new_mbs: 2
-new_Num_of_layers: 3
-new_TP: 2
-total_layers: 48

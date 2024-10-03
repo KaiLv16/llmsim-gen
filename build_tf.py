@@ -68,26 +68,6 @@ def get_parameters_by_name(df, name):
     
 
 # Usage: 
-# flow = Flow(src=, dst=, size=, lat=, depend_flow=[], invoke_flow=[])
-# print(flow)
-class Flow:
-    def __init__(self, prio=3, src=-1, dst=-1, size=10000, lat=0, depend_node=[], invoke_node=[], depend_flow=[], invoke_flow=[]):
-        self.prio = prio
-        self.src = src
-        self.dst = dst
-        self.size = size
-        self.lat = lat
-        self.depend_node = depend_node
-        self.invoke_node = invoke_node
-        self.depend_flow = depend_flow
-        self.invoke_flow = invoke_flow
-
-    def __repr__(self) -> str:
-        repr_str = f"""{self.prio}, src={self.src}, dst={self.dst}, size={self.size}, lat={self.lat}, depend_node={self.depend_node}, invoke_node={self.invoke_node}, depend_flow={self.depend_flow}, invoke_flow={self.invoke_flow}"""
-        return repr_str
-
-
-# Usage: 
 # dep = Dep(src=, dst=, depend_flow=[], invoke_flow=[])
 # print(dep)
 class Dep:
@@ -96,17 +76,51 @@ class Dep:
         self.dst = dst
         self.depend_node = depend_node
         self.invoke_node = invoke_node
+
+    def __repr__(self) -> str:
+        repr_str = f"""src={self.src}, dst={self.dst}, depend_node={self.depend_node}, invoke_node={self.invoke_node}"""
+        return repr_str
+
+
+# Usage: 
+# flow = Flow(src=, dst=, size=, lat=, depend_flow=[], invoke_flow=[])
+# print(flow)
+class Flow(Dep):
+    def __init__(self, prio=3, src=-1, dst=-1, size=10000, lat=0, depend_node=[], invoke_node=[], depend_flow=[], invoke_flow=[]):
+        super().__init__(src=-1, dst=-1, depend_node=[], invoke_node=[], depend_flow=[], invoke_flow=[])
+        self.prio = prio
+        self.size = size
+        self.lat = lat
         self.depend_flow = depend_flow
         self.invoke_flow = invoke_flow
 
     def __repr__(self) -> str:
-        repr_str = f"""src={self.src}, dst={self.dst}, depend_node={self.depend_node}, invoke_node={self.invoke_node}, depend_flow={self.depend_flow}, invoke_flow={self.invoke_flow}"""
+        repr_str = f"""{self.prio}, src={self.src}, dst={self.dst}, size={self.size}, lat={self.lat}, depend_node={self.depend_node}, invoke_node={self.invoke_node}, depend_flow={self.depend_flow}, invoke_flow={self.invoke_flow}"""
         return repr_str
+    
 
-
-class Layer:
-    def __init__(self, layer_id, inherent_id, input_size, output_size, calc_time, param_size, former_layer_id=None, next_layer_id=None):
+class Node:
+    def __init__(self, layer_id):
         self.layer_id = layer_id
+        self.flow_dep_id = []
+        self.flow_invoke_id = []
+
+    def print_node(self, file_name=None, end='\n'):
+        if file_name is None:
+            print(f"node_id={self.layer_id}{end} ")
+            print(f"dep={self.flow_dep_id}{end} ")
+            print(f"invoke={self.flow_invoke_id}")
+        else:
+            with open(file_name, 'w') as f:
+                f.write(f"node_id={self.layer_id}{end} ")
+                f.write(f"dep={self.flow_dep_id}{end} ")
+                f.write(f"invoke={self.flow_invoke_id}")
+
+
+
+class Layer(Node):
+    def __init__(self, layer_id, inherent_id, input_size, output_size, calc_time, param_size, former_layer_id=None, next_layer_id=None):
+        super().__init__(layer_id)
         self.inherent_id = inherent_id
         self.input_size = input_size
         self.output_size = output_size
@@ -127,9 +141,6 @@ class Layer:
         self.pp_dep = []
         self.pp_invoke = []
 
-        self.flow_dep_id = []
-        self.flow_invoke_id = []
-
     def __repr__(self):
         return (f"Layer {self.layer_id}: "
                 # f"Input_Size = {self.input_size}, Output_Size = {self.output_size}, "
@@ -146,20 +157,6 @@ class Layer:
     def set_dp_grp(self, dp_grp, dp_type):
         self.dp_grp = dp_grp
         self.dp_type = dp_type if dp_grp else None
-
-    def print_dep_flow(self, file_name=None, end='\n'):
-        if file_name is None:
-            print(self.flow_dep_id)
-        else:
-            with open(file_name, 'w') as f:
-                f.write(f"dep={self.flow_dep_id} {end}")
-
-    def print_invoke_flow(self, file_name=None, end='\n'):
-        if file_name is None:
-            print(self.flow_invoke_id)
-        else:
-            with open(file_name, 'w') as f:
-                f.write(f"invoke={self.flow_invoke_id} {end}")
 
 
 # 包括QKV层 和输出层：4 * N^2
