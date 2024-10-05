@@ -163,7 +163,8 @@ class Layer(Node):
         self.former_layer_id = former_layer_id
         self.next_layer_id = next_layer_id
 
-        self.tp_grp = []
+        self.tp_grp_start = []
+        self.tp_grp_end = []
         self.tp_fwd_type = None
         self.tp_bkwd_type = None
 
@@ -179,7 +180,8 @@ class Layer(Node):
                 # f"Input_Size = {self.input_size}, Output_Size = {self.output_size}, "
                 # f"Calc_Time = {self.calc_time}s, Param_Size = {self.param_size}, "
                 f"Former_Layer = {self.former_layer_id}, Next_Layer = {self.next_layer_id}, "
-                f"TP_Group = {self.tp_grp}, TP_fwd_Type = {self.tp_fwd_type}, TP_bkwd_Type = {self.tp_bkwd_type}, DP_src = {self.dp_src_grp}, DP_dst = {self.dp_dst_grp}, DP_Type = {self.dp_type}, "
+                f"TP_Group = {self.tp_grp}, TP_fwd_Type = {self.tp_fwd_type}, TP_bkwd_Type = {self.tp_bkwd_type}, "
+                f"DP_src = {self.dp_src_grp}, DP_dst = {self.dp_dst_grp}, DP_Type = {self.dp_type}, "
                 f"pp_dep={self.pp_dep}, pp_invoke={self.pp_invoke}")
     
     def set_tp_grp(self, tp_grp_start, tp_grp_end, tp_fwd_type=None, tp_bkwd_type=None):
