@@ -480,7 +480,8 @@ def main():
                             tf_layers[step][did][mbid][lid][tid].set_tp_groups(tp_grp_attn_start=tp_grp_attn_start, tp_grp_attn_end=tp_grp_attn_end, \
                                                                                tp_grp_mlp_start=tp_grp_mlp_start, tp_grp_mlp_end=tp_grp_mlp_end, \
                                                                                tp_fwd_type='ALLREDUCE', tp_bkwd_type='ALLREDUCE')
-
+                        attn_vnode, attn_ccflow = AllReduce(tp_grp_attn_start, tp_grp_attn_end, size=tf_layers[step][did][mbid][lid][-1].attention_layer.param_size, method='RingAllReduce')
+                        mlp_vnode, mlp_ccflows = AllReduce(tp_grp_mlp_start, tp_grp_mlp_end, size=tf_layers[step][did][mbid][lid][-1].mlp_layer.param_size, method='RingAllReduce')
                     
                     # 连接多层Transformer网络
                     for tid in range(TP):
@@ -530,6 +531,11 @@ def main():
                             tf_layers[step][did][0][lid][tid].attention_layer.dp_type = 'ALLREDUCE'
                             tf_layers[step - 1][did][mbs - 1][Num_of_layers - 1 - lid][tid].mlp_layer.dp_type = 'ALLREDUCE'
                             tf_layers[step][did][0][lid][tid].mlp_layer.dp_type = 'ALLREDUCE'
+
+                            attn_vnode, attn_ccflow = AllReduce(tf_layers[step][did][0][lid][tid].attention_layer.dp_src_grp, tf_layers[step][did][0][lid][tid].attention_layer.dp_dst_grp, \
+                                                                size=tf_layers[step][did][0][lid][tid].attention_layer.param_size, method='RingAllReduce')
+                            mlp_vnode, mlp_ccflows = AllReduce(tf_layers[step][did][0][lid][tid].mlp_layer.dp_src_grp, tf_layers[step][did][0][lid][tid].mlp_layer.dp_dst_grp, \
+                                                                size=tf_layers[step][did][0][lid][tid].mlp_layer.param_size, method='RingAllReduce')
                     else:
                         pass
 
@@ -546,8 +552,6 @@ def main():
                         tp_grp_attn_end = []
                         tp_grp_mlp_start = []
                         tp_grp_mlp_end = []
-                        last_layer = -1
-                        next_layer = -1
                         for tid in range(TP):
                             inherent_id = did * (mbs * Num_of_layers * TP) + mbid * (Num_of_layers * TP) + lid * TP + tid
                             lid_start_mlp = get_node_id()
@@ -584,7 +588,9 @@ def main():
                             tf_layers[step][did][mbid][lid][tid].set_tp_groups(tp_grp_attn_start=tp_grp_attn_start, tp_grp_attn_end=tp_grp_attn_end, \
                                                                                tp_grp_mlp_start=tp_grp_mlp_start, tp_grp_mlp_end=tp_grp_mlp_end, \
                                                                                tp_fwd_type='ALLREDUCE', tp_bkwd_type='ALLREDUCE')
-
+                        mlp_vnode, mlp_ccflows = AllReduce(tp_grp_mlp_start, tp_grp_mlp_end, size=tf_layers[step][did][mbid][lid][-1].mlp_layer.param_size, method='RingAllReduce')
+                        attn_vnode, attn_ccflow = AllReduce(tp_grp_attn_start, tp_grp_attn_end, size=tf_layers[step][did][mbid][lid][-1].attention_layer.param_size, method='RingAllReduce')
+                        
                     # 连接多层Transformer网络 (反向传播)
                     for tid in range(TP):
                         for lid in range(1, Num_of_layers):
