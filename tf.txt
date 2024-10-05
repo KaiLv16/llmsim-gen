@@ -11,196 +11,196 @@ PP: 2
 DP: 2
 
 BKWD Transformer Layer 0 (step, type, did, mbid, lid, tid = (1, 'BKWD', 0, 0, 0, 0)):
-MLP Layer <0, 1>: Former_Layer = None, Next_Layer = 2, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
-Attn Layer <2, 3>: Former_Layer = 1, Next_Layer = 8, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[24, 28]
+MLP Layer <0, 1>: Former_Layer = None, Next_Layer = 2, TP_Grp_start = [0, 4], TP_Grp_end = [1, 5], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+Attn Layer <2, 3>: Former_Layer = 1, Next_Layer = 8, TP_Grp_start = [2, 6], TP_Grp_end = [3, 7], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[24, 28]
 
 BKWD Transformer Layer 1 (step, type, did, mbid, lid, tid = (1, 'BKWD', 0, 0, 0, 1)):
-MLP Layer <4, 5>: Former_Layer = None, Next_Layer = 6, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
-Attn Layer <6, 7>: Former_Layer = 5, Next_Layer = 12, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[24, 28]
+MLP Layer <4, 5>: Former_Layer = None, Next_Layer = 6, TP_Grp_start = [0, 4], TP_Grp_end = [1, 5], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+Attn Layer <6, 7>: Former_Layer = 5, Next_Layer = 12, TP_Grp_start = [2, 6], TP_Grp_end = [3, 7], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[24, 28]
 
 BKWD Transformer Layer 2 (step, type, did, mbid, lid, tid = (1, 'BKWD', 0, 0, 1, 0)):
-MLP Layer <8, 9>: Former_Layer = 3, Next_Layer = 10, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
-Attn Layer <10, 11>: Former_Layer = 9, Next_Layer = 16, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[32, 36]
+MLP Layer <8, 9>: Former_Layer = 3, Next_Layer = 10, TP_Grp_start = [8, 12], TP_Grp_end = [9, 13], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+Attn Layer <10, 11>: Former_Layer = 9, Next_Layer = 16, TP_Grp_start = [10, 14], TP_Grp_end = [11, 15], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[32, 36]
 
 BKWD Transformer Layer 3 (step, type, did, mbid, lid, tid = (1, 'BKWD', 0, 0, 1, 1)):
-MLP Layer <12, 13>: Former_Layer = 7, Next_Layer = 14, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
-Attn Layer <14, 15>: Former_Layer = 13, Next_Layer = 20, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[32, 36]
+MLP Layer <12, 13>: Former_Layer = 7, Next_Layer = 14, TP_Grp_start = [8, 12], TP_Grp_end = [9, 13], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+Attn Layer <14, 15>: Former_Layer = 13, Next_Layer = 20, TP_Grp_start = [10, 14], TP_Grp_end = [11, 15], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[32, 36]
 
 BKWD Transformer Layer 4 (step, type, did, mbid, lid, tid = (1, 'BKWD', 0, 0, 2, 0)):
-MLP Layer <16, 17>: Former_Layer = 11, Next_Layer = 18, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
-Attn Layer <18, 19>: Former_Layer = 17, Next_Layer = None, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[40, 44]
+MLP Layer <16, 17>: Former_Layer = 11, Next_Layer = 18, TP_Grp_start = [16, 20], TP_Grp_end = [17, 21], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+Attn Layer <18, 19>: Former_Layer = 17, Next_Layer = None, TP_Grp_start = [18, 22], TP_Grp_end = [19, 23], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[40, 44]
 
 BKWD Transformer Layer 5 (step, type, did, mbid, lid, tid = (1, 'BKWD', 0, 0, 2, 1)):
-MLP Layer <20, 21>: Former_Layer = 15, Next_Layer = 22, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
-Attn Layer <22, 23>: Former_Layer = 21, Next_Layer = None, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[40, 44]
+MLP Layer <20, 21>: Former_Layer = 15, Next_Layer = 22, TP_Grp_start = [16, 20], TP_Grp_end = [17, 21], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+Attn Layer <22, 23>: Former_Layer = 21, Next_Layer = None, TP_Grp_start = [18, 22], TP_Grp_end = [19, 23], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[40, 44]
 
 BKWD Transformer Layer 6 (step, type, did, mbid, lid, tid = (1, 'BKWD', 0, 1, 0, 0)):
-MLP Layer <24, 25>: Former_Layer = None, Next_Layer = 26, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [25, 73], DP_dst = [114, 162], DP_Type = ALLREDUCE, pp_dep=[3, 7], pp_invoke=[]
-Attn Layer <26, 27>: Former_Layer = 25, Next_Layer = 32, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [27, 75], DP_dst = [112, 160], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
+MLP Layer <24, 25>: Former_Layer = None, Next_Layer = 26, TP_Grp_start = [24, 28], TP_Grp_end = [25, 29], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [25, 73], DP_dst = [114, 162], DP_Type = ALLREDUCE, pp_dep=[3, 7], pp_invoke=[]
+Attn Layer <26, 27>: Former_Layer = 25, Next_Layer = 32, TP_Grp_start = [26, 30], TP_Grp_end = [27, 31], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [27, 75], DP_dst = [112, 160], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
 
 BKWD Transformer Layer 7 (step, type, did, mbid, lid, tid = (1, 'BKWD', 0, 1, 0, 1)):
-MLP Layer <28, 29>: Former_Layer = None, Next_Layer = 30, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [29, 77], DP_dst = [118, 166], DP_Type = ALLREDUCE, pp_dep=[3, 7], pp_invoke=[]
-Attn Layer <30, 31>: Former_Layer = 29, Next_Layer = 36, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [31, 79], DP_dst = [116, 164], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
+MLP Layer <28, 29>: Former_Layer = None, Next_Layer = 30, TP_Grp_start = [24, 28], TP_Grp_end = [25, 29], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [29, 77], DP_dst = [118, 166], DP_Type = ALLREDUCE, pp_dep=[3, 7], pp_invoke=[]
+Attn Layer <30, 31>: Former_Layer = 29, Next_Layer = 36, TP_Grp_start = [26, 30], TP_Grp_end = [27, 31], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [31, 79], DP_dst = [116, 164], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
 
 BKWD Transformer Layer 8 (step, type, did, mbid, lid, tid = (1, 'BKWD', 0, 1, 1, 0)):
-MLP Layer <32, 33>: Former_Layer = 27, Next_Layer = 34, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [33, 81], DP_dst = [106, 154], DP_Type = ALLREDUCE, pp_dep=[11, 15], pp_invoke=[]
-Attn Layer <34, 35>: Former_Layer = 33, Next_Layer = 40, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [35, 83], DP_dst = [104, 152], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
+MLP Layer <32, 33>: Former_Layer = 27, Next_Layer = 34, TP_Grp_start = [32, 36], TP_Grp_end = [33, 37], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [33, 81], DP_dst = [106, 154], DP_Type = ALLREDUCE, pp_dep=[11, 15], pp_invoke=[]
+Attn Layer <34, 35>: Former_Layer = 33, Next_Layer = 40, TP_Grp_start = [34, 38], TP_Grp_end = [35, 39], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [35, 83], DP_dst = [104, 152], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
 
 BKWD Transformer Layer 9 (step, type, did, mbid, lid, tid = (1, 'BKWD', 0, 1, 1, 1)):
-MLP Layer <36, 37>: Former_Layer = 31, Next_Layer = 38, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [37, 85], DP_dst = [110, 158], DP_Type = ALLREDUCE, pp_dep=[11, 15], pp_invoke=[]
-Attn Layer <38, 39>: Former_Layer = 37, Next_Layer = 44, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [39, 87], DP_dst = [108, 156], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
+MLP Layer <36, 37>: Former_Layer = 31, Next_Layer = 38, TP_Grp_start = [32, 36], TP_Grp_end = [33, 37], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [37, 85], DP_dst = [110, 158], DP_Type = ALLREDUCE, pp_dep=[11, 15], pp_invoke=[]
+Attn Layer <38, 39>: Former_Layer = 37, Next_Layer = 44, TP_Grp_start = [34, 38], TP_Grp_end = [35, 39], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [39, 87], DP_dst = [108, 156], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
 
 BKWD Transformer Layer 10 (step, type, did, mbid, lid, tid = (1, 'BKWD', 0, 1, 2, 0)):
-MLP Layer <40, 41>: Former_Layer = 35, Next_Layer = 42, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [41, 89], DP_dst = [98, 146], DP_Type = ALLREDUCE, pp_dep=[19, 23], pp_invoke=[]
-Attn Layer <42, 43>: Former_Layer = 41, Next_Layer = None, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [43, 91], DP_dst = [96, 144], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
+MLP Layer <40, 41>: Former_Layer = 35, Next_Layer = 42, TP_Grp_start = [40, 44], TP_Grp_end = [41, 45], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [41, 89], DP_dst = [98, 146], DP_Type = ALLREDUCE, pp_dep=[19, 23], pp_invoke=[]
+Attn Layer <42, 43>: Former_Layer = 41, Next_Layer = None, TP_Grp_start = [42, 46], TP_Grp_end = [43, 47], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [43, 91], DP_dst = [96, 144], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
 
 BKWD Transformer Layer 11 (step, type, did, mbid, lid, tid = (1, 'BKWD', 0, 1, 2, 1)):
-MLP Layer <44, 45>: Former_Layer = 39, Next_Layer = 46, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [45, 93], DP_dst = [102, 150], DP_Type = ALLREDUCE, pp_dep=[19, 23], pp_invoke=[]
-Attn Layer <46, 47>: Former_Layer = 45, Next_Layer = None, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [47, 95], DP_dst = [100, 148], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
+MLP Layer <44, 45>: Former_Layer = 39, Next_Layer = 46, TP_Grp_start = [40, 44], TP_Grp_end = [41, 45], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [45, 93], DP_dst = [102, 150], DP_Type = ALLREDUCE, pp_dep=[19, 23], pp_invoke=[]
+Attn Layer <46, 47>: Former_Layer = 45, Next_Layer = None, TP_Grp_start = [42, 46], TP_Grp_end = [43, 47], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [47, 95], DP_dst = [100, 148], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
 
 BKWD Transformer Layer 12 (step, type, did, mbid, lid, tid = (1, 'BKWD', 1, 0, 0, 0)):
-MLP Layer <48, 49>: Former_Layer = None, Next_Layer = 50, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
-Attn Layer <50, 51>: Former_Layer = 49, Next_Layer = 56, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[72, 76]
+MLP Layer <48, 49>: Former_Layer = None, Next_Layer = 50, TP_Grp_start = [48, 52], TP_Grp_end = [49, 53], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+Attn Layer <50, 51>: Former_Layer = 49, Next_Layer = 56, TP_Grp_start = [50, 54], TP_Grp_end = [51, 55], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[72, 76]
 
 BKWD Transformer Layer 13 (step, type, did, mbid, lid, tid = (1, 'BKWD', 1, 0, 0, 1)):
-MLP Layer <52, 53>: Former_Layer = None, Next_Layer = 54, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
-Attn Layer <54, 55>: Former_Layer = 53, Next_Layer = 60, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[72, 76]
+MLP Layer <52, 53>: Former_Layer = None, Next_Layer = 54, TP_Grp_start = [48, 52], TP_Grp_end = [49, 53], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+Attn Layer <54, 55>: Former_Layer = 53, Next_Layer = 60, TP_Grp_start = [50, 54], TP_Grp_end = [51, 55], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[72, 76]
 
 BKWD Transformer Layer 14 (step, type, did, mbid, lid, tid = (1, 'BKWD', 1, 0, 1, 0)):
-MLP Layer <56, 57>: Former_Layer = 51, Next_Layer = 58, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
-Attn Layer <58, 59>: Former_Layer = 57, Next_Layer = 64, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[80, 84]
+MLP Layer <56, 57>: Former_Layer = 51, Next_Layer = 58, TP_Grp_start = [56, 60], TP_Grp_end = [57, 61], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+Attn Layer <58, 59>: Former_Layer = 57, Next_Layer = 64, TP_Grp_start = [58, 62], TP_Grp_end = [59, 63], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[80, 84]
 
 BKWD Transformer Layer 15 (step, type, did, mbid, lid, tid = (1, 'BKWD', 1, 0, 1, 1)):
-MLP Layer <60, 61>: Former_Layer = 55, Next_Layer = 62, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
-Attn Layer <62, 63>: Former_Layer = 61, Next_Layer = 68, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[80, 84]
+MLP Layer <60, 61>: Former_Layer = 55, Next_Layer = 62, TP_Grp_start = [56, 60], TP_Grp_end = [57, 61], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+Attn Layer <62, 63>: Former_Layer = 61, Next_Layer = 68, TP_Grp_start = [58, 62], TP_Grp_end = [59, 63], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[80, 84]
 
 BKWD Transformer Layer 16 (step, type, did, mbid, lid, tid = (1, 'BKWD', 1, 0, 2, 0)):
-MLP Layer <64, 65>: Former_Layer = 59, Next_Layer = 66, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
-Attn Layer <66, 67>: Former_Layer = 65, Next_Layer = None, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[88, 92]
+MLP Layer <64, 65>: Former_Layer = 59, Next_Layer = 66, TP_Grp_start = [64, 68], TP_Grp_end = [65, 69], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+Attn Layer <66, 67>: Former_Layer = 65, Next_Layer = None, TP_Grp_start = [66, 70], TP_Grp_end = [67, 71], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[88, 92]
 
 BKWD Transformer Layer 17 (step, type, did, mbid, lid, tid = (1, 'BKWD', 1, 0, 2, 1)):
-MLP Layer <68, 69>: Former_Layer = 63, Next_Layer = 70, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
-Attn Layer <70, 71>: Former_Layer = 69, Next_Layer = None, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[88, 92]
+MLP Layer <68, 69>: Former_Layer = 63, Next_Layer = 70, TP_Grp_start = [64, 68], TP_Grp_end = [65, 69], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+Attn Layer <70, 71>: Former_Layer = 69, Next_Layer = None, TP_Grp_start = [66, 70], TP_Grp_end = [67, 71], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[88, 92]
 
 BKWD Transformer Layer 18 (step, type, did, mbid, lid, tid = (1, 'BKWD', 1, 1, 0, 0)):
-MLP Layer <72, 73>: Former_Layer = None, Next_Layer = 74, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [25, 73], DP_dst = [114, 162], DP_Type = ALLREDUCE, pp_dep=[51, 55], pp_invoke=[]
-Attn Layer <74, 75>: Former_Layer = 73, Next_Layer = 80, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [27, 75], DP_dst = [112, 160], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
+MLP Layer <72, 73>: Former_Layer = None, Next_Layer = 74, TP_Grp_start = [72, 76], TP_Grp_end = [73, 77], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [25, 73], DP_dst = [114, 162], DP_Type = ALLREDUCE, pp_dep=[51, 55], pp_invoke=[]
+Attn Layer <74, 75>: Former_Layer = 73, Next_Layer = 80, TP_Grp_start = [74, 78], TP_Grp_end = [75, 79], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [27, 75], DP_dst = [112, 160], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
 
 BKWD Transformer Layer 19 (step, type, did, mbid, lid, tid = (1, 'BKWD', 1, 1, 0, 1)):
-MLP Layer <76, 77>: Former_Layer = None, Next_Layer = 78, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [29, 77], DP_dst = [118, 166], DP_Type = ALLREDUCE, pp_dep=[51, 55], pp_invoke=[]
-Attn Layer <78, 79>: Former_Layer = 77, Next_Layer = 84, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [31, 79], DP_dst = [116, 164], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
+MLP Layer <76, 77>: Former_Layer = None, Next_Layer = 78, TP_Grp_start = [72, 76], TP_Grp_end = [73, 77], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [29, 77], DP_dst = [118, 166], DP_Type = ALLREDUCE, pp_dep=[51, 55], pp_invoke=[]
+Attn Layer <78, 79>: Former_Layer = 77, Next_Layer = 84, TP_Grp_start = [74, 78], TP_Grp_end = [75, 79], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [31, 79], DP_dst = [116, 164], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
 
 BKWD Transformer Layer 20 (step, type, did, mbid, lid, tid = (1, 'BKWD', 1, 1, 1, 0)):
-MLP Layer <80, 81>: Former_Layer = 75, Next_Layer = 82, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [33, 81], DP_dst = [106, 154], DP_Type = ALLREDUCE, pp_dep=[59, 63], pp_invoke=[]
-Attn Layer <82, 83>: Former_Layer = 81, Next_Layer = 88, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [35, 83], DP_dst = [104, 152], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
+MLP Layer <80, 81>: Former_Layer = 75, Next_Layer = 82, TP_Grp_start = [80, 84], TP_Grp_end = [81, 85], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [33, 81], DP_dst = [106, 154], DP_Type = ALLREDUCE, pp_dep=[59, 63], pp_invoke=[]
+Attn Layer <82, 83>: Former_Layer = 81, Next_Layer = 88, TP_Grp_start = [82, 86], TP_Grp_end = [83, 87], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [35, 83], DP_dst = [104, 152], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
 
 BKWD Transformer Layer 21 (step, type, did, mbid, lid, tid = (1, 'BKWD', 1, 1, 1, 1)):
-MLP Layer <84, 85>: Former_Layer = 79, Next_Layer = 86, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [37, 85], DP_dst = [110, 158], DP_Type = ALLREDUCE, pp_dep=[59, 63], pp_invoke=[]
-Attn Layer <86, 87>: Former_Layer = 85, Next_Layer = 92, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [39, 87], DP_dst = [108, 156], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
+MLP Layer <84, 85>: Former_Layer = 79, Next_Layer = 86, TP_Grp_start = [80, 84], TP_Grp_end = [81, 85], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [37, 85], DP_dst = [110, 158], DP_Type = ALLREDUCE, pp_dep=[59, 63], pp_invoke=[]
+Attn Layer <86, 87>: Former_Layer = 85, Next_Layer = 92, TP_Grp_start = [82, 86], TP_Grp_end = [83, 87], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [39, 87], DP_dst = [108, 156], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
 
 BKWD Transformer Layer 22 (step, type, did, mbid, lid, tid = (1, 'BKWD', 1, 1, 2, 0)):
-MLP Layer <88, 89>: Former_Layer = 83, Next_Layer = 90, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [41, 89], DP_dst = [98, 146], DP_Type = ALLREDUCE, pp_dep=[67, 71], pp_invoke=[]
-Attn Layer <90, 91>: Former_Layer = 89, Next_Layer = None, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [43, 91], DP_dst = [96, 144], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
+MLP Layer <88, 89>: Former_Layer = 83, Next_Layer = 90, TP_Grp_start = [88, 92], TP_Grp_end = [89, 93], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [41, 89], DP_dst = [98, 146], DP_Type = ALLREDUCE, pp_dep=[67, 71], pp_invoke=[]
+Attn Layer <90, 91>: Former_Layer = 89, Next_Layer = None, TP_Grp_start = [90, 94], TP_Grp_end = [91, 95], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [43, 91], DP_dst = [96, 144], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
 
 BKWD Transformer Layer 23 (step, type, did, mbid, lid, tid = (1, 'BKWD', 1, 1, 2, 1)):
-MLP Layer <92, 93>: Former_Layer = 87, Next_Layer = 94, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [45, 93], DP_dst = [102, 150], DP_Type = ALLREDUCE, pp_dep=[67, 71], pp_invoke=[]
-Attn Layer <94, 95>: Former_Layer = 93, Next_Layer = None, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [47, 95], DP_dst = [100, 148], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
+MLP Layer <92, 93>: Former_Layer = 87, Next_Layer = 94, TP_Grp_start = [88, 92], TP_Grp_end = [89, 93], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [45, 93], DP_dst = [102, 150], DP_Type = ALLREDUCE, pp_dep=[67, 71], pp_invoke=[]
+Attn Layer <94, 95>: Former_Layer = 93, Next_Layer = None, TP_Grp_start = [90, 94], TP_Grp_end = [91, 95], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [47, 95], DP_dst = [100, 148], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
 
 FWD Transformer Layer 0 (step, type, did, mbid, lid, tid = (2, 'FWD', 0, 0, 0, 0)):
-Attn Layer <96, 97>: Former_Layer = None, Next_Layer = 98, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [43, 91], DP_dst = [96, 144], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
-MLP Layer <98, 99>: Former_Layer = 97, Next_Layer = 104, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [41, 89], DP_dst = [98, 146], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[120, 124]
+Attn Layer <96, 97>: Former_Layer = None, Next_Layer = 98, TP_Grp_start = [96, 100], TP_Grp_end = [97, 101], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [43, 91], DP_dst = [96, 144], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
+MLP Layer <98, 99>: Former_Layer = 97, Next_Layer = 104, TP_Grp_start = [98, 102], TP_Grp_end = [99, 103], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [41, 89], DP_dst = [98, 146], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[120, 124]
 
 FWD Transformer Layer 1 (step, type, did, mbid, lid, tid = (2, 'FWD', 0, 0, 0, 1)):
-Attn Layer <100, 101>: Former_Layer = None, Next_Layer = 102, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [47, 95], DP_dst = [100, 148], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
-MLP Layer <102, 103>: Former_Layer = 101, Next_Layer = 108, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [45, 93], DP_dst = [102, 150], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[120, 124]
+Attn Layer <100, 101>: Former_Layer = None, Next_Layer = 102, TP_Grp_start = [96, 100], TP_Grp_end = [97, 101], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [47, 95], DP_dst = [100, 148], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
+MLP Layer <102, 103>: Former_Layer = 101, Next_Layer = 108, TP_Grp_start = [98, 102], TP_Grp_end = [99, 103], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [45, 93], DP_dst = [102, 150], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[120, 124]
 
 FWD Transformer Layer 2 (step, type, did, mbid, lid, tid = (2, 'FWD', 0, 0, 1, 0)):
-Attn Layer <104, 105>: Former_Layer = 99, Next_Layer = 106, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [35, 83], DP_dst = [104, 152], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
-MLP Layer <106, 107>: Former_Layer = 105, Next_Layer = 112, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [33, 81], DP_dst = [106, 154], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[128, 132]
+Attn Layer <104, 105>: Former_Layer = 99, Next_Layer = 106, TP_Grp_start = [104, 108], TP_Grp_end = [105, 109], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [35, 83], DP_dst = [104, 152], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
+MLP Layer <106, 107>: Former_Layer = 105, Next_Layer = 112, TP_Grp_start = [106, 110], TP_Grp_end = [107, 111], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [33, 81], DP_dst = [106, 154], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[128, 132]
 
 FWD Transformer Layer 3 (step, type, did, mbid, lid, tid = (2, 'FWD', 0, 0, 1, 1)):
-Attn Layer <108, 109>: Former_Layer = 103, Next_Layer = 110, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [39, 87], DP_dst = [108, 156], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
-MLP Layer <110, 111>: Former_Layer = 109, Next_Layer = 116, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [37, 85], DP_dst = [110, 158], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[128, 132]
+Attn Layer <108, 109>: Former_Layer = 103, Next_Layer = 110, TP_Grp_start = [104, 108], TP_Grp_end = [105, 109], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [39, 87], DP_dst = [108, 156], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
+MLP Layer <110, 111>: Former_Layer = 109, Next_Layer = 116, TP_Grp_start = [106, 110], TP_Grp_end = [107, 111], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [37, 85], DP_dst = [110, 158], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[128, 132]
 
 FWD Transformer Layer 4 (step, type, did, mbid, lid, tid = (2, 'FWD', 0, 0, 2, 0)):
-Attn Layer <112, 113>: Former_Layer = 107, Next_Layer = 114, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [27, 75], DP_dst = [112, 160], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
-MLP Layer <114, 115>: Former_Layer = 113, Next_Layer = None, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [25, 73], DP_dst = [114, 162], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[136, 140]
+Attn Layer <112, 113>: Former_Layer = 107, Next_Layer = 114, TP_Grp_start = [112, 116], TP_Grp_end = [113, 117], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [27, 75], DP_dst = [112, 160], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
+MLP Layer <114, 115>: Former_Layer = 113, Next_Layer = None, TP_Grp_start = [114, 118], TP_Grp_end = [115, 119], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [25, 73], DP_dst = [114, 162], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[136, 140]
 
 FWD Transformer Layer 5 (step, type, did, mbid, lid, tid = (2, 'FWD', 0, 0, 2, 1)):
-Attn Layer <116, 117>: Former_Layer = 111, Next_Layer = 118, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [31, 79], DP_dst = [116, 164], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
-MLP Layer <118, 119>: Former_Layer = 117, Next_Layer = None, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [29, 77], DP_dst = [118, 166], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[136, 140]
+Attn Layer <116, 117>: Former_Layer = 111, Next_Layer = 118, TP_Grp_start = [112, 116], TP_Grp_end = [113, 117], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [31, 79], DP_dst = [116, 164], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
+MLP Layer <118, 119>: Former_Layer = 117, Next_Layer = None, TP_Grp_start = [114, 118], TP_Grp_end = [115, 119], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [29, 77], DP_dst = [118, 166], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[136, 140]
 
 FWD Transformer Layer 6 (step, type, did, mbid, lid, tid = (2, 'FWD', 0, 1, 0, 0)):
-Attn Layer <120, 121>: Former_Layer = None, Next_Layer = 122, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[99, 103], pp_invoke=[]
-MLP Layer <122, 123>: Former_Layer = 121, Next_Layer = 128, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+Attn Layer <120, 121>: Former_Layer = None, Next_Layer = 122, TP_Grp_start = [120, 124], TP_Grp_end = [121, 125], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[99, 103], pp_invoke=[]
+MLP Layer <122, 123>: Former_Layer = 121, Next_Layer = 128, TP_Grp_start = [122, 126], TP_Grp_end = [123, 127], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
 
 FWD Transformer Layer 7 (step, type, did, mbid, lid, tid = (2, 'FWD', 0, 1, 0, 1)):
-Attn Layer <124, 125>: Former_Layer = None, Next_Layer = 126, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[99, 103], pp_invoke=[]
-MLP Layer <126, 127>: Former_Layer = 125, Next_Layer = 132, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+Attn Layer <124, 125>: Former_Layer = None, Next_Layer = 126, TP_Grp_start = [120, 124], TP_Grp_end = [121, 125], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[99, 103], pp_invoke=[]
+MLP Layer <126, 127>: Former_Layer = 125, Next_Layer = 132, TP_Grp_start = [122, 126], TP_Grp_end = [123, 127], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
 
 FWD Transformer Layer 8 (step, type, did, mbid, lid, tid = (2, 'FWD', 0, 1, 1, 0)):
-Attn Layer <128, 129>: Former_Layer = 123, Next_Layer = 130, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[107, 111], pp_invoke=[]
-MLP Layer <130, 131>: Former_Layer = 129, Next_Layer = 136, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+Attn Layer <128, 129>: Former_Layer = 123, Next_Layer = 130, TP_Grp_start = [128, 132], TP_Grp_end = [129, 133], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[107, 111], pp_invoke=[]
+MLP Layer <130, 131>: Former_Layer = 129, Next_Layer = 136, TP_Grp_start = [130, 134], TP_Grp_end = [131, 135], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
 
 FWD Transformer Layer 9 (step, type, did, mbid, lid, tid = (2, 'FWD', 0, 1, 1, 1)):
-Attn Layer <132, 133>: Former_Layer = 127, Next_Layer = 134, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[107, 111], pp_invoke=[]
-MLP Layer <134, 135>: Former_Layer = 133, Next_Layer = 140, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+Attn Layer <132, 133>: Former_Layer = 127, Next_Layer = 134, TP_Grp_start = [128, 132], TP_Grp_end = [129, 133], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[107, 111], pp_invoke=[]
+MLP Layer <134, 135>: Former_Layer = 133, Next_Layer = 140, TP_Grp_start = [130, 134], TP_Grp_end = [131, 135], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
 
 FWD Transformer Layer 10 (step, type, did, mbid, lid, tid = (2, 'FWD', 0, 1, 2, 0)):
-Attn Layer <136, 137>: Former_Layer = 131, Next_Layer = 138, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[115, 119], pp_invoke=[]
-MLP Layer <138, 139>: Former_Layer = 137, Next_Layer = None, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+Attn Layer <136, 137>: Former_Layer = 131, Next_Layer = 138, TP_Grp_start = [136, 140], TP_Grp_end = [137, 141], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[115, 119], pp_invoke=[]
+MLP Layer <138, 139>: Former_Layer = 137, Next_Layer = None, TP_Grp_start = [138, 142], TP_Grp_end = [139, 143], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
 
 FWD Transformer Layer 11 (step, type, did, mbid, lid, tid = (2, 'FWD', 0, 1, 2, 1)):
-Attn Layer <140, 141>: Former_Layer = 135, Next_Layer = 142, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[115, 119], pp_invoke=[]
-MLP Layer <142, 143>: Former_Layer = 141, Next_Layer = None, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+Attn Layer <140, 141>: Former_Layer = 135, Next_Layer = 142, TP_Grp_start = [136, 140], TP_Grp_end = [137, 141], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[115, 119], pp_invoke=[]
+MLP Layer <142, 143>: Former_Layer = 141, Next_Layer = None, TP_Grp_start = [138, 142], TP_Grp_end = [139, 143], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
 
 FWD Transformer Layer 12 (step, type, did, mbid, lid, tid = (2, 'FWD', 1, 0, 0, 0)):
-Attn Layer <144, 145>: Former_Layer = None, Next_Layer = 146, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [43, 91], DP_dst = [96, 144], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
-MLP Layer <146, 147>: Former_Layer = 145, Next_Layer = 152, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [41, 89], DP_dst = [98, 146], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[168, 172]
+Attn Layer <144, 145>: Former_Layer = None, Next_Layer = 146, TP_Grp_start = [144, 148], TP_Grp_end = [145, 149], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [43, 91], DP_dst = [96, 144], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
+MLP Layer <146, 147>: Former_Layer = 145, Next_Layer = 152, TP_Grp_start = [146, 150], TP_Grp_end = [147, 151], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [41, 89], DP_dst = [98, 146], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[168, 172]
 
 FWD Transformer Layer 13 (step, type, did, mbid, lid, tid = (2, 'FWD', 1, 0, 0, 1)):
-Attn Layer <148, 149>: Former_Layer = None, Next_Layer = 150, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [47, 95], DP_dst = [100, 148], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
-MLP Layer <150, 151>: Former_Layer = 149, Next_Layer = 156, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [45, 93], DP_dst = [102, 150], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[168, 172]
+Attn Layer <148, 149>: Former_Layer = None, Next_Layer = 150, TP_Grp_start = [144, 148], TP_Grp_end = [145, 149], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [47, 95], DP_dst = [100, 148], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
+MLP Layer <150, 151>: Former_Layer = 149, Next_Layer = 156, TP_Grp_start = [146, 150], TP_Grp_end = [147, 151], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [45, 93], DP_dst = [102, 150], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[168, 172]
 
 FWD Transformer Layer 14 (step, type, did, mbid, lid, tid = (2, 'FWD', 1, 0, 1, 0)):
-Attn Layer <152, 153>: Former_Layer = 147, Next_Layer = 154, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [35, 83], DP_dst = [104, 152], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
-MLP Layer <154, 155>: Former_Layer = 153, Next_Layer = 160, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [33, 81], DP_dst = [106, 154], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[176, 180]
+Attn Layer <152, 153>: Former_Layer = 147, Next_Layer = 154, TP_Grp_start = [152, 156], TP_Grp_end = [153, 157], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [35, 83], DP_dst = [104, 152], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
+MLP Layer <154, 155>: Former_Layer = 153, Next_Layer = 160, TP_Grp_start = [154, 158], TP_Grp_end = [155, 159], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [33, 81], DP_dst = [106, 154], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[176, 180]
 
 FWD Transformer Layer 15 (step, type, did, mbid, lid, tid = (2, 'FWD', 1, 0, 1, 1)):
-Attn Layer <156, 157>: Former_Layer = 151, Next_Layer = 158, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [39, 87], DP_dst = [108, 156], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
-MLP Layer <158, 159>: Former_Layer = 157, Next_Layer = 164, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [37, 85], DP_dst = [110, 158], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[176, 180]
+Attn Layer <156, 157>: Former_Layer = 151, Next_Layer = 158, TP_Grp_start = [152, 156], TP_Grp_end = [153, 157], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [39, 87], DP_dst = [108, 156], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
+MLP Layer <158, 159>: Former_Layer = 157, Next_Layer = 164, TP_Grp_start = [154, 158], TP_Grp_end = [155, 159], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [37, 85], DP_dst = [110, 158], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[176, 180]
 
 FWD Transformer Layer 16 (step, type, did, mbid, lid, tid = (2, 'FWD', 1, 0, 2, 0)):
-Attn Layer <160, 161>: Former_Layer = 155, Next_Layer = 162, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [27, 75], DP_dst = [112, 160], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
-MLP Layer <162, 163>: Former_Layer = 161, Next_Layer = None, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [25, 73], DP_dst = [114, 162], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[184, 188]
+Attn Layer <160, 161>: Former_Layer = 155, Next_Layer = 162, TP_Grp_start = [160, 164], TP_Grp_end = [161, 165], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [27, 75], DP_dst = [112, 160], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
+MLP Layer <162, 163>: Former_Layer = 161, Next_Layer = None, TP_Grp_start = [162, 166], TP_Grp_end = [163, 167], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [25, 73], DP_dst = [114, 162], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[184, 188]
 
 FWD Transformer Layer 17 (step, type, did, mbid, lid, tid = (2, 'FWD', 1, 0, 2, 1)):
-Attn Layer <164, 165>: Former_Layer = 159, Next_Layer = 166, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [31, 79], DP_dst = [116, 164], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
-MLP Layer <166, 167>: Former_Layer = 165, Next_Layer = None, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [29, 77], DP_dst = [118, 166], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[184, 188]
+Attn Layer <164, 165>: Former_Layer = 159, Next_Layer = 166, TP_Grp_start = [160, 164], TP_Grp_end = [161, 165], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [31, 79], DP_dst = [116, 164], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[]
+MLP Layer <166, 167>: Former_Layer = 165, Next_Layer = None, TP_Grp_start = [162, 166], TP_Grp_end = [163, 167], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [29, 77], DP_dst = [118, 166], DP_Type = ALLREDUCE, pp_dep=[], pp_invoke=[184, 188]
 
 FWD Transformer Layer 18 (step, type, did, mbid, lid, tid = (2, 'FWD', 1, 1, 0, 0)):
-Attn Layer <168, 169>: Former_Layer = None, Next_Layer = 170, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[147, 151], pp_invoke=[]
-MLP Layer <170, 171>: Former_Layer = 169, Next_Layer = 176, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+Attn Layer <168, 169>: Former_Layer = None, Next_Layer = 170, TP_Grp_start = [168, 172], TP_Grp_end = [169, 173], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[147, 151], pp_invoke=[]
+MLP Layer <170, 171>: Former_Layer = 169, Next_Layer = 176, TP_Grp_start = [170, 174], TP_Grp_end = [171, 175], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
 
 FWD Transformer Layer 19 (step, type, did, mbid, lid, tid = (2, 'FWD', 1, 1, 0, 1)):
-Attn Layer <172, 173>: Former_Layer = None, Next_Layer = 174, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[147, 151], pp_invoke=[]
-MLP Layer <174, 175>: Former_Layer = 173, Next_Layer = 180, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+Attn Layer <172, 173>: Former_Layer = None, Next_Layer = 174, TP_Grp_start = [168, 172], TP_Grp_end = [169, 173], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[147, 151], pp_invoke=[]
+MLP Layer <174, 175>: Former_Layer = 173, Next_Layer = 180, TP_Grp_start = [170, 174], TP_Grp_end = [171, 175], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
 
 FWD Transformer Layer 20 (step, type, did, mbid, lid, tid = (2, 'FWD', 1, 1, 1, 0)):
-Attn Layer <176, 177>: Former_Layer = 171, Next_Layer = 178, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[155, 159], pp_invoke=[]
-MLP Layer <178, 179>: Former_Layer = 177, Next_Layer = 184, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+Attn Layer <176, 177>: Former_Layer = 171, Next_Layer = 178, TP_Grp_start = [176, 180], TP_Grp_end = [177, 181], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[155, 159], pp_invoke=[]
+MLP Layer <178, 179>: Former_Layer = 177, Next_Layer = 184, TP_Grp_start = [178, 182], TP_Grp_end = [179, 183], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
 
 FWD Transformer Layer 21 (step, type, did, mbid, lid, tid = (2, 'FWD', 1, 1, 1, 1)):
-Attn Layer <180, 181>: Former_Layer = 175, Next_Layer = 182, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[155, 159], pp_invoke=[]
-MLP Layer <182, 183>: Former_Layer = 181, Next_Layer = 188, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+Attn Layer <180, 181>: Former_Layer = 175, Next_Layer = 182, TP_Grp_start = [176, 180], TP_Grp_end = [177, 181], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[155, 159], pp_invoke=[]
+MLP Layer <182, 183>: Former_Layer = 181, Next_Layer = 188, TP_Grp_start = [178, 182], TP_Grp_end = [179, 183], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
 
 FWD Transformer Layer 22 (step, type, did, mbid, lid, tid = (2, 'FWD', 1, 1, 2, 0)):
-Attn Layer <184, 185>: Former_Layer = 179, Next_Layer = 186, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[163, 167], pp_invoke=[]
-MLP Layer <186, 187>: Former_Layer = 185, Next_Layer = None, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+Attn Layer <184, 185>: Former_Layer = 179, Next_Layer = 186, TP_Grp_start = [184, 188], TP_Grp_end = [185, 189], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[163, 167], pp_invoke=[]
+MLP Layer <186, 187>: Former_Layer = 185, Next_Layer = None, TP_Grp_start = [186, 190], TP_Grp_end = [187, 191], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
 
 FWD Transformer Layer 23 (step, type, did, mbid, lid, tid = (2, 'FWD', 1, 1, 2, 1)):
-Attn Layer <188, 189>: Former_Layer = 183, Next_Layer = 190, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[163, 167], pp_invoke=[]
-MLP Layer <190, 191>: Former_Layer = 189, Next_Layer = None, TP_Group = [], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
+Attn Layer <188, 189>: Former_Layer = 183, Next_Layer = 190, TP_Grp_start = [184, 188], TP_Grp_end = [185, 189], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[163, 167], pp_invoke=[]
+MLP Layer <190, 191>: Former_Layer = 189, Next_Layer = None, TP_Grp_start = [186, 190], TP_Grp_end = [187, 191], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]
 
 passes: [1, 2]
 new_DP: 2

@@ -90,6 +90,124 @@ class Dep:
         repr_str = f"""src={self.src}, dst={self.dst}, depend_node={self.depend_node}, invoke_node={self.invoke_node}"""
         return repr_str
 
+class Node:
+    def __init__(self, layer_start_id, layer_end_id, name='node'):
+        self.class_name = name
+        self.layer_start_id = layer_start_id
+        self.layer_end_id = layer_end_id
+        self.flow_dep_id = []
+        self.flow_invoke_id = []
+
+    def print_node(self, file_name=None, end='\n'):
+        if file_name is None:
+            print(f"{self.class_name}_id=<{self.layer_start_id}, {self.layer_end_id}>{end} ")
+            print(f"dep={self.flow_dep_id}{end} ")
+            print(f"invoke={self.flow_invoke_id}")
+        else:
+            with open(file_name, 'w') as f:
+                f.write(f"{self.class_name}_id=<{self.layer_start_id}, {self.layer_end_id}>{end} ")
+                f.write(f"dep={self.flow_dep_id}{end} ")
+                f.write(f"invoke={self.flow_invoke_id}")
+
+class VirtNode(Node):
+    def __init__(self, layer_start_id, layer_end_id):
+        super().__init__(layer_start_id, layer_end_id, name='virt_node')
+
+
+def RingAllReduce(src_list, dst_list):
+    virt_nodes = []
+    cc_flows = []
+
+    return virt_nodes, cc_flows
+
+def ring_all_reduce(N, total_data_size):
+    assert N > 1, f"Exception when generating AllReduce flows: DP grp must bigger than 1!"
+    flows = defaultdict(list)               # key: data chunk   value:  cc_flow
+
+    v_node = defaultdict(list)       # key: dp_id        value: cc_vnode 
+    v_nodename_start = []       # key: dp_id        value: cc_vnode 
+    v_nodename_end = []       # key: dp_id        value: cc_vnode 
+    
+    flow_data_size = total_data_size / N
+
+    data_chunk_start_idx = [i for i in range(N)]
+    data_chunk_idx = [i for i in range(N)]
+    
+    for chunk in range(N):
+        chunk_flow_id = 0
+        
+        for round in range(2 * N - 2):
+            src = data_chunk_idx[chunk]             # 对应 源dp_id
+            dst = (data_chunk_idx[chunk] + 1) % N   # 对应 目的dp_id
+            data_chunk_idx[chunk] = dst             # 更新该chunk的指向的dp_id的指针，供下一次for循环使用
+            if round < N - 1 - 1:
+                src_op = '_rs'      # reduce-scatter
+                dst_op = '_rs'      # all gather
+            elif round == N - 1 - 1:
+                src_op = '_rs'
+                dst_op = '_ag'
+            else:
+                src_op = '_ag' 
+                dst_op = '_ag'
+
+            src_node_name = f"virt_dp{src}_chunk{chunk}" + src_op
+            if src_node_name not in v_node:
+                v_node[src_node_name] = cc_vnode(src_node_name, src)
+                if round == 0:
+                    v_nodename_start.append(src_node_name)
+
+            dst_node_name = f"virt_dp{dst}_chunk{chunk}" + dst_op
+            if dst_node_name not in v_node:
+                v_node[dst_node_name] = cc_vnode(dst_node_name, dst)
+                if round >= N - 1 - 1:
+                    v_nodename_end.append(dst_node_name)
+
+            flow = cc_Flow(f"chunk{chunk}_flow{chunk_flow_id}", src, dst, flow_data_size, 'reduce-scatter', round, v_node[src_node_name], v_node[dst_node_name])
+            
+            v_node[src_node_name].flow_invoke.append(flow)
+            v_node[dst_node_name].flow_depend.append(flow)
+            flows[chunk].append(flow)
+
+            chunk_flow_id += 1
+
+    # 提取 nodename 中的dp组信息
+    def extract_dp_number(s):
+        match = re.search(r'dp(\d+)', s)
+        if match:
+            return int(match.group(1))
+        else:
+            return None
+        
+    # 把vnode转换成按照dp分组的形式
+    vnode_grp_by_dpid = defaultdict(list)
+    for nodename, node in v_node.items():
+        dp_id = extract_dp_number(nodename)
+        vnode_grp_by_dpid[(dp_id, nodename)] = node
+    
+    assert len(v_nodename_start) == N       # 每个DP只主动触发自己的1/N的数据的发送，剩下的数据需要等待其他DP发过来
+    assert len(vnode_grp_by_dpid) == len(v_node)      # N组
+    assert len(v_nodename_end) == N * N     # 每个node上面的数据分为N份，N个node
+
+    return flows, vnode_grp_by_dpid, v_nodename_start, v_nodename_end
+
+
+
+# 返回值1是class VirtNode对象的列表, 返回值2是 class Flow的列表
+def AllReduce(src_list, dst_list, size, method='RingAllReduce'):
+    assert len(src_list) > 0
+    assert len(dst_list) > 0
+    assert len(src_list) == len(dst_list)
+    assert isinstance(src_list[0], Node)   # Node类或者其子类的对象
+    assert isinstance(dst_list[0], Node)
+
+    virt_nodes = []
+    cc_flows = []
+    if method == 'RingAllReduce':
+        virt_nodes, cc_flows = RingAllReduce(src_list, dst_list, size)
+    else:
+        assert False, f'Method {method} has not implemented yet!'
+
+    return virt_nodes, cc_flows
 
 # Usage: 
 # flow = Flow(src=, dst=, size=, lat=, depend_flow=[], invoke_flow=[])
@@ -106,25 +224,6 @@ class Flow(Dep):
     def __repr__(self) -> str:
         repr_str = f"""{self.prio}, src={self.src}, dst={self.dst}, size={self.size}, pre_lat={self.lat}, depend_node={self.depend_node}, invoke_node={self.invoke_node}, depend_flow={self.depend_flow}, invoke_flow={self.invoke_flow}"""
         return repr_str
-    
-
-class Node:
-    def __init__(self, layer_start_id, layer_end_id):
-        self.layer_start_id = layer_start_id
-        self.layer_end_id = layer_end_id
-        self.flow_dep_id = []
-        self.flow_invoke_id = []
-
-    def print_node(self, file_name=None, end='\n'):
-        if file_name is None:
-            print(f"node_id=<{self.layer_start_id}, {self.layer_end_id}>{end} ")
-            print(f"dep={self.flow_dep_id}{end} ")
-            print(f"invoke={self.flow_invoke_id}")
-        else:
-            with open(file_name, 'w') as f:
-                f.write(f"node_id=<{self.layer_start_id}, {self.layer_end_id}>{end} ")
-                f.write(f"dep={self.flow_dep_id}{end} ")
-                f.write(f"invoke={self.flow_invoke_id}")
 
 
 class ShadowNode(Node):
@@ -180,7 +279,7 @@ class Layer(Node):
                 # f"Input_Size = {self.input_size}, Output_Size = {self.output_size}, "
                 # f"Calc_Time = {self.calc_time}s, Param_Size = {self.param_size}, "
                 f"Former_Layer = {self.former_layer_id}, Next_Layer = {self.next_layer_id}, "
-                f"TP_Group = {self.tp_grp}, TP_fwd_Type = {self.tp_fwd_type}, TP_bkwd_Type = {self.tp_bkwd_type}, "
+                f"TP_Grp_start = {self.tp_grp_start}, TP_Grp_end = {self.tp_grp_end}, TP_fwd_Type = {self.tp_fwd_type}, TP_bkwd_Type = {self.tp_bkwd_type}, "
                 f"DP_src = {self.dp_src_grp}, DP_dst = {self.dp_dst_grp}, DP_Type = {self.dp_type}, "
                 f"pp_dep={self.pp_dep}, pp_invoke={self.pp_invoke}")
     
@@ -287,77 +386,6 @@ class TransformerLayer:
         self.mlp_layer.set_dp_grp(dp_grp, dp_type)
         self.attention_layer.set_dp_grp(dp_grp, dp_type)
 
-    
-
-def ring_all_reduce(N, total_data_size):
-    assert N > 1, f"Exception when generating AllReduce flows: DP grp must bigger than 1!"
-    flows = defaultdict(list)               # key: data chunk   value:  cc_flow
-
-    v_node = defaultdict(list)       # key: dp_id        value: cc_vnode 
-    v_nodename_start = []       # key: dp_id        value: cc_vnode 
-    v_nodename_end = []       # key: dp_id        value: cc_vnode 
-    
-    flow_data_size = total_data_size / N
-
-    data_chunk_start_idx = [i for i in range(N)]
-    data_chunk_idx = [i for i in range(N)]
-    
-    for chunk in range(N):
-        chunk_flow_id = 0
-        
-        for round in range(2 * N - 2):
-            src = data_chunk_idx[chunk]             # 对应 源dp_id
-            dst = (data_chunk_idx[chunk] + 1) % N   # 对应 目的dp_id
-            data_chunk_idx[chunk] = dst             # 更新该chunk的指向的dp_id的指针，供下一次for循环使用
-            if round < N - 1 - 1:
-                src_op = '_rs'      # reduce-scatter
-                dst_op = '_rs'      # all gather
-            elif round == N - 1 - 1:
-                src_op = '_rs'
-                dst_op = '_ag'
-            else:
-                src_op = '_ag' 
-                dst_op = '_ag'
-
-            src_node_name = f"virt_dp{src}_chunk{chunk}" + src_op
-            if src_node_name not in v_node:
-                v_node[src_node_name] = cc_vnode(src_node_name, src)
-                if round == 0:
-                    v_nodename_start.append(src_node_name)
-
-            dst_node_name = f"virt_dp{dst}_chunk{chunk}" + dst_op
-            if dst_node_name not in v_node:
-                v_node[dst_node_name] = cc_vnode(dst_node_name, dst)
-                if round >= N - 1 - 1:
-                    v_nodename_end.append(dst_node_name)
-
-            flow = cc_Flow(f"chunk{chunk}_flow{chunk_flow_id}", src, dst, flow_data_size, 'reduce-scatter', round, v_node[src_node_name], v_node[dst_node_name])
-            
-            v_node[src_node_name].flow_invoke.append(flow)
-            v_node[dst_node_name].flow_depend.append(flow)
-            flows[chunk].append(flow)
-
-            chunk_flow_id += 1
-
-    # 提取 nodename 中的dp组信息
-    def extract_dp_number(s):
-        match = re.search(r'dp(\d+)', s)
-        if match:
-            return int(match.group(1))
-        else:
-            return None
-        
-    # 把vnode转换成按照dp分组的形式
-    vnode_grp_by_dpid = defaultdict(list)
-    for nodename, node in v_node.items():
-        dp_id = extract_dp_number(nodename)
-        vnode_grp_by_dpid[(dp_id, nodename)] = node
-    
-    assert len(v_nodename_start) == N       # 每个DP只主动触发自己的1/N的数据的发送，剩下的数据需要等待其他DP发过来
-    assert len(vnode_grp_by_dpid) == len(v_node)      # N组
-    assert len(v_nodename_end) == N * N     # 每个node上面的数据分为N份，N个node
-
-    return flows, vnode_grp_by_dpid, v_nodename_start, v_nodename_end
 
 
 #######################################
