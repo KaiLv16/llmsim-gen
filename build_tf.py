@@ -6,6 +6,9 @@ from build_llm_exec_graph import *
 from collections import defaultdict
 
 
+tf_layers = None
+lid_2_idx_dict = {}
+
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Transformers Layer Configuration")
     parser.add_argument('--num_of_layers', type=int, default=3, help='Number of layers in the transformer model (default: 3)')
@@ -114,96 +117,73 @@ class VirtNode(Node):
         super().__init__(layer_start_id, layer_end_id, name='virt_node')
 
 
-def RingAllReduce(src_list, dst_list):
+def RingAllReduce(src_list, dst_list, total_data_size, op=None):
+    global tf_layers
+    global lid_2_idx_dict
+    assert op in ['mlp', 'attn']
+
+    N = len(src_list)
     virt_nodes = []
     cc_flows = []
 
-    return virt_nodes, cc_flows
-
-def ring_all_reduce(N, total_data_size):
-    assert N > 1, f"Exception when generating AllReduce flows: DP grp must bigger than 1!"
-    flows = defaultdict(list)               # key: data chunk   value:  cc_flow
-
-    v_node = defaultdict(list)       # key: dp_id        value: cc_vnode 
-    v_nodename_start = []       # key: dp_id        value: cc_vnode 
-    v_nodename_end = []       # key: dp_id        value: cc_vnode 
-    
     flow_data_size = total_data_size / N
 
-    data_chunk_start_idx = [i for i in range(N)]
-    data_chunk_idx = [i for i in range(N)]
-    
     for chunk in range(N):
-        chunk_flow_id = 0
-        
+        src_idx = chunk
+        dst_idx = (chunk + N - 2) % N
         for round in range(2 * N - 2):
-            src = data_chunk_idx[chunk]             # 对应 源dp_id
-            dst = (data_chunk_idx[chunk] + 1) % N   # 对应 目的dp_id
-            data_chunk_idx[chunk] = dst             # 更新该chunk的指向的dp_id的指针，供下一次for循环使用
-            if round < N - 1 - 1:
-                src_op = '_rs'      # reduce-scatter
-                dst_op = '_rs'      # all gather
-            elif round == N - 1 - 1:
-                src_op = '_rs'
-                dst_op = '_ag'
+            src_node_id = src_list[src_idx] if round == 0 else virt_nodes[-1].node_end_id
+            if round == (2 * N - 3):
+                dst_node_id = dst_list[dst_idx] 
             else:
-                src_op = '_ag' 
-                dst_op = '_ag'
+                # sidxs = lid_2_idx_dict[src_list[(round + chunk) % N]]  # [step, did, mbid, lid, tid]
+                didxs = lid_2_idx_dict[dst_list[(round + chunk + 1) % N]]
+                if op == 'mlp':
+                    dst_node_start_id = tf_layers[didxs[0]][didxs[1]][didxs[2]][didxs[3]][didxs[4]].mlp_layer.layer_start_id
+                    dst_node_end_id = tf_layers[didxs[0]][didxs[1]][didxs[2]][didxs[3]][didxs[4]].mlp_layer.layer_end_id
+                elif op == 'attn':
+                    dst_node_start_id = tf_layers[didxs[0]][didxs[1]][didxs[2]][didxs[3]][didxs[4]].attention_layer.layer_start_id
+                    dst_node_end_id = tf_layers[didxs[0]][didxs[1]][didxs[2]][didxs[3]][didxs[4]].attention_layer.layer_end_id
 
-            src_node_name = f"virt_dp{src}_chunk{chunk}" + src_op
-            if src_node_name not in v_node:
-                v_node[src_node_name] = cc_vnode(src_node_name, src)
-                if round == 0:
-                    v_nodename_start.append(src_node_name)
-
-            dst_node_name = f"virt_dp{dst}_chunk{chunk}" + dst_op
-            if dst_node_name not in v_node:
-                v_node[dst_node_name] = cc_vnode(dst_node_name, dst)
-                if round >= N - 1 - 1:
-                    v_nodename_end.append(dst_node_name)
-
-            flow = cc_Flow(f"chunk{chunk}_flow{chunk_flow_id}", src, dst, flow_data_size, 'reduce-scatter', round, v_node[src_node_name], v_node[dst_node_name])
-            
-            v_node[src_node_name].flow_invoke.append(flow)
-            v_node[dst_node_name].flow_depend.append(flow)
-            flows[chunk].append(flow)
-
-            chunk_flow_id += 1
-
-    # 提取 nodename 中的dp组信息
-    def extract_dp_number(s):
-        match = re.search(r'dp(\d+)', s)
-        if match:
-            return int(match.group(1))
-        else:
-            return None
-        
-    # 把vnode转换成按照dp分组的形式
-    vnode_grp_by_dpid = defaultdict(list)
-    for nodename, node in v_node.items():
-        dp_id = extract_dp_number(nodename)
-        vnode_grp_by_dpid[(dp_id, nodename)] = node
-    
-    assert len(v_nodename_start) == N       # 每个DP只主动触发自己的1/N的数据的发送，剩下的数据需要等待其他DP发过来
-    assert len(vnode_grp_by_dpid) == len(v_node)      # N组
-    assert len(v_nodename_end) == N * N     # 每个node上面的数据分为N份，N个node
-
-    return flows, vnode_grp_by_dpid, v_nodename_start, v_nodename_end
-
+                assert dst_node_start_id == dst_list[(round + chunk + 1) % N]
+                virt_nodes.append(ShadowNode(get_node_id(), get_node_id(), dst_node_start_id, dst_node_end_id))
+                dst_node_id = virt_nodes[-1].node_start_id
+            cc_flows.append(Flow(src=src_node_id, dst=dst_node_id, size=flow_data_size))
+                
+    return virt_nodes, cc_flows
 
 
 # 返回值1是class VirtNode对象的列表, 返回值2是 class Flow的列表
 def AllReduce(src_list, dst_list, size, method='RingAllReduce'):
+    global tf_layers
+    global lid_2_idx_dict
+    
     assert len(src_list) > 0
     assert len(dst_list) > 0
     assert len(src_list) == len(dst_list)
     assert isinstance(src_list[0], Node)   # Node类或者其子类的对象
     assert isinstance(dst_list[0], Node)
+    
+    sidxs = lid_2_idx_dict[src_list[0]]            
+    src_mlp_id = tf_layers[sidxs[0]][sidxs[1]][sidxs[2]][sidxs[3]][sidxs[4]].layer_end_id_mlp
+    src_attn_id = tf_layers[sidxs[0]][sidxs[1]][sidxs[2]][sidxs[3]][sidxs[4]].layer_end_id_attn
+
+    didxs = lid_2_idx_dict[dst_list[0]]
+    dst_mlp_id = tf_layers[didxs[0]][didxs[1]][didxs[2]][didxs[3]][didxs[4]].layer_start_id_mlp
+    dst_attn_id = tf_layers[sidxs[0]][sidxs[1]][sidxs[2]][sidxs[3]][sidxs[4]].layer_start_id_attn
+
+    op = None
+    if src_list[0] == src_mlp_id and dst_list[0] == dst_mlp_id:
+        op = 'mlp'
+    elif src_list[0] == src_attn_id and dst_list[0] == dst_attn_id:
+        op = 'attn'
+    else:
+        assert False
 
     virt_nodes = []
     cc_flows = []
     if method == 'RingAllReduce':
-        virt_nodes, cc_flows = RingAllReduce(src_list, dst_list, size)
+        virt_nodes, cc_flows = RingAllReduce(src_list, dst_list, size, op)
     else:
         assert False, f'Method {method} has not implemented yet!'
 
@@ -391,8 +371,9 @@ class TransformerLayer:
 #######################################
 ###            M A I N              ###
 #######################################
-
-if __name__ == '__main__':
+def main():
+    global tf_layers
+    global lid_2_idx_dict
     args = parse_arguments()
     # 读取 CSV 文件到 DataFrame
     workload_df = pd.read_csv('workload.csv', sep='\t')
@@ -439,6 +420,7 @@ if __name__ == '__main__':
     steps = passes * 2
     first_step = 1 if bypass_first_fwd else 0
     last_step = 1 if bypass_last_bkwd else 0
+    
     tf_layers = [[[[[] for _ in range(Num_of_layers)] for _ in range(mbs)] for _ in range(DP)] for _ in range(steps)]
     total_layer_cnt = 0
 
@@ -669,3 +651,6 @@ if __name__ == '__main__':
     print(f'new_Num_of_layers: {Num_of_layers}')
     print(f'new_TP: {TP}')
     print(f'total_layers: {total_layer_cnt}')
+
+if __name__ == '__main__':
+    main()
