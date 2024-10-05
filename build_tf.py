@@ -597,7 +597,7 @@ if __name__ == '__main__':
                                 # for tgrp in range(TP):
                                 #     tf_layers[step][did][mbid][0][tid].mlp_layer.pp_dep.append(tf_layers[step - 1][did][mbs - 1][Num_of_layers - 1][tgrp].mlp_layer.layer_end_id)
                                 #     tf_layers[step - 1][did][mbs - 1][Num_of_layers - 1][tid].mlp_layer.pp_invoke.append(tf_layers[step][did][mbid][0][tgrp].mlp_layer.layer_start_id)
-
+  
                                 # 添加前后层连接的Flow
                                 src_id = tf_layers[step - 1][did][mbs - 1][Num_of_layers - 1][tid].mlp_layer.layer_end_id
                                 dst_id = tf_layers[step][did][mbid][0][tid].mlp_layer.layer_start_id
