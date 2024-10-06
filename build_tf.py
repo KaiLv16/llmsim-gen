@@ -422,7 +422,10 @@ def AllReduce(label, src_list, dst_list, size, method='RingAllReduce'):
 
 
 
-def define_inherentId_to_NICId():
+def define_inherentId_to_NICId(DP, mbs, Num_of_layers, TP):
+    # inherent_id = did * (mbs * Num_of_layers * TP) + mbid * (Num_of_layers * TP) + lid * TP + tid
+
+    
     pass
 
 
@@ -752,6 +755,10 @@ def main():
     print(f'new_Num_of_layers: {Num_of_layers}')
     print(f'new_TP: {TP}')
     print(f'total_layers: {total_layer_cnt}')
+    
+    return DP, mbs, Num_of_layers, TP
 
 if __name__ == '__main__':
-    main()
+    DP, mbs, Num_of_layers, TP = main()
+    define_inherentId_to_NICId(DP, mbs, Num_of_layers, TP)  # in a mocked case: (2, 2, 3, 2)
+
