@@ -9,7 +9,18 @@ World_size: 8
 TP: 2
 PP: 2
 DP: 2
-False
+layer 0: [0, 4], [1, 5]
+layer 1: [8, 12], [9, 13]
+layer 2: [16, 20], [17, 21]
+layer 0: [24, 28], [25, 29]
+layer 1: [32, 36], [33, 37]
+layer 2: [40, 44], [41, 45]
+layer 0: [48, 52], [49, 53]
+layer 1: [56, 60], [57, 61]
+layer 2: [64, 68], [65, 69]
+layer 0: [72, 76], [73, 77]
+layer 1: [80, 84], [81, 85]
+layer 2: [88, 92], [89, 93]
 
 BKWD Transformer Layer 0 (step, type, did, mbid, lid, tid = (1, 'BKWD', 0, 0, 0, 0)):
 MLP Layer <0, 1>: Former_Layer = None, Next_Layer = 2, TP_Grp_start = [0, 4], TP_Grp_end = [1, 5], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]

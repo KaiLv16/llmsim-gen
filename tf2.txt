@@ -1,0 +1,18 @@
+Name: GPT_7B
+Parameter_size: 7B
+Hidden_size: 4096
+Num_of_layers: 32
+Attention_heads: 32
+Sequence_length: 2048
+FFN_hidden_size: 16384
+World_size: 8
+TP: 2
+PP: 2
+DP: 2
+
+passes: [1, 2]
+new_DP: 2
+new_mbs: 2
+new_Num_of_layers: 3
+new_TP: 2
+total_layers: 48
