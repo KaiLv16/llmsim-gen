@@ -10,9 +10,10 @@ tf_layers = None
 lid_2_idx_dict = {}         # 用transformer或者mlp的全局唯一的ID，找Transformer对象的五个index :)
 vnode_list = []
 flow_list = []
-inherent_id_2_NIC_dict = {}       # 做inherent ID到物理网卡上的映射
-nodeid_2_inherent_id = {}
+
 vnodeid_2_nodeid = {}
+nodeid_2_inherent_id = {}
+inherent_id_2_NIC_dict = {}       # 做inherent ID到物理网卡上的映射
 
 
 def parse_arguments():
@@ -40,7 +41,7 @@ def get_node_id():
 
 
 # 全局 vnode ID 分发器
-global_vlid_register = 9999
+global_vlid_register = 99999  # 应当足够大，以免与 global_lid_register 产生重合
 def get_vnode_id():
     global global_vlid_register
     global_vlid_register += 1
