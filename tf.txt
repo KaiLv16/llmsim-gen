@@ -9,6 +9,7 @@ World_size: 8
 TP: 2
 PP: 2
 DP: 2
+False
 
 BKWD Transformer Layer 0 (step, type, did, mbid, lid, tid = (1, 'BKWD', 0, 0, 0, 0)):
 MLP Layer <0, 1>: Former_Layer = None, Next_Layer = 2, TP_Grp_start = [0, 4], TP_Grp_end = [1, 5], TP_fwd_Type = ALLREDUCE, TP_bkwd_Type = ALLREDUCE, DP_src = [], DP_dst = [], DP_Type = None, pp_dep=[], pp_invoke=[]

@@ -20,6 +20,8 @@ def parse_arguments():
     parser.add_argument('--pp', type=int, default=-1, help='Number of stages')
     parser.add_argument('--bypass_first_fwd', type=bool, default=True, help='Bypass first forward pass')
     parser.add_argument('--bypass_last_bkwd', type=bool, default=True, help='Bypass last backward pass')
+    parser.add_argument('--enable_ar', type=str, default='True', help='Enable All-Reduce (default True)')
+
     return parser.parse_args()
 
 
@@ -155,29 +157,35 @@ def RingAllReduce(src_list, dst_list, total_data_size, op=None):
 
 # 返回值1是class VirtNode对象的列表, 返回值2是 class Flow的列表
 def AllReduce(src_list, dst_list, size, method='RingAllReduce'):
+
+    print(f"\n All_Reduce: {src_list} -> {dst_list}\n")
+    
     global tf_layers
     global lid_2_idx_dict
     
     assert len(src_list) > 0
     assert len(dst_list) > 0
     assert len(src_list) == len(dst_list)
-    assert isinstance(src_list[0], Node)   # Node类或者其子类的对象
-    assert isinstance(dst_list[0], Node)
     
     sidxs = lid_2_idx_dict[src_list[0]]            
-    src_mlp_id = tf_layers[sidxs[0]][sidxs[1]][sidxs[2]][sidxs[3]][sidxs[4]].layer_end_id_mlp
-    src_attn_id = tf_layers[sidxs[0]][sidxs[1]][sidxs[2]][sidxs[3]][sidxs[4]].layer_end_id_attn
+    src_mlp_id = tf_layers[sidxs[0]][sidxs[1]][sidxs[2]][sidxs[3]][sidxs[4]].mlp_layer.layer_end_id
+    src_attn_id = tf_layers[sidxs[0]][sidxs[1]][sidxs[2]][sidxs[3]][sidxs[4]].attention_layer.layer_end_id
 
     didxs = lid_2_idx_dict[dst_list[0]]
-    dst_mlp_id = tf_layers[didxs[0]][didxs[1]][didxs[2]][didxs[3]][didxs[4]].layer_start_id_mlp
-    dst_attn_id = tf_layers[sidxs[0]][sidxs[1]][sidxs[2]][sidxs[3]][sidxs[4]].layer_start_id_attn
+    dst_mlp_id = tf_layers[didxs[0]][didxs[1]][didxs[2]][didxs[3]][didxs[4]].mlp_layer.layer_start_id
+    dst_attn_id = tf_layers[sidxs[0]][sidxs[1]][sidxs[2]][sidxs[3]][sidxs[4]].attention_layer.layer_start_id
 
     op = None
+    direct = None
     if src_list[0] == src_mlp_id and dst_list[0] == dst_mlp_id:
         op = 'mlp'
+    # elif src_list[0] == dst_mlp_id and dst_list[0] == src_mlp_id:
+    #     op = 'mlp'
     elif src_list[0] == src_attn_id and dst_list[0] == dst_attn_id:
         op = 'attn'
     else:
+        print(f"assert {src_list[0]} == {src_mlp_id} and {dst_list[0]} == {dst_mlp_id}")
+        print(f"assert {src_list[0]} == {src_attn_id} and {dst_list[0]} == {dst_attn_id}")
         assert False
 
     virt_nodes = []
@@ -375,11 +383,15 @@ def main():
     global tf_layers
     global lid_2_idx_dict
     args = parse_arguments()
+
+    enable_ar = args.enable_ar.lower() == 'true'
+
     # 读取 CSV 文件到 DataFrame
     workload_df = pd.read_csv('workload.csv', sep='\t')
     Parameter_size, Hidden_size, Num_of_layers, Attention_heads, Seq_len, FFN_hidden_size, World_size, TP, PP, DP \
         = get_parameters_by_name(workload_df, 'GPT_7B')
     # 开始构造流
+    vnode_list = []
     flow_list = []
     flow_file = "llm_flow.txt"
     if args.pp != -1:
@@ -441,8 +453,6 @@ def main():
                         tp_grp_attn_end = []
                         tp_grp_mlp_start = []
                         tp_grp_mlp_end = []
-                        last_layer = -1
-                        next_layer = -1
                         for tid in range(TP):
                             inherent_id = did * (mbs * Num_of_layers * TP) + mbid * (Num_of_layers * TP) + lid * TP + tid
                             lid_start_attn = get_node_id()
@@ -480,8 +490,13 @@ def main():
                             tf_layers[step][did][mbid][lid][tid].set_tp_groups(tp_grp_attn_start=tp_grp_attn_start, tp_grp_attn_end=tp_grp_attn_end, \
                                                                                tp_grp_mlp_start=tp_grp_mlp_start, tp_grp_mlp_end=tp_grp_mlp_end, \
                                                                                tp_fwd_type='ALLREDUCE', tp_bkwd_type='ALLREDUCE')
-                        attn_vnode, attn_ccflow = AllReduce(tp_grp_attn_start, tp_grp_attn_end, size=tf_layers[step][did][mbid][lid][-1].attention_layer.param_size, method='RingAllReduce')
-                        mlp_vnode, mlp_ccflows = AllReduce(tp_grp_mlp_start, tp_grp_mlp_end, size=tf_layers[step][did][mbid][lid][-1].mlp_layer.param_size, method='RingAllReduce')
+                        if enable_ar == True:
+                            attn_vnode, attn_ccflow = AllReduce(tp_grp_attn_start, tp_grp_attn_end, size=tf_layers[step][did][mbid][lid][-1].attention_layer.param_size, method='RingAllReduce')
+                            mlp_vnode, mlp_ccflows = AllReduce(tp_grp_mlp_start, tp_grp_mlp_end, size=tf_layers[step][did][mbid][lid][-1].mlp_layer.param_size, method='RingAllReduce')
+                            vnode_list.append(attn_vnode)
+                            vnode_list.append(mlp_vnode)
+                            flow_list.append(attn_ccflow)
+                            flow_list.append(mlp_ccflows)
                     
                     # 连接多层Transformer网络
                     for tid in range(TP):
@@ -532,10 +547,15 @@ def main():
                             tf_layers[step - 1][did][mbs - 1][Num_of_layers - 1 - lid][tid].mlp_layer.dp_type = 'ALLREDUCE'
                             tf_layers[step][did][0][lid][tid].mlp_layer.dp_type = 'ALLREDUCE'
 
-                            attn_vnode, attn_ccflow = AllReduce(tf_layers[step][did][0][lid][tid].attention_layer.dp_src_grp, tf_layers[step][did][0][lid][tid].attention_layer.dp_dst_grp, \
+                            if enable_ar == True:
+                                attn_vnode, attn_ccflow = AllReduce(tf_layers[step][did][0][lid][tid].attention_layer.dp_src_grp, tf_layers[step][did][0][lid][tid].attention_layer.dp_dst_grp, \
                                                                 size=tf_layers[step][did][0][lid][tid].attention_layer.param_size, method='RingAllReduce')
-                            mlp_vnode, mlp_ccflows = AllReduce(tf_layers[step][did][0][lid][tid].mlp_layer.dp_src_grp, tf_layers[step][did][0][lid][tid].mlp_layer.dp_dst_grp, \
+                                mlp_vnode, mlp_ccflows = AllReduce(tf_layers[step][did][0][lid][tid].mlp_layer.dp_src_grp, tf_layers[step][did][0][lid][tid].mlp_layer.dp_dst_grp, \
                                                                 size=tf_layers[step][did][0][lid][tid].mlp_layer.param_size, method='RingAllReduce')
+                                vnode_list.append(attn_vnode)
+                                vnode_list.append(mlp_vnode)
+                                flow_list.append(attn_ccflow)
+                                flow_list.append(mlp_ccflows)
                     else:
                         pass
 
@@ -588,8 +608,13 @@ def main():
                             tf_layers[step][did][mbid][lid][tid].set_tp_groups(tp_grp_attn_start=tp_grp_attn_start, tp_grp_attn_end=tp_grp_attn_end, \
                                                                                tp_grp_mlp_start=tp_grp_mlp_start, tp_grp_mlp_end=tp_grp_mlp_end, \
                                                                                tp_fwd_type='ALLREDUCE', tp_bkwd_type='ALLREDUCE')
-                        mlp_vnode, mlp_ccflows = AllReduce(tp_grp_mlp_start, tp_grp_mlp_end, size=tf_layers[step][did][mbid][lid][-1].mlp_layer.param_size, method='RingAllReduce')
-                        attn_vnode, attn_ccflow = AllReduce(tp_grp_attn_start, tp_grp_attn_end, size=tf_layers[step][did][mbid][lid][-1].attention_layer.param_size, method='RingAllReduce')
+                        if enable_ar == True:
+                            mlp_vnode, mlp_ccflows = AllReduce(tp_grp_mlp_start, tp_grp_mlp_end, size=tf_layers[step][did][mbid][lid][-1].mlp_layer.param_size, method='RingAllReduce')
+                            attn_vnode, attn_ccflow = AllReduce(tp_grp_attn_start, tp_grp_attn_end, size=tf_layers[step][did][mbid][lid][-1].attention_layer.param_size, method='RingAllReduce')
+                            vnode_list.append(mlp_vnode)
+                            vnode_list.append(attn_vnode)
+                            flow_list.append(mlp_ccflows)
+                            flow_list.append(attn_ccflow)
                         
                     # 连接多层Transformer网络 (反向传播)
                     for tid in range(TP):
