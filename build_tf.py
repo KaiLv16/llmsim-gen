@@ -7,7 +7,7 @@ from collections import defaultdict
 
 
 tf_layers = None
-lid_2_idx_dict = {}
+lid_2_idx_dict = {}         # 用transformer或者mlp的全局唯一的ID，找Transformer对象的五个index :)
 vnode_list = []
 flow_list = []
 inherent_id_2_NIC_dict = {}       # 做inherent ID到物理网卡上的映射
@@ -447,9 +447,6 @@ def main():
     # 开始构造流
     if args.pp != -1:
         PP = args.pp
-
-    # 用transformer或者mlp的全局唯一的ID，找Transformer对象的五个index :)
-    lid_2_idx_dict = {}
 
     # Num_of_layers = 3
     # global_batch = 8192
