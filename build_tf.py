@@ -420,6 +420,11 @@ def AllReduce(label, src_list, dst_list, size, method='RingAllReduce'):
     return virt_nodes, cc_flows
 
 
+
+def define_inherentId_to_NICId():
+    pass
+
+
 #######################################
 ###            M A I N              ###
 #######################################
@@ -433,7 +438,6 @@ def main():
     global vnodeid_2_nodeid
 
     args = parse_arguments()
-
     enable_ar = args.enable_ar.lower() == 'true'
 
     # 读取 CSV 文件到 DataFrame
