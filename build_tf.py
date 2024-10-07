@@ -113,7 +113,8 @@ class Dep:
 
     def __repr__(self) -> str:
         # type = -1 表示 Dep, = 3 表示 Flow
-        repr_str = f"""{self.id}, {self.prio}, src={self.src}, dst={self.dst}, lat={self.lat}, depend_node={self.depend_node}, invoke_node={self.invoke_node}"""
+        repr_str = f"{self.id}, {self.prio}, src={self.src}, dst={self.dst}, lat={self.lat}, "
+        repr_str += f"depend_node={self.depend_node}, invoke_node={self.invoke_node}, depend_flow={self.depend_flow}, invoke_flow={self.invoke_flow}"
         return repr_str
 
 
@@ -202,42 +203,6 @@ class ShadowNode(Node):
                 f.write(f"origin_node_id=<{self.origin_node_start_id}, {self.origin_node_end_id}>{end} ")
                 f.write(f"dep={self.flow_dep_id}{end} ")
                 f.write(f"invoke={self.flow_invoke_id}")
-
-
-def gen_flow_dependency():
-    global flow_list
-    global tf_layers
-    global vnode_list
-
-    NodeDependencyDict = defaultdict(SimpleNode)
-
-    for flow in flow_list:
-        if flow.src not in NodeDependencyDict:
-            NodeDependencyDict[flow.src] = SimpleNode(flow.src, flow.lat, invoke_flow_id=flow.id)
-        else:
-            NodeDependencyDict[flow.src].invoke_flows.append(flow.id)
-
-        if flow.dst not in NodeDependencyDict:
-            NodeDependencyDict[flow.dst] = SimpleNode(flow.dst, flow.lat, depend_flow_id=flow.id)
-        else:
-            NodeDependencyDict[flow.dst].depend_flows.append(flow.id)
-    
-    for i in range(flow_list):
-        flow_list[i]. = NodeDependencyDict[flow.src].
-
-        if flow.dst not in NodeDependencyDict:
-            NodeDependencyDict[flow.dst] = SimpleNode(flow.dst, flow.lat, depend_flow_id=flow.id)
-        else:
-            NodeDependencyDict[flow.dst].depend_flows.append(flow.id)
-
-        flow.dst
-        if flow.prio == -1:     # Dep
-            pass
-        elif flow.prio == 3:     # Flow
-            pass
-        else:
-            pass
-
 
 
 class Layer(Node):
@@ -376,6 +341,9 @@ class TransformerLayer:
         self.attention_layer.set_dp_grp(dp_grp, dp_type)
 
 
+###################################
+###         FUNCTIONS           ###
+###################################
 def RingAllReduce(src_list, dst_list, total_data_size, op=None):
     global tf_layers
     global lid_2_idx_dict
@@ -492,6 +460,27 @@ def define_inherentId_to_NICId(DP, mbs, Num_of_layers, TP):
                     print(f"Layer {inherent_id} ({did}, {mbid}, {lid}, {tid}) @ node {inherent_id_2_NIC_dict[inherent_id]}")
 
 
+def gen_flow_dependency():
+    global flow_list
+    global tf_layers
+    global vnode_list
+
+    NodeDependencyDict = defaultdict(SimpleNode)
+
+    for flow in flow_list:
+        if flow.src not in NodeDependencyDict:
+            NodeDependencyDict[flow.src] = SimpleNode(flow.src, flow.lat, invoke_flow_id=flow.id)
+        else:
+            NodeDependencyDict[flow.src].invoke_flows.append(flow.id)
+
+        if flow.dst not in NodeDependencyDict:
+            NodeDependencyDict[flow.dst] = SimpleNode(flow.dst, flow.lat, depend_flow_id=flow.id)
+        else:
+            NodeDependencyDict[flow.dst].depend_flows.append(flow.id)
+    
+    for i in range(len(flow_list)):
+        flow_list[i].depend_flow = NodeDependencyDict[flow_list[i].src].depend_flows
+        flow_list[i].invoke_flow = NodeDependencyDict[flow_list[i].dst].invoke_flows
 
 
 #######################################
@@ -793,6 +782,20 @@ def main():
                             dst_id = tf_layers[step][did][mbid][lid][tid].mlp_layer.layer_start_id
                             flow_list.append(Dep(src=src_id, dst=dst_id))
 
+    print(f'\npasses: {list(range(first_step, steps - last_step))}')                
+    print(f'new_DP: {DP}')
+    print(f'new_mbs: {mbs}')
+    print(f'new_Num_of_layers: {Num_of_layers}')
+    print(f'new_TP: {TP}')
+    print(f'total_layers: {total_layer_cnt}')
+
+    return DP, mbs, Num_of_layers, TP
+
+
+def print_details():
+    global tf_layers
+    global vnode_list
+    global flow_list
     # node
     with open('mix/llm_node.txt', 'w') as f:
         for step in range(len(tf_layers)):
@@ -813,20 +816,11 @@ def main():
             f.write(repr(flow) + '\n')
 
 
-
-    print(f'\npasses: {list(range(first_step, steps - last_step))}')                
-    print(f'new_DP: {DP}')
-    print(f'new_mbs: {mbs}')
-    print(f'new_Num_of_layers: {Num_of_layers}')
-    print(f'new_TP: {TP}')
-    print(f'total_layers: {total_layer_cnt}')
-    
-    return DP, mbs, Num_of_layers, TP
-
 if __name__ == '__main__':
     DP, mbs, Num_of_layers, TP = main()
     # define_inherentId_to_NICId(2, 2, 3, 2)  # in a mocked case: (2, 2, 3, 2)
     define_inherentId_to_NICId(DP, mbs, Num_of_layers, TP)  # in a mocked case: (2, 2, 3, 2)
     gen_flow_dependency()
+    print_details()
     
 
