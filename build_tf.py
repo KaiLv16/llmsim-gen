@@ -100,7 +100,7 @@ def get_parameters_by_name(df, name):
 # dep = Dep(src=, dst=, depend_node=[], invoke_node=[])
 # print(dep)
 class Dep:
-    def __init__(self, prio=-1, src=-1, dst=-1, lat=0, depend_node=[], invoke_node=[]):
+    def __init__(self, prio=-1, src=-1, dst=-1, lat=0, depend_node=[], invoke_node=[], depend_flow=[], invoke_flow=[]):
         self.id = get_flow_id()
         self.prio=prio
         self.src = src
@@ -108,6 +108,8 @@ class Dep:
         self.lat = lat
         self.depend_node = depend_node
         self.invoke_node = invoke_node
+        self.depend_flow = depend_flow
+        self.invoke_flow = invoke_flow
 
     def __repr__(self) -> str:
         # type = -1 表示 Dep, = 3 表示 Flow
@@ -120,10 +122,8 @@ class Dep:
 # print(flow)
 class Flow(Dep):
     def __init__(self, prio=3, src=-1, dst=-1, size=10000, lat=0, depend_node=[], invoke_node=[], depend_flow=[], invoke_flow=[]):
-        super().__init__(prio=prio, src=src, dst=dst, lat=lat, depend_node=depend_node, invoke_node=invoke_node)
+        super().__init__(prio=prio, src=src, dst=dst, lat=lat, depend_node=depend_node, invoke_node=invoke_node, depend_flow=depend_flow, invoke_flow=invoke_flow)
         self.size = size
-        self.depend_flow = depend_flow
-        self.invoke_flow = invoke_flow
 
     def __repr__(self) -> str:
         repr_str = f"""{self.id}, {self.prio}, src={self.src}, dst={self.dst}, size={self.size}, lat={self.lat}, depend_node={self.depend_node}, invoke_node={self.invoke_node}, depend_flow={self.depend_flow}, invoke_flow={self.invoke_flow}"""
@@ -221,6 +221,14 @@ def gen_flow_dependency():
             NodeDependencyDict[flow.dst] = SimpleNode(flow.dst, flow.lat, depend_flow_id=flow.id)
         else:
             NodeDependencyDict[flow.dst].depend_flows.append(flow.id)
+    
+    for i in range(flow_list):
+        flow_list[i]. = NodeDependencyDict[flow.src].
+
+        if flow.dst not in NodeDependencyDict:
+            NodeDependencyDict[flow.dst] = SimpleNode(flow.dst, flow.lat, depend_flow_id=flow.id)
+        else:
+            NodeDependencyDict[flow.dst].depend_flows.append(flow.id)
 
         flow.dst
         if flow.prio == -1:     # Dep
@@ -229,6 +237,8 @@ def gen_flow_dependency():
             pass
         else:
             pass
+
+
 
 class Layer(Node):
     def __init__(self, layer_start_id, layer_end_id, inherent_id, input_size, output_size, calc_time, param_size, former_layer_id=None, next_layer_id=None):
@@ -423,8 +433,6 @@ def AllReduce(label, src_list, dst_list, size, method='RingAllReduce'):
     
     sidxs = lid_2_idx_dict[src_list[0]]            
     didxs = lid_2_idx_dict[dst_list[0]]
-
-
 
     op = None
     if 'tp' in label.lower():       
