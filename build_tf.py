@@ -144,10 +144,11 @@ class SimpleNode:
 
 
 class Node:
-    def __init__(self, layer_start_id, layer_end_id, lat=0, name='node'):
+    def __init__(self, layer_start_id, layer_mid_id, layer_end_id, lat=0, name='node'):
         global flow_list
         self.class_name = name
         self.layer_start_id = layer_start_id
+        self.layer_mid_id = layer_mid_id
         self.layer_end_id = layer_end_id
         self.flow_dep_id = []
         self.flow_invoke_id = []
@@ -155,7 +156,7 @@ class Node:
         if name == 'cc_shadow':
             flow_list.append(Dep(src=layer_start_id, dst=layer_end_id, lat=0))
         elif name == 'inner_layer':
-            flow_list.append(Dep(src=layer_start_id, dst=layer_start_id, lat=lat))
+            flow_list.append(Dep(src=layer_start_id, dst=layer_mid_id, lat=lat))
         else:
             pass
 
@@ -175,7 +176,7 @@ class Node:
 class ShadowNode(Node):
     def __init__(self, node_start_id, node_end_id, origin_node_start_id, origin_node_end_id, lat):
         global vnodeid_2_nodeid
-        super().__init__(node_start_id, node_end_id, lat=0, name='cc_shadow')
+        super().__init__(layer_start_id=node_start_id, layer_mid_id=-1, layer_end_id=node_end_id, lat=0, name='cc_shadow')
         self.origin_node_start_id = origin_node_start_id
         self.origin_node_end_id = origin_node_end_id
 
@@ -206,8 +207,8 @@ class ShadowNode(Node):
 
 
 class Layer(Node):
-    def __init__(self, layer_start_id, layer_end_id, inherent_id, input_size, output_size, calc_time, param_size, former_layer_id=None, next_layer_id=None):
-        super().__init__(layer_start_id, layer_end_id, lat=calc_time, name='inner_layer')
+    def __init__(self, layer_start_id, layer_mid_id, layer_end_id, inherent_id, input_size, output_size, calc_time, param_size, former_layer_id=None, next_layer_id=None):
+        super().__init__(layer_start_id, layer_mid_id, layer_end_id, lat=calc_time, name='inner_layer')
         self.inherent_id = inherent_id
         self.input_size = input_size
         self.output_size = output_size
@@ -229,7 +230,7 @@ class Layer(Node):
         self.pp_invoke = []
 
     def __repr__(self):
-        return (f"Layer <{self.layer_start_id}, {self.layer_end_id}>: "
+        return (f"Layer <{self.layer_start_id}, {self.layer_mid_id}, {self.layer_end_id}>: "
                 # f"Input_Size = {self.input_size}, Output_Size = {self.output_size}, "
                 # f"Calc_Time = {self.calc_time}s, Param_Size = {self.param_size}, "
                 f"Former_Layer = {self.former_layer_id}, Next_Layer = {self.next_layer_id}, "
@@ -250,8 +251,8 @@ class Layer(Node):
 
 # 包括QKV层 和输出层：4 * N^2
 class Attention(Layer):
-    def __init__(self, tf_object, layer_start_id, layer_end_id, inherent_id, input_size, output_size, calc_time, param_size, former_layer_id=None, next_layer_id=None):
-        super().__init__(layer_start_id, layer_end_id, inherent_id, input_size, output_size, calc_time, param_size, former_layer_id, next_layer_id)
+    def __init__(self, tf_object, layer_start_id, layer_mid_id, layer_end_id, inherent_id, input_size, output_size, calc_time, param_size, former_layer_id=None, next_layer_id=None):
+        super().__init__(layer_start_id, layer_mid_id, layer_end_id, inherent_id, input_size, output_size, calc_time, param_size, former_layer_id, next_layer_id)
         self.layer_type = "Attn"
         self.tf_layer = tf_object
 
@@ -263,8 +264,8 @@ class Attention(Layer):
 
 # 包括两个线性层： N -> 4N  &&  4N -> N, N为隐藏层大小。参数量 = (N * 4 * N + 4 * N) + (4 * N * N + N)
 class MLP(Layer):
-    def __init__(self, tf_object, layer_start_id, layer_end_id, inherent_id, input_size, output_size, calc_time, param_size, former_layer_id=None, next_layer_id=None):
-        super().__init__(layer_start_id, layer_end_id, inherent_id, input_size, output_size, calc_time, param_size, former_layer_id, next_layer_id)
+    def __init__(self, tf_object, layer_start_id, layer_mid_id, layer_end_id, inherent_id, input_size, output_size, calc_time, param_size, former_layer_id=None, next_layer_id=None):
+        super().__init__(layer_start_id, layer_mid_id, layer_end_id, inherent_id, input_size, output_size, calc_time, param_size, former_layer_id, next_layer_id)
         self.layer_type = "MLP"
         self.tf_layer = tf_object
 
@@ -278,7 +279,7 @@ class TransformerLayer:
     '''
     inherent_id: 用于确定这一层的物理位置
     '''
-    def __init__(self, inherent_id, step, pass_type, layer_start_id_attn, layer_end_id_attn, layer_start_id_mlp, layer_end_id_mlp, input_size, output_size, \
+    def __init__(self, inherent_id, step, pass_type, layer_start_id_attn, layer_mid_id_attn, layer_end_id_attn, layer_start_id_mlp, layer_mid_id_mlp, layer_end_id_mlp, input_size, output_size, \
                  mlp_calc_time, attn_calc_time, mlp_param_size, attn_param_size, former_layer_id=None, next_layer_id=None, did=0, mbs=0, Num_of_layers=1, TP=1):
         output_input_size = input_size
         self.inherent_id = inherent_id
@@ -294,21 +295,23 @@ class TransformerLayer:
         
         
         if self.pass_type == 'FWD':
-            self.attention_layer = Attention(self, layer_start_id=layer_start_id_attn, layer_end_id=layer_end_id_attn, inherent_id=inherent_id, input_size=input_size, output_size=output_input_size, 
-                                         calc_time=attn_calc_time, param_size=attn_param_size, 
-                                         former_layer_id=former_layer_id, next_layer_id=layer_start_id_mlp)
+            self.attention_layer = Attention(self, layer_start_id=layer_start_id_attn, layer_mid_id=layer_mid_id_attn, layer_end_id=layer_end_id_attn, inherent_id=inherent_id,
+                                             input_size=input_size, output_size=output_input_size, calc_time=attn_calc_time, param_size=attn_param_size, 
+                                             former_layer_id=former_layer_id, next_layer_id=layer_start_id_mlp)
         
-            self.mlp_layer = MLP(self, layer_start_id=layer_start_id_mlp, layer_end_id=layer_end_id_mlp, inherent_id=inherent_id, input_size=output_input_size, output_size=input_size, 
-                             calc_time=mlp_calc_time, param_size=mlp_param_size, 
-                             former_layer_id=layer_end_id_attn, next_layer_id=next_layer_id)
+            self.mlp_layer = MLP(self, layer_start_id=layer_start_id_mlp, layer_mid_id=layer_mid_id_mlp, layer_end_id=layer_end_id_mlp, inherent_id=inherent_id, 
+                                 input_size=output_input_size, output_size=input_size, calc_time=mlp_calc_time, param_size=mlp_param_size, 
+                                 former_layer_id=layer_end_id_attn, next_layer_id=next_layer_id)
+            flow_list.append(Dep(src=layer_end_id_attn, dst=layer_start_id_mlp))
         else:
-            self.mlp_layer = MLP(self, layer_start_id=layer_start_id_mlp, layer_end_id=layer_end_id_mlp, inherent_id=inherent_id, input_size=output_input_size, output_size=input_size, 
-                             calc_time=mlp_calc_time, param_size=mlp_param_size, 
-                             former_layer_id=former_layer_id, next_layer_id=layer_start_id_attn)
+            self.mlp_layer = MLP(self, layer_start_id=layer_start_id_mlp, layer_mid_id=layer_mid_id_mlp, layer_end_id=layer_end_id_mlp, inherent_id=inherent_id, 
+                                 input_size=output_input_size, output_size=input_size, calc_time=mlp_calc_time, param_size=mlp_param_size, 
+                                 former_layer_id=former_layer_id, next_layer_id=layer_start_id_attn)
             
-            self.attention_layer = Attention(self, layer_start_id=layer_start_id_attn, layer_end_id=layer_end_id_attn, inherent_id=inherent_id, input_size=input_size, output_size=output_input_size, 
-                                         calc_time=attn_calc_time, param_size=attn_param_size, 
-                                         former_layer_id=layer_end_id_mlp, next_layer_id=next_layer_id)
+            self.attention_layer = Attention(self, layer_start_id=layer_start_id_attn, layer_mid_id=layer_mid_id_attn, layer_end_id=layer_end_id_attn, inherent_id=inherent_id, 
+                                             input_size=input_size, output_size=output_input_size, calc_time=attn_calc_time, param_size=attn_param_size, 
+                                             former_layer_id=layer_end_id_mlp, next_layer_id=next_layer_id)
+            flow_list.append(Dep(src=layer_end_id_mlp, dst=layer_start_id_attn))
     
     def __repr__(self):
         result = self.extract_ids()
@@ -399,15 +402,15 @@ def AllReduce(label, src_list, dst_list, size, method='RingAllReduce'):
     assert len(dst_list) > 0
     assert len(src_list) == len(dst_list)
     
-    sidxs = lid_2_idx_dict[src_list[0]]            
+    sidxs = lid_2_idx_dict[src_list[0]]
     didxs = lid_2_idx_dict[dst_list[0]]
 
     op = None
-    if 'tp' in label.lower():       
+    if 'tp' in label.lower():
         # tp的src是节点的start，dst是节点的end
-        src_mlp_id = tf_layers[sidxs[0]][sidxs[1]][sidxs[2]][sidxs[3]][sidxs[4]].mlp_layer.layer_start_id
+        src_mlp_id = tf_layers[sidxs[0]][sidxs[1]][sidxs[2]][sidxs[3]][sidxs[4]].mlp_layer.layer_mid_id
         dst_mlp_id = tf_layers[didxs[0]][didxs[1]][didxs[2]][didxs[3]][didxs[4]].mlp_layer.layer_end_id
-        src_attn_id = tf_layers[sidxs[0]][sidxs[1]][sidxs[2]][sidxs[3]][sidxs[4]].attention_layer.layer_start_id
+        src_attn_id = tf_layers[sidxs[0]][sidxs[1]][sidxs[2]][sidxs[3]][sidxs[4]].attention_layer.layer_mid_id
         dst_attn_id = tf_layers[didxs[0]][didxs[1]][didxs[2]][didxs[3]][didxs[4]].attention_layer.layer_end_id
 
         if src_list[0] == src_mlp_id and dst_list[0] == dst_mlp_id:
@@ -419,7 +422,7 @@ def AllReduce(label, src_list, dst_list, size, method='RingAllReduce'):
             print(f"assert {src_list[0]} == {src_attn_id} and {dst_list[0]} == {dst_attn_id}")
             assert False
 
-    elif 'dp' in label.lower():       
+    elif 'dp' in label.lower():
         # dp的src是节点A的end，dst是节点B的start
         src_mlp_id = tf_layers[sidxs[0]][sidxs[1]][sidxs[2]][sidxs[3]][sidxs[4]].mlp_layer.layer_end_id
         dst_mlp_id = tf_layers[didxs[0]][didxs[1]][didxs[2]][didxs[3]][didxs[4]].mlp_layer.layer_start_id
@@ -465,6 +468,16 @@ def gen_flow_dependency():
     global tf_layers
     global vnode_list
 
+    def remove_common_elements(list1, list2):
+        # 找出两个列表中共同的元素
+        common_elements = set(list1) & set(list2)
+        
+        # 过滤掉共同元素，保持顺序
+        filtered_list1 = [item for item in list1 if item not in common_elements]
+        filtered_list2 = [item for item in list2 if item not in common_elements]
+        
+        return filtered_list1, filtered_list2
+    
     NodeDependencyDict = defaultdict(SimpleNode)
 
     for flow in flow_list:
@@ -481,7 +494,11 @@ def gen_flow_dependency():
     for i in range(len(flow_list)):
         flow_list[i].depend_flow = NodeDependencyDict[flow_list[i].src].depend_flows
         flow_list[i].invoke_flow = NodeDependencyDict[flow_list[i].dst].invoke_flows
+        assert len(flow_list[i].depend_flow) == len(set(flow_list[i].depend_flow))
+        assert len(flow_list[i].invoke_flow) == len(set(flow_list[i].invoke_flow))
 
+        flow_list[i].depend_flow, flow_list[i].invoke_flow = \
+            remove_common_elements(flow_list[i].depend_flow, flow_list[i].invoke_flow)
 
 #######################################
 ###            M A I N              ###
@@ -562,12 +579,14 @@ def main():
                         for tid in range(TP):
                             inherent_id = did * (mbs * Num_of_layers * TP) + mbid * (Num_of_layers * TP) + lid * TP + tid
                             lid_start_attn = get_node_id()
+                            lid_mid_attn = get_node_id()
                             lid_end_attn = get_node_id()
                             lid_start_mlp = get_node_id()
+                            lid_mid_mlp = get_node_id()
                             lid_end_mlp = get_node_id()
-                            tp_grp_attn_start.append(lid_start_attn)
+                            tp_grp_attn_start.append(lid_mid_attn)
                             tp_grp_attn_end.append(lid_end_attn)
-                            tp_grp_mlp_start.append(lid_start_mlp)
+                            tp_grp_mlp_start.append(lid_mid_mlp)
                             tp_grp_mlp_end.append(lid_end_mlp)
 
                             # 添加DP依赖
@@ -577,8 +596,8 @@ def main():
 
                             tf_layers[step][did][mbid][lid].append(
                                 TransformerLayer(inherent_id=inherent_id, step=step, pass_type=pass_type,
-                                            layer_start_id_attn=lid_start_attn, layer_end_id_attn=lid_end_attn, 
-                                            layer_start_id_mlp=lid_start_mlp, layer_end_id_mlp=lid_end_mlp, 
+                                            layer_start_id_attn=lid_start_attn, layer_mid_id_attn=lid_mid_attn, layer_end_id_attn=lid_end_attn, 
+                                            layer_start_id_mlp=lid_start_mlp, layer_mid_id_mlp=lid_mid_mlp, layer_end_id_mlp=lid_end_mlp, 
                                             input_size=mb_input_size, output_size=mb_input_size, 
                                             attn_calc_time=0.005, mlp_calc_time=0.010, 
                                             mlp_param_size=mlp_param_size_tp, attn_param_size=attn_param_size_tp,
@@ -593,8 +612,10 @@ def main():
                             total_layer_cnt += 1
 
                             lid_2_idx_dict[lid_start_attn] = [step, did, mbid, lid, tid]
+                            lid_2_idx_dict[lid_mid_attn] = [step, did, mbid, lid, tid]
                             lid_2_idx_dict[lid_end_attn] = [step, did, mbid, lid, tid]
                             lid_2_idx_dict[lid_start_mlp] = [step, did, mbid, lid, tid]
+                            lid_2_idx_dict[lid_mid_mlp] = [step, did, mbid, lid, tid]
                             lid_2_idx_dict[lid_end_mlp] = [step, did, mbid, lid, tid]
 
                         # TODO
@@ -688,13 +709,15 @@ def main():
                             # inherent_id = did * (mbs * Num_of_layers * TP) + mbid * (Num_of_layers * TP) + lid * TP + tid
                             inherent_id = (DP - 1 - did) * (mbs * Num_of_layers * TP) + (mbs - 1 - mbid) * (Num_of_layers * TP) + (Num_of_layers - 1 - lid) * TP + (TP - 1 - tid)
                             lid_start_mlp = get_node_id()
+                            lid_mid_mlp = get_node_id()
                             lid_end_mlp = get_node_id()
                             lid_start_attn = get_node_id()
+                            lid_mid_attn = get_node_id()
                             lid_end_attn = get_node_id()
                             
-                            tp_grp_attn_start.append(lid_start_attn)
+                            tp_grp_attn_start.append(lid_mid_attn)
                             tp_grp_attn_end.append(lid_end_attn)
-                            tp_grp_mlp_start.append(lid_start_mlp)
+                            tp_grp_mlp_start.append(lid_mid_mlp)
                             tp_grp_mlp_end.append(lid_end_mlp)
 
                             # 添加DP依赖
@@ -704,13 +727,15 @@ def main():
 
                             tf_layers[step][did][mbid][lid].append(
                                 TransformerLayer(inherent_id=inherent_id, step=step, pass_type=pass_type,
-                                            layer_start_id_attn=lid_start_attn, layer_end_id_attn=lid_end_attn, 
-                                            layer_start_id_mlp=lid_start_mlp, layer_end_id_mlp=lid_end_mlp, 
+                                            layer_start_id_attn=lid_start_attn, layer_mid_id_attn=lid_mid_attn, layer_end_id_attn=lid_end_attn, 
+                                            layer_start_id_mlp=lid_start_mlp, layer_mid_id_mlp=lid_mid_mlp, layer_end_id_mlp=lid_end_mlp, 
                                             input_size=mb_input_size, output_size=mb_input_size, 
                                             attn_calc_time=0.01, mlp_calc_time=0.02,        # 反向传播计算时间是正向传播的两倍
                                             mlp_param_size=mlp_param_size_tp, attn_param_size=attn_param_size_tp,
                                             did=did, mbs=mbs, Num_of_layers=Num_of_layers, TP=TP)
                                 )
+
+                            
                             nodeid_2_inherent_id[lid_start_attn] = inherent_id
                             nodeid_2_inherent_id[lid_end_attn] = inherent_id
                             nodeid_2_inherent_id[lid_start_mlp] = inherent_id
@@ -719,8 +744,10 @@ def main():
                             total_layer_cnt += 1
 
                             lid_2_idx_dict[lid_start_attn] = [step, did, mbid, lid, tid]
+                            lid_2_idx_dict[lid_mid_attn] = [step, did, mbid, lid, tid]
                             lid_2_idx_dict[lid_end_attn] = [step, did, mbid, lid, tid]
                             lid_2_idx_dict[lid_start_mlp] = [step, did, mbid, lid, tid]
+                            lid_2_idx_dict[lid_mid_mlp] = [step, did, mbid, lid, tid]
                             lid_2_idx_dict[lid_end_mlp] = [step, did, mbid, lid, tid]
                             
                         for tid in range(TP):
