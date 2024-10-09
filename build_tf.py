@@ -4,16 +4,46 @@ import pandas as pd
 import argparse
 from build_llm_exec_graph import *
 from collections import defaultdict
+import matplotlib.pyplot as plt
+import networkx as nx
 
 
 tf_layers = None
 lid_2_idx_dict = {}         # 用transformer或者mlp的全局唯一的ID，找Transformer对象的五个index :)
 vnode_list = []
 flow_list = []
+flowtype_cnt = {'dp': 0, 'tp_fwd': 0, 'tp_bkwd': 0, 'between_layer': 0, 'start_mid_layer': 0, 'attn_mlp_layer': 0, 'mlp_attn_layer': 0, 'between_mbid': 0, 'in_shadow_node': 0, 'cc_flow': 0, 'fwd_bkwd_connect': 0}
 
 vnodeid_2_nodeid = {}
 nodeid_2_inherent_id = {}
 inherent_id_2_NIC_dict = {}       # 做inherent ID到物理网卡上的映射
+
+
+def vid_to_pid(print_file=None):
+    global vnodeid_2_nodeid
+    global nodeid_2_inherent_id
+    global inherent_id_2_NIC_dict
+
+    id_to_pid_dict = {}
+    
+    # 打开文件以进行写入
+    if print_file is not None:
+        with open(print_file, 'w') as f:
+            for nodeid in nodeid_2_inherent_id.keys():
+                id_to_pid_dict[nodeid] = inherent_id_2_NIC_dict[nodeid_2_inherent_id[nodeid]]
+                f.write(f"{nodeid} -> {id_to_pid_dict[nodeid]} (inherent_id {nodeid_2_inherent_id[nodeid]})\n")
+
+            for vnodeid in vnodeid_2_nodeid.keys():
+                id_to_pid_dict[vnodeid] = inherent_id_2_NIC_dict[nodeid_2_inherent_id[vnodeid_2_nodeid[vnodeid]]]
+                f.write(f"{vnodeid} -> {id_to_pid_dict[vnodeid]} (Layer {vnodeid_2_nodeid[vnodeid]}, inherent_id {nodeid_2_inherent_id[vnodeid_2_nodeid[vnodeid]]})\n")
+    else:
+        for nodeid in nodeid_2_inherent_id.keys():
+            id_to_pid_dict[nodeid] = inherent_id_2_NIC_dict[nodeid_2_inherent_id[nodeid]]
+
+        for vnodeid in vnodeid_2_nodeid.keys():
+            id_to_pid_dict[vnodeid] = inherent_id_2_NIC_dict[nodeid_2_inherent_id[vnodeid_2_nodeid[vnodeid]]]
+
+    return id_to_pid_dict
 
 
 def parse_arguments():
@@ -155,8 +185,10 @@ class Node:
         self.lat = lat
         if name == 'cc_shadow':
             flow_list.append(Dep(src=layer_start_id, dst=layer_end_id, lat=0))
+            flowtype_cnt['in_shadow_node'] += 1 
         elif name == 'inner_layer':
             flow_list.append(Dep(src=layer_start_id, dst=layer_mid_id, lat=lat))
+            flowtype_cnt['start_mid_layer'] += 1 
         else:
             pass
 
@@ -303,6 +335,7 @@ class TransformerLayer:
                                  input_size=output_input_size, output_size=input_size, calc_time=mlp_calc_time, param_size=mlp_param_size, 
                                  former_layer_id=layer_end_id_attn, next_layer_id=next_layer_id)
             flow_list.append(Dep(src=layer_end_id_attn, dst=layer_start_id_mlp))
+            flowtype_cnt['attn_mlp_layer'] += 1
         else:
             self.mlp_layer = MLP(self, layer_start_id=layer_start_id_mlp, layer_mid_id=layer_mid_id_mlp, layer_end_id=layer_end_id_mlp, inherent_id=inherent_id, 
                                  input_size=output_input_size, output_size=input_size, calc_time=mlp_calc_time, param_size=mlp_param_size, 
@@ -312,7 +345,7 @@ class TransformerLayer:
                                              input_size=input_size, output_size=output_input_size, calc_time=attn_calc_time, param_size=attn_param_size, 
                                              former_layer_id=layer_end_id_mlp, next_layer_id=next_layer_id)
             flow_list.append(Dep(src=layer_end_id_mlp, dst=layer_start_id_attn))
-    
+            flowtype_cnt['mlp_attn_layer'] += 1
     def __repr__(self):
         result = self.extract_ids()
         # return f"Transformer Layer {self.inherent_id} (step={result[0]} pass_type={result[1]} did={result[2]} mbid={result[3]} lid={result[4]} tid={result[5]}):\n{self.attention_layer}\n{self.mlp_layer}"
@@ -372,17 +405,19 @@ def RingAllReduce(src_list, dst_list, total_data_size, op=None):
 
                 if op == 'mlp':
                     dst_node_start_id = tf_layers[didxs[0]][didxs[1]][didxs[2]][didxs[3]][didxs[4]].mlp_layer.layer_start_id
+                    dst_node_mid_id = tf_layers[didxs[0]][didxs[1]][didxs[2]][didxs[3]][didxs[4]].mlp_layer.layer_mid_id
                     dst_node_end_id = tf_layers[didxs[0]][didxs[1]][didxs[2]][didxs[3]][didxs[4]].mlp_layer.layer_end_id
                     calc_time = tf_layers[sidxs[0]][sidxs[1]][sidxs[2]][sidxs[3]][sidxs[4]].mlp_layer.calc_time
                 elif op == 'attn':
                     dst_node_start_id = tf_layers[didxs[0]][didxs[1]][didxs[2]][didxs[3]][didxs[4]].attention_layer.layer_start_id
+                    dst_node_mid_id = tf_layers[didxs[0]][didxs[1]][didxs[2]][didxs[3]][didxs[4]].attention_layer.layer_mid_id
                     dst_node_end_id = tf_layers[didxs[0]][didxs[1]][didxs[2]][didxs[3]][didxs[4]].attention_layer.layer_end_id
                     calc_time = tf_layers[sidxs[0]][sidxs[1]][sidxs[2]][sidxs[3]][sidxs[4]].attention_layer.calc_time
 
                 # print(f"op = {op}, dst_node_start_id = {dst_node_start_id}, dst_node_end_id = {dst_node_end_id}, dst_list[(round + chunk + 1) % N] = {dst_list[(round + chunk + 1) % N]}")
                 assert dst_node_end_id == dst_list[(round + chunk + 1) % N] or dst_node_start_id == dst_list[(round + chunk + 1) % N], \
                     f"{op}  {src_list}, {dst_list}  {dst_node_end_id}, {dst_list[(round + chunk + 1) % N]}"
-                virt_nodes.append(ShadowNode(get_vnode_id(), get_vnode_id(), dst_node_start_id, dst_node_end_id, lat=calc_time))
+                virt_nodes.append(ShadowNode(get_vnode_id(), get_vnode_id(), dst_node_mid_id, dst_node_end_id, lat=calc_time))
                 dst_node_id = virt_nodes[-1].layer_start_id
 
             cc_flows.append(Flow(src=src_node_id, dst=dst_node_id, size=flow_data_size))
@@ -518,7 +553,7 @@ def main():
     # 读取 CSV 文件到 DataFrame
     workload_df = pd.read_csv('workload.csv', sep='\t')
     Parameter_size, Hidden_size, Num_of_layers, Attention_heads, Seq_len, FFN_hidden_size, World_size, TP, PP, DP \
-        = get_parameters_by_name(workload_df, 'GPT_7B')
+        = get_parameters_by_name(workload_df, 'GPT_7B_2')
     # 开始构造流
     if args.pp != -1:
         PP = args.pp
@@ -605,8 +640,10 @@ def main():
                                 )
                             
                             nodeid_2_inherent_id[lid_start_attn] = inherent_id
+                            nodeid_2_inherent_id[lid_mid_attn] = inherent_id
                             nodeid_2_inherent_id[lid_end_attn] = inherent_id
                             nodeid_2_inherent_id[lid_start_mlp] = inherent_id
+                            nodeid_2_inherent_id[lid_mid_mlp] = inherent_id
                             nodeid_2_inherent_id[lid_end_mlp] = inherent_id
                             
                             total_layer_cnt += 1
@@ -629,7 +666,9 @@ def main():
                             vnode_list += attn_vnode
                             vnode_list += mlp_vnode
                             flow_list.extend(attn_ccflow)
+                            flowtype_cnt['tp_fwd'] += len(attn_ccflow)
                             flow_list.extend(mlp_ccflow)
+                            flowtype_cnt['tp_fwd'] += len(mlp_ccflow)
                     
                     # 连接多层Transformer网络
                     for tid in range(TP):
@@ -643,6 +682,7 @@ def main():
                             size = tf_layers[step][did][mbid][lid - 1][tid].mlp_layer.output_size
                             lat = tf_layers[step][did][mbid][lid - 1][tid].mlp_layer.calc_time
                             flow_list.append(Flow(src=src_id, dst=dst_id, size=size, lat=0))
+                            flowtype_cnt['between_layer'] += 1
                     
                 # 添加 PP 依赖
                 for mbid in range(1, mbs):     # 每个mb
@@ -655,10 +695,11 @@ def main():
                             src_id = tf_layers[step][did][mbid-1][lid][tid].mlp_layer.layer_end_id
                             dst_id = tf_layers[step][did][mbid][lid][tid].attention_layer.layer_start_id
                             flow_list.append(Dep(src=src_id, dst=dst_id))
+                            flowtype_cnt['between_mbid'] += 1
                             
             # 最后：TP并行下，每个 TP 部分分别做 DP 的 all-reduce
             # TODO: 添加 ALLREDUCE 的 flow
-            for did in range(DP):
+            for did in range(1):    # 每个DP的dependency都是一样的，为了避免多次生成流，只做第一个DP的
                 for lid in range(Num_of_layers):            
                     # if len(dp_grp_bkwd[0]) != 0 and len(dp_grp_fwd[0]) != 0:
                     if step > first_step:
@@ -688,7 +729,9 @@ def main():
                                 vnode_list += attn_vnode
                                 vnode_list += mlp_vnode
                                 flow_list.extend(attn_ccflow)
+                                flowtype_cnt['dp'] += len(attn_ccflow)
                                 flow_list.extend(mlp_ccflow)
+                                flowtype_cnt['dp'] += len(mlp_ccflow)
                     else:
                         pass
 
@@ -737,8 +780,10 @@ def main():
 
                             
                             nodeid_2_inherent_id[lid_start_attn] = inherent_id
+                            nodeid_2_inherent_id[lid_mid_attn] = inherent_id
                             nodeid_2_inherent_id[lid_end_attn] = inherent_id
                             nodeid_2_inherent_id[lid_start_mlp] = inherent_id
+                            nodeid_2_inherent_id[lid_mid_mlp] = inherent_id
                             nodeid_2_inherent_id[lid_end_mlp] = inherent_id
 
                             total_layer_cnt += 1
@@ -762,7 +807,9 @@ def main():
                             vnode_list += mlp_vnode
                             vnode_list += attn_vnode
                             flow_list.extend(mlp_ccflow)
+                            flowtype_cnt['tp_bkwd'] += len(mlp_ccflow)
                             flow_list.extend(attn_ccflow)
+                            flowtype_cnt['tp_bkwd'] += len(attn_ccflow)
 
                         
                     # 连接多层Transformer网络 (反向传播)
@@ -777,6 +824,7 @@ def main():
                             size = tf_layers[step][did][mbid][lid - 1][tid].attention_layer.output_size
                             lat = tf_layers[step][did][mbid][lid - 1][tid].attention_layer.calc_time
                             flow_list.append(Flow(src=src_id, dst=dst_id, size=size, lat=0, depend_flow=[], invoke_flow=[]))
+                            flowtype_cnt['between_layer'] += 1
 
                             
                     # 连接前向和反向传播的代码。这里使用PP进行连接。note: 这里是dependency而非flow
@@ -796,6 +844,7 @@ def main():
                                 size = tf_layers[step - 1][did][mbs - 1][Num_of_layers - 1][tid].mlp_layer.output_size
                                 lat = tf_layers[step - 1][did][mbs - 1][Num_of_layers - 1][tid].mlp_layer.calc_time
                                 flow_list.append(Flow(src=src_id, dst=dst_id, size=size, lat=0, depend_flow=[], invoke_flow=[]))
+                                flowtype_cnt['fwd_bkwd_connect'] += 1
 
                 # 添加 PP 依赖
                 for mbid in range(1, mbs):     # 每个mb
@@ -808,6 +857,7 @@ def main():
                             src_id = tf_layers[step][did][mbid-1][lid][tid].attention_layer.layer_end_id
                             dst_id = tf_layers[step][did][mbid][lid][tid].mlp_layer.layer_start_id
                             flow_list.append(Dep(src=src_id, dst=dst_id))
+                            flowtype_cnt['between_mbid'] += 1
 
     print(f'\npasses: {list(range(first_step, steps - last_step))}')                
     print(f'new_DP: {DP}')
@@ -842,6 +892,87 @@ def print_details():
         for flow in flow_list:
             f.write(repr(flow) + '\n')
 
+    print(flowtype_cnt)
+    total_sum = sum(flowtype_cnt.values())
+    print(f"total_flows = {total_sum}")
+
+def read_flows(filename):
+    edges = []
+    elliminate_shadow = False
+    with open(filename, 'r') as file:
+        for line in file:
+            parts = line.strip().split(',')
+            edge_id = parts[0].strip()  # 获取边编号
+            second_column_value = int(parts[1].strip())  # 获取第二列的值
+            src = parts[2].split('=')[1].strip()  # 获取起始节点编号
+            dst = parts[3].split('=')[1].strip()  # 获取终止节点编号
+            src_num = int(src)
+            dst_num = int(dst)
+            if elliminate_shadow == True:
+                if src_num in vnodeid_2_nodeid:
+                    src = '(' + str(vnodeid_2_nodeid[src_num]) + ')'
+                if dst_num in vnodeid_2_nodeid:
+                    dst = '(' + str(vnodeid_2_nodeid[dst_num]) + ')'
+                edges.append((src, dst, edge_id, second_column_value))
+            else:
+                edges.append((src, dst, edge_id, second_column_value))
+    return edges
+
+def create_graph(edges):
+    G = nx.DiGraph()
+    for src, dst, edge_id, second_column_value in edges:
+        # 根据第二列的值设置边的颜色和样式
+        if second_column_value == 3:
+            color = "black"
+            style = "solid"
+        elif second_column_value == -1:
+            color = "lightgray"
+            style = "dashed"
+        
+        # 添加带属性的边
+        G.add_edge(src, dst, label=edge_id, color=color, style=style)
+    return G
+
+def flip_positions(pos):
+    """上下翻转节点的位置，通过翻转y坐标"""
+    flipped_pos = {}
+    for node, (x, y) in pos.items():
+        flipped_pos[node] = (x, -y)  # 通过将y坐标取反实现上下翻转
+    return flipped_pos
+
+def draw_graph(G):
+    # 使用 graphviz 的 'dot' 布局，带 rankdir 参数实现从左到右排列
+    pos = nx.nx_agraph.graphviz_layout(G, prog="dot")  #, args='-Grankdir=LR')
+
+    # 上下翻转节点位置
+    # pos = flip_positions(pos)
+
+    # 创建图形和轴
+    fig, ax = plt.subplots(figsize=(20, 15))  # 增大图形尺寸
+
+    # 绘制节点
+    nx.draw(G, pos, ax=ax, with_labels=True, node_color='lightblue', 
+            node_size=200, font_size=7, font_weight='bold', arrows=True)
+
+    # 获取边的颜色和样式
+    edges = G.edges(data=True)
+    edge_colors = [attr['color'] for _, _, attr in edges]
+    edge_styles = [attr['style'] for _, _, attr in edges]
+
+    # 绘制边
+    for edge, color, style in zip(edges, edge_colors, edge_styles):
+        nx.draw_networkx_edges(G, pos, ax=ax, edgelist=[edge], edge_color=color, 
+                               style=style, arrows=True)
+
+    # 绘制边的标签
+    edge_labels = nx.get_edge_attributes(G, 'label')
+    nx.draw_networkx_edge_labels(G, pos, ax=ax, edge_labels=edge_labels, 
+                                 font_color='red', font_size=7)  # 减小字体避免重叠
+    
+    plt.title("Directed Graph of Flows (Flipped & Rotated 90°)")
+    plt.savefig("flows_graph_flipped_rotated.pdf", format="pdf")  # 保存为PDF
+    plt.show()
+    plt.close()  # 关闭图形
 
 if __name__ == '__main__':
     DP, mbs, Num_of_layers, TP = main()
@@ -849,5 +980,10 @@ if __name__ == '__main__':
     define_inherentId_to_NICId(DP, mbs, Num_of_layers, TP)  # in a mocked case: (2, 2, 3, 2)
     gen_flow_dependency()
     print_details()
-    
+    node_2_pid = vid_to_pid('mix/node_mapping.txt')
+
+    filename = 'mix/llm_flow.txt'
+    edges = read_flows(filename)
+    G = create_graph(edges)
+    draw_graph(G)
 
