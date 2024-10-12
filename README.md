@@ -14,6 +14,11 @@
 python3 get_fx_graph.py --pp_mode F_then_B --pp_granularity device --dp_granularity device --pp_flow_bucket_size 10000000 -d --plot_seed 11 > graph.txt
 ```
 
+## 对于 LLM, 我们没有使用运算图，而是重新对LLM训练过程中的DP PP TP 进行了建模。运行方法为：
+```
+python3 build_tf.py --pp_cut 0 --global_batch 2 --micro_batch 1 --num_of_layers 2 --enable_ar true
+```
+
 # Reference
 Resnet的代码来自这里：
 [https://github.com/wangyunjeff/ResNet50-MNIST-pytorch](https://github.com/wangyunjeff/ResNet50-MNIST-pytorch)
