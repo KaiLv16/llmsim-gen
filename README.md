@@ -19,7 +19,12 @@ python3 get_fx_graph.py --pp_mode F_then_B --pp_granularity device --dp_granular
 python3 build_tf.py --pp_cut 0 --global_batch 2 --micro_batch 1 --num_of_layers 2 --enable_ar true
 ```
 
-最终生成的输出供 `llmsim-sim` 使用。用法请见对应的repo。
+最终生成的输出在 `mix` ，供 `llmsim-sim` 使用。用法请见对应的repo。
+
+对于 `llm_flow.txt` 中的每一条流的 `src` 和 `dst`，你可以通过控制下面的参数来决定打印的是vnode还是node.  
+```
+print_vnode = False
+```
 
 # Reference
 Resnet的代码来自这里：
