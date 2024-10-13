@@ -15,7 +15,7 @@ vnode_list = []
 flow_list = []
 flowtype_cnt = {'dp': 0, 'tp_fwd': 0, 'tp_bkwd': 0, 'between_layer': 0, 'start_mid_layer': 0, 'attn_mlp_layer': 0, 'mlp_attn_layer': 0, 'between_mbid': 0, 'in_shadow_node': 0, 'cc_flow': 0, 'fwd_bkwd_connect': 0}
 
-print_vnode = False
+print_vnode = True          # 生成节点依赖时，务必将其置为True
 vnodeid_2_nodeid = {}
 nodeid_2_inherent_id = {}
 inherent_id_2_NIC_dict = {}       # 做inherent ID到物理网卡上的映射
@@ -28,22 +28,16 @@ def vid_to_pid(print_file=None):
 
     id_to_pid_dict = {}
     
-    # 打开文件以进行写入
-    if print_file is not None:
-        with open(print_file, 'w') as f:
-            for nodeid in nodeid_2_inherent_id.keys():
-                id_to_pid_dict[nodeid] = inherent_id_2_NIC_dict[nodeid_2_inherent_id[nodeid]]
-                f.write(f"{nodeid} -> {id_to_pid_dict[nodeid]} (inherent_id {nodeid_2_inherent_id[nodeid]})\n")
-
-            for vnodeid in vnodeid_2_nodeid.keys():
-                id_to_pid_dict[vnodeid] = inherent_id_2_NIC_dict[nodeid_2_inherent_id[vnodeid_2_nodeid[vnodeid]]]
-                f.write(f"{vnodeid} -> {id_to_pid_dict[vnodeid]} (Layer {vnodeid_2_nodeid[vnodeid]}, inherent_id {nodeid_2_inherent_id[vnodeid_2_nodeid[vnodeid]]})\n")
-    else:
+    with open(print_file, 'w') as f:
         for nodeid in nodeid_2_inherent_id.keys():
             id_to_pid_dict[nodeid] = inherent_id_2_NIC_dict[nodeid_2_inherent_id[nodeid]]
+            if print_file is not None:
+                f.write(f"{nodeid} -> {id_to_pid_dict[nodeid]} (inherent_id {nodeid_2_inherent_id[nodeid]})\n")
 
         for vnodeid in vnodeid_2_nodeid.keys():
             id_to_pid_dict[vnodeid] = inherent_id_2_NIC_dict[nodeid_2_inherent_id[vnodeid_2_nodeid[vnodeid]]]
+            if print_file is not None:
+                f.write(f"{vnodeid} -> {id_to_pid_dict[vnodeid]} (Layer {vnodeid_2_nodeid[vnodeid]}, inherent_id {nodeid_2_inherent_id[vnodeid_2_nodeid[vnodeid]]})\n")
 
     return id_to_pid_dict
 
@@ -197,10 +191,10 @@ class Node:
         self.flow_dep_id = []
         self.flow_invoke_id = []
         self.lat = lat
-        if name == 'cc_shadow':
+        if name == 'cc_shadow' and layer_start_id != layer_end_id:
             flow_list.append(Dep(src=layer_start_id, dst=layer_end_id, lat=0, note=name))
             flowtype_cnt['in_shadow_node'] += 1 
-        elif name == 'inner_layer':
+        elif name == 'inner_layer' and layer_start_id != layer_end_id:
             flow_list.append(Dep(src=layer_start_id, dst=layer_mid_id, lat=lat, note=name))
             flowtype_cnt['start_mid_layer'] += 1 
         else:
@@ -220,8 +214,14 @@ class Node:
 
 
 class ShadowNode(Node):
-    def __init__(self, node_start_id, node_end_id, origin_node_start_id, origin_node_end_id, lat):
+    def __init__(self, node_start_id=None, node_end_id=None, origin_node_start_id=None, origin_node_end_id=None, lat=-1):
         global vnodeid_2_nodeid
+        assert node_start_id is not None and origin_node_start_id is not None
+        assert (node_end_id is not None and origin_node_end_id is not None) or (node_end_id is None and origin_node_end_id is None)
+        if node_end_id is None:
+            node_end_id = node_start_id
+            origin_node_end_id = origin_node_start_id
+
         super().__init__(layer_start_id=node_start_id, layer_mid_id=-1, layer_end_id=node_end_id, lat=0, name='cc_shadow')
         self.origin_node_start_id = origin_node_start_id
         self.origin_node_end_id = origin_node_end_id
@@ -231,8 +231,13 @@ class ShadowNode(Node):
 
     def __repr__(self):
         # repr_str = 'WARNING: printing method of class ShadowNode is not implemented yet.'
-        repr_str = f"node_id=<{self.layer_start_id}, {self.layer_end_id}> "
-        repr_str += f"origin_node_id=<{self.origin_node_start_id}, {self.origin_node_end_id}> "
+        if self.layer_start_id == self.layer_end_id:
+            repr_str = f"node_id=<{self.layer_start_id}> "
+            repr_str += f"origin_node_id=<{self.origin_node_start_id}> "
+        else:
+            repr_str = f"node_id=<{self.layer_start_id}, {self.layer_end_id}> "
+            repr_str += f"origin_node_id=<{self.origin_node_start_id}, {self.origin_node_end_id}> "
+
         repr_str += f"lat={self.lat} "
         repr_str += f"dep={self.flow_dep_id} "
         repr_str += f"invoke={self.flow_invoke_id}"
@@ -400,7 +405,7 @@ class TransformerLayer:
 ###################################
 ###         FUNCTIONS           ###
 ###################################
-def RingAllReduce(label, src_list, dst_list, total_data_size, op=None):
+def RingAllReduce_1(label, src_list, dst_list, total_data_size, op=None):
     global tf_layers
     global lid_2_idx_dict
     assert op in ['mlp', 'attn']
@@ -413,7 +418,7 @@ def RingAllReduce(label, src_list, dst_list, total_data_size, op=None):
 
     for chunk in range(N):
         src_idx = chunk
-        dst_idx = (chunk + N - 2) % N
+        dst_idx = (chunk + 2 * N - 2) % N
         for round in range(2 * N - 2):
             src_node_id = src_list[src_idx] if round == 0 else virt_nodes[-1].layer_end_id
             if round == (2 * N - 3):
@@ -450,23 +455,46 @@ def RingAllReduce(label, src_list, dst_list, total_data_size, op=None):
     return virt_nodes, cc_flows
 
 
-# 返回值1是class VirtNode对象的列表, 返回值2是 class Flow的列表
-def AllReduce(label, src_list, dst_list, size, method='RingAllReduce'):
-
-
-    print(f"All_Reduce {label}: {src_list} -> {dst_list}")
-    
+def RingAllReduce_2(label, src_list, dst_list, total_data_size, op=None):
     global tf_layers
     global lid_2_idx_dict
-    
-    assert len(src_list) > 0
-    assert len(dst_list) > 0
-    assert len(src_list) == len(dst_list)
-    
+    assert op in ['mlp', 'attn']    # actually 不需要这个限制
+
+    N = len(src_list)
+    virt_nodes = []
+    cc_flows = []
+    flow_data_size = total_data_size / N
+
+    for chunk in range(N):
+        src_node_id = src_list[chunk]
+        for round in range(1, 2 * N - 1):
+            src_idx = (chunk + round - 1) % N     # 这两个用来标记当前的 dst vnode 和哪个 src_list / dst_list 对应
+            dst_idx = (chunk + round) % N
+            vnode = ShadowNode(get_vnode_id(), None, dst_list[dst_idx], None)
+            dst_node_id = vnode.layer_start_id
+            virt_nodes.append(vnode)
+
+            cc_flows.append(Flow(src=src_node_id, dst=dst_node_id, size=flow_data_size, note=f'{label}, chunk {chunk}, round {round}'))
+            if round <= N - 1:
+                cc_flows.append(Dep(src=src_list[dst_idx], dst=dst_node_id, note=f'{label}, Reduce-Scatter dependency, chunk {chunk}, round {round}'))
+            if round >= N - 1 and round <= 2 * N - 2:
+                cc_flows.append(Dep(src=dst_node_id, dst=dst_list[dst_idx], note=f'{label}, All-Gather dependency, chunk {chunk}, round {round}'))
+            src_node_id = virt_nodes[-1].layer_end_id
+    # print(f"{virt_nodes}")
+    return virt_nodes, cc_flows
+
+
+# 返回值1是class VirtNode对象的列表, 返回值2是 class Flow的列表
+def AllReduce(label, src_list, dst_list, size, method='RingAllReduce', op=None):
+    print(f"All_Reduce {label}: {src_list} -> {dst_list}")
+
+    '''
+    global tf_layers
+    global lid_2_idx_dict
+
     sidxs = lid_2_idx_dict[src_list[0]]
     didxs = lid_2_idx_dict[dst_list[0]]
 
-    op = None
     if 'tp' in label.lower():
         # tp的src是节点的start，dst是节点的end
         src_mlp_id = tf_layers[sidxs[0]][sidxs[1]][sidxs[2]][sidxs[3]][sidxs[4]].mlp_layer.layer_mid_id
@@ -500,9 +528,12 @@ def AllReduce(label, src_list, dst_list, size, method='RingAllReduce'):
             assert False
     else:
         assert False
-
+    '''
     if method == 'RingAllReduce':
-        virt_nodes, cc_flows = RingAllReduce(label, src_list, dst_list, size, op)
+        assert len(src_list) > 0
+        assert len(dst_list) > 0
+        assert len(src_list) == len(dst_list)
+        virt_nodes, cc_flows = RingAllReduce_2(label, src_list, dst_list, size, op)
     else:
         assert False, f'Method {method} has not implemented yet!'
 
@@ -687,8 +718,8 @@ def main():
                                                                                tp_grp_mlp_start=tp_grp_mlp_start, tp_grp_mlp_end=tp_grp_mlp_end, \
                                                                                tp_fwd_type='ALLREDUCE', tp_bkwd_type='ALLREDUCE')
                         if enable_ar == True:
-                            attn_vnode, attn_ccflow = AllReduce('TP attn FWD', tp_grp_attn_start, tp_grp_attn_end, size=tf_layers[step][did][mbid][lid][-1].attention_layer.param_size, method='RingAllReduce')
-                            mlp_vnode, mlp_ccflow = AllReduce('TP mlp FWD', tp_grp_mlp_start, tp_grp_mlp_end, size=tf_layers[step][did][mbid][lid][-1].mlp_layer.param_size, method='RingAllReduce')
+                            attn_vnode, attn_ccflow = AllReduce('TP attn FWD', tp_grp_attn_start, tp_grp_attn_end, size=tf_layers[step][did][mbid][lid][-1].attention_layer.param_size, method='RingAllReduce', op='attn')
+                            mlp_vnode, mlp_ccflow = AllReduce('TP mlp FWD', tp_grp_mlp_start, tp_grp_mlp_end, size=tf_layers[step][did][mbid][lid][-1].mlp_layer.param_size, method='RingAllReduce', op='mlp')
                             vnode_list += attn_vnode
                             vnode_list += mlp_vnode
                             flow_list.extend(attn_ccflow)
@@ -748,9 +779,9 @@ def main():
 
                             if enable_ar == True:
                                 attn_vnode, attn_ccflow = AllReduce('DP attn', tf_layers[step][did][0][lid][tid].attention_layer.dp_src_grp, tf_layers[step][did][0][lid][tid].attention_layer.dp_dst_grp, \
-                                                                size=tf_layers[step][did][0][lid][tid].attention_layer.param_size, method='RingAllReduce')
+                                                                size=tf_layers[step][did][0][lid][tid].attention_layer.param_size, method='RingAllReduce', op='attn')
                                 mlp_vnode, mlp_ccflow = AllReduce('DP mlp', tf_layers[step][did][0][lid][tid].mlp_layer.dp_src_grp, tf_layers[step][did][0][lid][tid].mlp_layer.dp_dst_grp, \
-                                                                size=tf_layers[step][did][0][lid][tid].mlp_layer.param_size, method='RingAllReduce')
+                                                                size=tf_layers[step][did][0][lid][tid].mlp_layer.param_size, method='RingAllReduce', op='mlp')
                                 vnode_list += attn_vnode
                                 vnode_list += mlp_vnode
                                 flow_list.extend(attn_ccflow)
@@ -827,8 +858,8 @@ def main():
                             
                         # print(f'layer {lid}: {tp_grp_mlp_start}, {tp_grp_mlp_end}')
                         if enable_ar == True:
-                            mlp_vnode, mlp_ccflow = AllReduce("TP mlp BKWD", tp_grp_mlp_start, tp_grp_mlp_end, size=tf_layers[step][did][mbid][lid][-1].mlp_layer.param_size, method='RingAllReduce')
-                            attn_vnode, attn_ccflow = AllReduce('TP attn BKWD', tp_grp_attn_start, tp_grp_attn_end, size=tf_layers[step][did][mbid][lid][-1].attention_layer.param_size, method='RingAllReduce')
+                            mlp_vnode, mlp_ccflow = AllReduce("TP mlp BKWD", tp_grp_mlp_start, tp_grp_mlp_end, size=tf_layers[step][did][mbid][lid][-1].mlp_layer.param_size, method='RingAllReduce', op='mlp')
+                            attn_vnode, attn_ccflow = AllReduce('TP attn BKWD', tp_grp_attn_start, tp_grp_attn_end, size=tf_layers[step][did][mbid][lid][-1].attention_layer.param_size, method='RingAllReduce', op='attn')
                             vnode_list += mlp_vnode
                             vnode_list += attn_vnode
                             flow_list.extend(mlp_ccflow)
@@ -1016,3 +1047,8 @@ if __name__ == '__main__':
     G = create_graph(edges)
     draw_graph(G)
 
+    # v_nodes, v_flows = RingAllReduce_2('label', [0, 1], [100, 101], 30, op='mlp')
+    # for vnode in v_nodes:
+    #     print(vnode)
+    # for vflow in v_flows:
+    #     print(vflow)

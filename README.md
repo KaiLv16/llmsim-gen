@@ -22,6 +22,8 @@ python3 build_tf.py --pp_cut 0 --global_batch 2 --micro_batch 1 --num_of_layers 
 最终生成的输出在 `mix` ，供 `llmsim-sim` 使用。用法请见对应的repo。
 
 对于 `llm_flow.txt` 中的每一条流的 `src` 和 `dst`，你可以通过控制下面的参数来决定打印的是vnode还是node.  
+
+**注意**: 在生成节点依赖时，务必将 `print_vnode` 置为True，否则会影响生成流依赖的正确性！只有在人工核验节点正确性时，才应该把这个置为False。
 ```
 print_vnode = False
 ```
