@@ -690,8 +690,8 @@ def main():
                                 dp_grp_fwd[lid][tid][0].append(lid_start_attn)
                                 dp_grp_fwd[lid][tid][1].append(lid_start_mlp)
 
-                            attn_calc_time=0.005
-                            mlp_calc_time=0.010
+                            attn_calc_time=0.0007
+                            mlp_calc_time=0.001
 
                             tf_layers[step][did][mbid][lid].append(
                                 TransformerLayer(inherent_id=inherent_id, step=step, pass_type=pass_type,
@@ -836,8 +836,8 @@ def main():
                                 dp_grp_bkwd[lid][tid][0].append(lid_end_attn)
                                 dp_grp_bkwd[lid][tid][1].append(lid_end_mlp)
 
-                            attn_calc_time=0.01     # 反向传播计算时间是正向传播的两倍
-                            mlp_calc_time=0.02
+                            attn_calc_time=0.001     # 反向传播计算时间是正向传播的两倍
+                            mlp_calc_time=0.002
 
                             tf_layers[step][did][mbid][lid].append(
                                 TransformerLayer(inherent_id=inherent_id, step=step, pass_type=pass_type,
