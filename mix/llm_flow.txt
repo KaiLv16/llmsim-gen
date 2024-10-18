@@ -1,13 +1,13 @@
 1908
 0, -1, src=2, dst=3, lat=0, depend_flow=[15, 22, 35], invoke_flow=[1], depend_node=[], invoke_node=[] note=<BKWD_mlp_to_attn>
 1, -1, src=3, dst=4, lat=0.001, depend_flow=[0], invoke_flow=[36, 48, 55], depend_node=[], invoke_node=[] note=<Attention BKWD calc latency>
-2, -1, src=0, dst=1, lat=0.0021, depend_flow=[], invoke_flow=[9, 21, 28], depend_node=[], invoke_node=[] note=<MLP BKWD calc latency>
+2, -1, src=0, dst=1, lat=0.002, depend_flow=[], invoke_flow=[9, 21, 28], depend_node=[], invoke_node=[] note=<MLP BKWD calc latency>
 3, -1, src=8, dst=9, lat=0, depend_flow=[17, 24, 31], invoke_flow=[4], depend_node=[], invoke_node=[] note=<BKWD_mlp_to_attn>
 4, -1, src=9, dst=10, lat=0.001, depend_flow=[3], invoke_flow=[37, 45, 57], depend_node=[], invoke_node=[] note=<Attention BKWD calc latency>
 5, -1, src=6, dst=7, lat=0.002, depend_flow=[], invoke_flow=[10, 18, 30], depend_node=[], invoke_node=[] note=<MLP BKWD calc latency>
 6, -1, src=14, dst=15, lat=0, depend_flow=[13, 26, 33], invoke_flow=[7], depend_node=[], invoke_node=[] note=<BKWD_mlp_to_attn>
 7, -1, src=15, dst=16, lat=0.001, depend_flow=[6], invoke_flow=[39, 46, 54], depend_node=[], invoke_node=[] note=<Attention BKWD calc latency>
-8, -1, src=12, dst=13, lat=0.00205, depend_flow=[], invoke_flow=[12, 19, 27], depend_node=[], invoke_node=[] note=<MLP BKWD calc latency>
+8, -1, src=12, dst=13, lat=0.002, depend_flow=[], invoke_flow=[12, 19, 27], depend_node=[], invoke_node=[] note=<MLP BKWD calc latency>
 9, 3, src=1, dst=100000, size=14915356.444444446, lat=0, depend_flow=[2], invoke_flow=[11], depend_node=[], invoke_node=[] note=<TP mlp BKWD, chunk 0, round 1>
 10, -1, src=7, dst=100000, lat=0, depend_flow=[5], invoke_flow=[11], depend_node=[], invoke_node=[] note=<TP mlp BKWD, Reduce-Scatter dependency, chunk 0, round 1>
 11, 3, src=100000, dst=100001, size=14915356.444444446, lat=0, depend_flow=[9, 10], invoke_flow=[13, 14], depend_node=[], invoke_node=[] note=<TP mlp BKWD, chunk 0, round 2>
