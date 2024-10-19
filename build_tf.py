@@ -358,7 +358,7 @@ class TransformerLayer:
             self.mlp_layer = MLP(self, layer_start_id=layer_start_id_mlp, layer_mid_id=layer_mid_id_mlp, layer_end_id=layer_end_id_mlp, inherent_id=inherent_id, 
                                  input_size=output_input_size, output_size=input_size, calc_time=mlp_calc_time, param_size=mlp_param_size, 
                                  former_layer_id=layer_end_id_attn, next_layer_id=next_layer_id)
-            flow_list.append(Dep(src=layer_end_id_attn, dst=layer_start_id_mlp, note='TWD_attn_to_mlp'))
+            flow_list.append(Dep(src=layer_end_id_attn, dst=layer_start_id_mlp, note=f'FWD_attn_to_mlp_id{self.inherent_id}_dp{self.did}'))
             flowtype_cnt['attn_to_mlp_layer'] += 1
         else:
             self.mlp_layer = MLP(self, layer_start_id=layer_start_id_mlp, layer_mid_id=layer_mid_id_mlp, layer_end_id=layer_end_id_mlp, inherent_id=inherent_id, 
@@ -368,7 +368,7 @@ class TransformerLayer:
             self.attention_layer = Attention(self, layer_start_id=layer_start_id_attn, layer_mid_id=layer_mid_id_attn, layer_end_id=layer_end_id_attn, inherent_id=inherent_id, 
                                              input_size=input_size, output_size=output_input_size, calc_time=attn_calc_time, param_size=attn_param_size, 
                                              former_layer_id=layer_end_id_mlp, next_layer_id=next_layer_id)
-            flow_list.append(Dep(src=layer_end_id_mlp, dst=layer_start_id_attn, note='BKWD_mlp_to_attn'))
+            flow_list.append(Dep(src=layer_end_id_mlp, dst=layer_start_id_attn, note=f'BKWD_mlp_to_attn_id{self.inherent_id}_dp{self.did}'))
             flowtype_cnt['mlp_to_attn_layer'] += 1
     def __repr__(self):
         result = self.extract_ids(self.pass_type)
@@ -702,8 +702,8 @@ def main():
                                             mlp_param_size=mlp_param_size_tp, attn_param_size=attn_param_size_tp,
                                             did=did, mbs=mbs, Num_of_layers=Num_of_layers, TP=TP, DP=DP)
                                 )
-                            flow_list.append(Dep(src=lid_start_attn, dst=lid_mid_attn, lat=attn_calc_time, note='Attention FWD calc latency'))     # attn在本层的计算。用来仿真前向计算的时延
-                            flow_list.append(Dep(src=lid_start_mlp, dst=lid_mid_mlp, lat=mlp_calc_time, note='MLP FWD calc latency'))     # mlp 在本层的计算。用来仿真前向计算的时延
+                            flow_list.append(Dep(src=lid_start_attn, dst=lid_mid_attn, lat=attn_calc_time, note=f'layer {inherent_id} Attention FWD calc latency'))     # attn在本层的计算。用来仿真前向计算的时延
+                            flow_list.append(Dep(src=lid_start_mlp, dst=lid_mid_mlp, lat=mlp_calc_time, note=f'layer {inherent_id} MLP FWD calc latency'))     # mlp 在本层的计算。用来仿真前向计算的时延
                             flowtype_cnt['FWD_Attention_calc'] += 1
                             flowtype_cnt['FWD_Mlp_calc'] += 1
                             
@@ -746,11 +746,13 @@ def main():
                             tf_layers[step][did][mbid][lid - 1][tid].mlp_layer.next_layer_id = tf_layers[step][did][mbid][lid][tid].attention_layer.layer_start_id
                             
                             # 添加前后层连接的Flow
+                            inherent_id1 = tf_layers[step][did][mbid][lid - 1][tid].inherent_id
+                            inherent_id2 = tf_layers[step][did][mbid][lid][tid].inherent_id
                             src_id = tf_layers[step][did][mbid][lid - 1][tid].mlp_layer.layer_end_id
                             dst_id = tf_layers[step][did][mbid][lid][tid].attention_layer.layer_start_id
                             size = tf_layers[step][did][mbid][lid - 1][tid].mlp_layer.output_size
                             lat = tf_layers[step][did][mbid][lid - 1][tid].mlp_layer.calc_time
-                            flow_list.append(Flow(src=src_id, dst=dst_id, size=size, lat=0, note=f'connect between layers (FWD)'))
+                            flow_list.append(Flow(src=src_id, dst=dst_id, size=size, lat=0, note=f'layer {inherent_id1} -> layer {inherent_id2}: connect between layers (FWD)'))
                             flowtype_cnt['between_tf_layers'] += 1
                     
                 # 添加 PP 依赖
@@ -761,9 +763,11 @@ def main():
                                 tf_layers[step][did][mbid-1][lid][tid].mlp_layer.pp_invoke.append(tf_layers[step][did][mbid][lid][tgrp].attention_layer.layer_start_id)
                                 tf_layers[step][did][mbid][lid][tid].attention_layer.pp_dep.append(tf_layers[step][did][mbid-1][lid][tgrp].mlp_layer.layer_end_id)
                             # 添加跨不同的mbid的前后层依赖
+                            inherent_id1 = tf_layers[step][did][mbid-1][lid][tid].inherent_id
+                            inherent_id2 = tf_layers[step][did][mbid][lid][tid].inherent_id
                             src_id = tf_layers[step][did][mbid-1][lid][tid].mlp_layer.layer_end_id
                             dst_id = tf_layers[step][did][mbid][lid][tid].attention_layer.layer_start_id
-                            flow_list.append(Dep(src=src_id, dst=dst_id, note='dep across mbid (fwd)'))
+                            flow_list.append(Dep(src=src_id, dst=dst_id, note=f'layer {inherent_id1} -> layer {inherent_id2}: dep across mbid (fwd)'))
                             flowtype_cnt['between_microbatch'] += 1
                             
             # 最后：TP并行下，每个 TP 部分分别做 DP 的 all-reduce
@@ -849,8 +853,8 @@ def main():
                                             did=did, mbs=mbs, Num_of_layers=Num_of_layers, TP=TP, DP=DP)
                                 )
 
-                            flow_list.append(Dep(src=lid_start_attn, dst=lid_mid_attn, lat=attn_calc_time, note='Attention BKWD calc latency'))     # attn在本层的计算。用来仿真前向计算的时延
-                            flow_list.append(Dep(src=lid_start_mlp, dst=lid_mid_mlp, lat=mlp_calc_time, note='MLP BKWD calc latency'))     # mlp 在本层的计算。用来仿真前向计算的时延
+                            flow_list.append(Dep(src=lid_start_attn, dst=lid_mid_attn, lat=attn_calc_time, note=f'layer {inherent_id} Attention BKWD calc latency'))     # attn在本层的计算。用来仿真前向计算的时延
+                            flow_list.append(Dep(src=lid_start_mlp, dst=lid_mid_mlp, lat=mlp_calc_time, note=f'layer {inherent_id} MLP BKWD calc latency'))     # mlp 在本层的计算。用来仿真前向计算的时延
                             flowtype_cnt['BKWD_Attention_calc'] += 1
                             flowtype_cnt['BKWD_Mlp_calc'] += 1
 
@@ -894,11 +898,13 @@ def main():
                             tf_layers[step][did][mbid][lid - 1][tid].attention_layer.next_layer_id = tf_layers[step][did][mbid][lid][tid].mlp_layer.layer_start_id
                             
                             # 添加前后层连接的Flow
+                            inherent_id1 = tf_layers[step][did][mbid][lid - 1][tid].inherent_id
+                            inherent_id2 = tf_layers[step][did][mbid][lid][tid].inherent_id
                             src_id = tf_layers[step][did][mbid][lid - 1][tid].attention_layer.layer_end_id
                             dst_id = tf_layers[step][did][mbid][lid][tid].mlp_layer.layer_start_id
                             size = tf_layers[step][did][mbid][lid - 1][tid].attention_layer.output_size
                             lat = tf_layers[step][did][mbid][lid - 1][tid].attention_layer.calc_time
-                            flow_list.append(Flow(src=src_id, dst=dst_id, size=size, lat=0, depend_flow=[], invoke_flow=[], note=f'connect between layers (BKWD)'))
+                            flow_list.append(Flow(src=src_id, dst=dst_id, size=size, lat=0, depend_flow=[], invoke_flow=[], note=f'layer {inherent_id1} -> layer {inherent_id2}: connect between layers (BKWD)'))
                             flowtype_cnt['between_tf_layers'] += 1
 
                             
@@ -914,11 +920,13 @@ def main():
                                 #     tf_layers[step - 1][did][mbs - 1][Num_of_layers - 1][tid].mlp_layer.pp_invoke.append(tf_layers[step][did][mbid][0][tgrp].mlp_layer.layer_start_id)
   
                                 # 添加前后层连接的Flow
+                                inherent_id1 = tf_layers[step - 1][did][mbs - 1][Num_of_layers - 1][tid].inherent_id
+                                inherent_id2 = tf_layers[step][did][mbid][0][tid].inherent_id
                                 src_id = tf_layers[step - 1][did][mbs - 1][Num_of_layers - 1][tid].mlp_layer.layer_end_id
                                 dst_id = tf_layers[step][did][mbid][0][tid].mlp_layer.layer_start_id
                                 size = tf_layers[step - 1][did][mbs - 1][Num_of_layers - 1][tid].mlp_layer.output_size
                                 lat = tf_layers[step - 1][did][mbs - 1][Num_of_layers - 1][tid].mlp_layer.calc_time
-                                flow_list.append(Flow(src=src_id, dst=dst_id, size=size, lat=0, depend_flow=[], invoke_flow=[], note=f'connect between FWD & BKWD'))
+                                flow_list.append(Flow(src=src_id, dst=dst_id, size=size, lat=0, depend_flow=[], invoke_flow=[], note=f'layer {inherent_id1} -> layer {inherent_id2}: connect between FWD & BKWD'))
                                 flowtype_cnt['fwd_bkwd_connect'] += 1
 
                 # 添加 PP 依赖
@@ -929,9 +937,11 @@ def main():
                                 tf_layers[step][did][mbid-1][lid][tid].attention_layer.pp_invoke.append(tf_layers[step][did][mbid][lid][tgrp].mlp_layer.layer_start_id)
                                 tf_layers[step][did][mbid][lid][tid].mlp_layer.pp_dep.append(tf_layers[step][did][mbid-1][lid][tgrp].attention_layer.layer_end_id)
                             # 添加跨不同的mbid的前后层依赖
+                            inherent_id1 = tf_layers[step][did][mbid-1][lid][tid].inherent_id
+                            inherent_id2 = tf_layers[step][did][mbid][lid][tid].inherent_id
                             src_id = tf_layers[step][did][mbid-1][lid][tid].attention_layer.layer_end_id
                             dst_id = tf_layers[step][did][mbid][lid][tid].mlp_layer.layer_start_id
-                            flow_list.append(Dep(src=src_id, dst=dst_id, note='dep across mbid (bkwd)'))
+                            flow_list.append(Dep(src=src_id, dst=dst_id, note=f'layer {inherent_id1} -> layer {inherent_id2}: dep across mbid (bkwd)'))
                             flowtype_cnt['between_microbatch'] += 1
 
     print(f'\npasses: {list(range(first_step, steps - last_step))}')                
