@@ -150,7 +150,7 @@ class Dep:
         # type = -1 表示 Dep, = 3 表示 Flow
         repr_str = f"{self.id}, {self.prio}, src={src}, dst={dst}, lat={self.lat}, "
         repr_str += f"depend_flow={self.depend_flow}, invoke_flow={self.invoke_flow}, depend_node={self.depend_node}, invoke_node={self.invoke_node}"
-        repr_str += f" note=<{self.note}>"
+        repr_str += f" note=<<{self.note}>>"
         return repr_str
 
 
@@ -169,7 +169,7 @@ class Flow(Dep):
         src = self.src if (print_vnode is True or self.src not in vnodeid_2_nodeid) else vnodeid_2_nodeid[self.src]
         dst = self.dst if (print_vnode is True or self.dst not in vnodeid_2_nodeid) else vnodeid_2_nodeid[self.dst]
         repr_str = f"""{self.id}, {self.prio}, src={src}, dst={dst}, size={self.size}, lat={self.lat}, depend_flow={self.depend_flow}, invoke_flow={self.invoke_flow}, depend_node={self.depend_node}, invoke_node={self.invoke_node}"""
-        repr_str += f" note=<{self.note}>"
+        repr_str += f" note=<<{self.note}>>"
         return repr_str
 
 
