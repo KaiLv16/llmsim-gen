@@ -730,8 +730,8 @@ def main():
                                                                                tp_grp_mlp_start=tp_grp_mlp_start, tp_grp_mlp_end=tp_grp_mlp_end, \
                                                                                tp_fwd_type='ALLREDUCE', tp_bkwd_type='ALLREDUCE')
                         if enable_ar == True:
-                            attn_vnode, attn_ccflow = AllReduce('TP attn FWD', tp_grp_attn_start, tp_grp_attn_end, size=tf_layers[step][did][mbid][lid][-1].attention_layer.param_size, method='RingAllReduce', op='attn')
-                            mlp_vnode, mlp_ccflow = AllReduce('TP mlp FWD', tp_grp_mlp_start, tp_grp_mlp_end, size=tf_layers[step][did][mbid][lid][-1].mlp_layer.param_size, method='RingAllReduce', op='mlp')
+                            attn_vnode, attn_ccflow = AllReduce(f'TP attn FWD ({tp_grp_attn_start}-> {tp_grp_attn_end})', tp_grp_attn_start, tp_grp_attn_end, size=tf_layers[step][did][mbid][lid][-1].attention_layer.param_size, method='RingAllReduce', op='attn')
+                            mlp_vnode, mlp_ccflow = AllReduce(f'TP mlp FWD ({tp_grp_mlp_start} -> {tp_grp_mlp_end})', tp_grp_mlp_start, tp_grp_mlp_end, size=tf_layers[step][did][mbid][lid][-1].mlp_layer.param_size, method='RingAllReduce', op='mlp')
                             vnode_list += attn_vnode
                             vnode_list += mlp_vnode
                             flow_list.extend(attn_ccflow)
@@ -794,9 +794,11 @@ def main():
                             tf_layers[step][did][0][lid][tid].mlp_layer.dp_type = 'ALLREDUCE'
 
                             if enable_ar == True:
-                                attn_vnode, attn_ccflow = AllReduce('DP attn', tf_layers[step][did][0][lid][tid].attention_layer.dp_src_grp, tf_layers[step][did][0][lid][tid].attention_layer.dp_dst_grp, \
+                                attn_vnode, attn_ccflow = AllReduce(f'DP attn ({tf_layers[step][did][0][lid][tid].attention_layer.dp_src_grp} -> {tf_layers[step][did][0][lid][tid].attention_layer.dp_dst_grp})', 
+                                                                tf_layers[step][did][0][lid][tid].attention_layer.dp_src_grp, tf_layers[step][did][0][lid][tid].attention_layer.dp_dst_grp, \
                                                                 size=tf_layers[step][did][0][lid][tid].attention_layer.param_size, method='RingAllReduce', op='attn')
-                                mlp_vnode, mlp_ccflow = AllReduce('DP mlp', tf_layers[step][did][0][lid][tid].mlp_layer.dp_src_grp, tf_layers[step][did][0][lid][tid].mlp_layer.dp_dst_grp, \
+                                mlp_vnode, mlp_ccflow = AllReduce(f'DP mlp ({tf_layers[step][did][0][lid][tid].mlp_layer.dp_src_grp} -> {tf_layers[step][did][0][lid][tid].mlp_layer.dp_dst_grp})',
+                                                                tf_layers[step][did][0][lid][tid].mlp_layer.dp_src_grp, tf_layers[step][did][0][lid][tid].mlp_layer.dp_dst_grp, \
                                                                 size=tf_layers[step][did][0][lid][tid].mlp_layer.param_size, method='RingAllReduce', op='mlp')
                                 vnode_list += attn_vnode
                                 vnode_list += mlp_vnode
@@ -881,8 +883,8 @@ def main():
                             
                         # print(f'layer {lid}: {tp_grp_mlp_start}, {tp_grp_mlp_end}')
                         if enable_ar == True:
-                            mlp_vnode, mlp_ccflow = AllReduce("TP mlp BKWD", tp_grp_mlp_start, tp_grp_mlp_end, size=tf_layers[step][did][mbid][lid][-1].mlp_layer.param_size, method='RingAllReduce', op='mlp')
-                            attn_vnode, attn_ccflow = AllReduce('TP attn BKWD', tp_grp_attn_start, tp_grp_attn_end, size=tf_layers[step][did][mbid][lid][-1].attention_layer.param_size, method='RingAllReduce', op='attn')
+                            mlp_vnode, mlp_ccflow = AllReduce(f"TP mlp BKWD ({tp_grp_mlp_start} -> {tp_grp_mlp_end})", tp_grp_mlp_start, tp_grp_mlp_end, size=tf_layers[step][did][mbid][lid][-1].mlp_layer.param_size, method='RingAllReduce', op='mlp')
+                            attn_vnode, attn_ccflow = AllReduce(f'TP attn BKWD ({tp_grp_attn_start} -> {tp_grp_attn_end})', tp_grp_attn_start, tp_grp_attn_end, size=tf_layers[step][did][mbid][lid][-1].attention_layer.param_size, method='RingAllReduce', op='attn')
                             vnode_list += mlp_vnode
                             vnode_list += attn_vnode
                             flow_list.extend(mlp_ccflow)
